@@ -152,14 +152,27 @@ const KontakPage = () => {
                 {/* Contact Cards Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                     {/* Telepon Card */}
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                    <div
+                        className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center cursor-pointer"
+                        onClick={() => {
+                            const rawNumber = contactData?.telepon || defaultTelepon;
+                            const waNumber = rawNumber.startsWith("0") ? `62${rawNumber.slice(1)}` : rawNumber;
+                            window.open(`https://wa.me/${waNumber}`, "_blank");
+                        }}
+                    >
                         <div className="w-16 h-16 bg-[#004AAD33] rounded-full flex items-center justify-center mx-auto mb-6">
                             <Phone className="w-7 h-7 text-[#004AAD]" />
                         </div>
                         <h3 className="text-xl font-bold text-gray-800 mb-4">Telepon</h3>
                         <a
-                            href={`tel:${contactData?.telepon || defaultTelepon}`}
-                            className="text-gray-600 hover:text-blue-600 transition-colors block"
+                            href={`https://wa.me/${(contactData?.telepon || defaultTelepon).startsWith("0")
+                                    ? `62${(contactData?.telepon || defaultTelepon).slice(1)}`
+                                    : contactData?.telepon || defaultTelepon
+                                }`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-gray-600 hover:text-green-600 transition-colors block"
+                            onClick={(e) => e.stopPropagation()} // supaya klik nomor tidak ganda
                         >
                             {contactData?.telepon || defaultTelepon}
                         </a>
