@@ -13,8 +13,17 @@ export default function ProtectedRoute({
     const { user } = useAuth();
     const location = useLocation();
 
+
     // Jika tidak ada user, redirect ke login dengan state untuk kembali
     if (!user) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+
+    // Jika user tidak punya role valid, anggap belum login
+    if (!user.role || !user.role.role_name) {
+        // Bersihkan localStorage agar tidak loop
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
 

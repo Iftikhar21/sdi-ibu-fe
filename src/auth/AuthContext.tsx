@@ -16,17 +16,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const [token, setToken] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
+
     useEffect(() => {
         const storedToken = localStorage.getItem("token");
         const storedUser = localStorage.getItem("user");
 
-        if (storedToken && storedUser) {
-            setToken(storedToken);
-            setUser(JSON.parse(storedUser));
+        let parsedUser: User | null = null;
+        if (storedUser) {
+            try {
+                parsedUser = JSON.parse(storedUser);
+            } catch {
+                parsedUser = null;
+            }
+        }
 
-            api.defaults.headers.common[
-                "Authorization"
-            ] = `Bearer ${storedToken}`;
+        // Jika user tidak valid (tidak ada role), hapus localStorage dan logout
+        if (
+            storedToken &&
+            parsedUser &&
+            parsedUser.role &&
+            parsedUser.role.role_name
+        ) {
+            setToken(storedToken);
+            setUser(parsedUser);
+            api.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
+        } else {
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            setToken(null);
+            setUser(null);
+            delete api.defaults.headers.common["Authorization"];
         }
 
         setLoading(false);
