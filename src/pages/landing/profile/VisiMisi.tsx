@@ -4,6 +4,7 @@ import api from "../../../api/api";
 import bg_1 from "@/assets/img/bg_1.svg";
 import image_visi_misi_1 from "@/assets/img/image_visi_misi_1.svg";
 import image_visi_misi_2 from "@/assets/img/image_visi_misi_2.svg";
+import image_visi_misi_3 from "@/assets/img/image_visi_misi_3.svg";
 
 interface VisiMisiData {
     id: number;
@@ -116,7 +117,7 @@ const VisiMisiPage = () => {
                     <div className="order-2 lg:order-1">
                         <div className="rounded-2xl overflow-hidden shadow-xl">
                             <img
-                                src={image_visi_misi_1}
+                                src={image_visi_misi_3}
                                 alt="Misi SDI"
                                 className="w-full h-[450px] object-cover"
                             />

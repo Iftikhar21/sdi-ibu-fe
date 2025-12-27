@@ -5,7 +5,7 @@ import api from "../../api/api";
 
 import logo_sdi from "@/assets/img/logo-sdi-ibu.svg";
 import ring_home from "@/assets/img/ring_home.svg";
-import image_sejarah_1 from '@/assets/img/image_sejarah_1.svg';
+import image_sejarah_2 from '@/assets/img/image_sejarah_2.svg';
 import bg_6 from "@/assets/img/bg_6.svg";
 
 interface RegisterData {
@@ -288,7 +288,7 @@ export default function Register() {
                         />
                         <div className="absolute inset-0 z-0 overflow-hidden flex items-center justify-center">
                             <img
-                                src={image_sejarah_1}
+                                src={image_sejarah_2}
                                 alt="SDI Students"
                                 className="w-[88%] h-[88%] object-cover"
                                 style={{ clipPath: "polygon(50% 0%, 65% 15%, 85% 15%, 85% 35%, 100% 50%, 85% 65%, 85% 85%, 65% 85%, 50% 100%, 35% 85%, 15% 85%, 15% 65%, 0% 50%, 15% 35%, 15% 15%, 35% 15%)" }}

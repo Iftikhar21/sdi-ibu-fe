@@ -488,7 +488,7 @@ const HomePage = () => {
                             <div className="relative">
                                 <div className="relative">
                                     <img
-                                        src={image_sejarah_1}
+                                        src={image_home_1}
                                         alt="Students Learning"
                                         className="w-full h-full object-cover rounded-2xl"
                                     />

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import api from '../../../api/api';
 import bg_1 from '@/assets/img/bg_1.svg';
 import image_sejarah_1 from '@/assets/img/image_sejarah_1.svg';
+import image_sejarah_2 from '@/assets/img/image_sejarah_2.svg';
 
 interface SejarahData {
     id: number;
@@ -161,7 +162,7 @@ const SejarahPage = () => {
                     <div>
                         <div className="relative rounded-2xl overflow-hidden shadow-xl">
                             <img
-                                src={image_sejarah_1}
+                                src={image_sejarah_2}
                                 alt="SDI Ikhlas Bakti Umat"
                                 className="w-full h-[400px] object-cover"
                             />
