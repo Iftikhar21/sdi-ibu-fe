@@ -206,7 +206,7 @@ const HomePage = () => {
                                 Islam <span className="text-yellow-400">Ikhlas Bakti<br />Umat</span>
                             </h1>
                             <p className="text-lg text-gray-200 mb-8 max-w-lg mx-auto lg:mx-0">
-                                Membantu dengan ilmu, Membimbing dengan akhlaq mulia
+                                Mendidik dengan Iman, Membimbing dengan Adab dan Akhlak Mulia. Pendidikan Iman dan Adab Terintegrasi dalam Kurikulum dan Lingkungan Sekolah.
                             </p>
                             <Link
                                 to="/pendaftaran"
