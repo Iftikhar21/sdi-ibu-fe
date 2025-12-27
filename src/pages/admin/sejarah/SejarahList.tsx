@@ -14,6 +14,7 @@ import {
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { historyService } from '../../../services/historyServices';
+import { Helmet } from 'react-helmet-async';
 
 export default function SejarahList() {
     const [data, setData] = useState<History[]>([]);
@@ -89,6 +90,9 @@ export default function SejarahList() {
 
     return (
         <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
             <Layout title="Kelola Sejarah">
                 {/* Header Dashboard Style */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
@@ -223,7 +227,7 @@ export default function SejarahList() {
                             </div>
                         )}
                     </div>
-                    
+
                 </div>
             </Layout>
 

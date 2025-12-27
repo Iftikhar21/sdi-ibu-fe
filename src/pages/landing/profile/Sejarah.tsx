@@ -5,6 +5,7 @@ import api from '../../../api/api';
 import bg_1 from '@/assets/img/bg_1.svg';
 import image_sejarah_1 from '@/assets/img/image_sejarah_1.svg';
 import image_sejarah_2 from '@/assets/img/image_sejarah_2.svg';
+import { Helmet } from "react-helmet-async";
 
 interface SejarahData {
     id: number;
@@ -57,6 +58,40 @@ const SejarahPage = () => {
 
     return (
         <MainLayout>
+            <Helmet>
+                {/* TITLE */}
+                <title>Sejarah SDI Ikhlas Bakti Umat | SDI Ibu</title>
+
+                {/* META DESCRIPTION */}
+                <meta
+                    name="description"
+                    content="Sejarah berdirinya SDI Ikhlas Bakti Umat dan perjalanan sekolah dalam membangun pendidikan Islam yang unggul dan berkarakter."
+                />
+
+                {/* OPEN GRAPH */}
+                <meta
+                    property="og:title"
+                    content="Sejarah SDI Ikhlas Bakti Umat | SDI Ibu"
+                />
+                <meta
+                    property="og:description"
+                    content="Perjalanan SDI Ikhlas Bakti Umat dalam membangun pendidikan Islam yang unggul dan berkarakter."
+                />
+                <meta
+                    property="og:type"
+                    content="website"
+                />
+                <meta
+                    property="og:url"
+                    content={window.location.href}
+                />
+
+                {/* OPTIONAL OG IMAGE */}
+                <meta
+                    property="og:image"
+                    content="https://www.sdiibu.com/og/sejarah.jpg"
+                />
+            </Helmet>
             {/* Hero Section */}
             <div className="relative h-[400px] lg:h-[800px] bg-gradient-to-r from-blue-900/90 to-blue-800/90">
                 <div

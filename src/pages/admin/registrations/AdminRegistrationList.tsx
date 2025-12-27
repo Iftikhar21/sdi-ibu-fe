@@ -25,6 +25,7 @@ import type { Registration } from '../../../types/registration';
 import { registrationService } from '../../../services/registrationServices';
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
+import { Helmet } from 'react-helmet-async';
 
 interface RegistrationWithUser extends Registration {
     user?: {
@@ -253,6 +254,9 @@ export default function AdminRegistrationList() {
 
     return (
         <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
             <Layout title="Kelola Pendaftaran">
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">

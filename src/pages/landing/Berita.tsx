@@ -5,6 +5,7 @@ import MainLayout from '../../components/layout/landing/MainLayout';
 import { useEffect } from 'react';
 import api from '../../api/api';
 import bg_3 from "@/assets/img/bg_3.svg";
+import { Helmet } from 'react-helmet-async';
 
 interface Photo {
     id: number;
@@ -178,6 +179,30 @@ const BeritaPage = () => {
 
     return (
         <MainLayout>
+            <Helmet>
+                <title>Berita SDI Ikhlas Bakti Umat | Informasi & Kegiatan Sekolah</title>
+
+                <meta
+                    name="description"
+                    content="Berita terbaru SDI Ikhlas Bakti Umat Jakarta Timur seputar kegiatan sekolah, prestasi siswa, dan informasi pendidikan."
+                />
+
+                <meta
+                    name="keywords"
+                    content="Berita SDI Ikhlas Bakti Umat, Berita Sekolah Islam, SD Islam Jakarta Timur"
+                />
+
+                {/* Open Graph */}
+                <meta property="og:title" content="Berita SDI Ikhlas Bakti Umat" />
+                <meta
+                    property="og:description"
+                    content="Informasi dan berita terbaru SDI Ikhlas Bakti Umat Jakarta Timur."
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:url" content="https://domainkamu/si/berita" />
+
+                <link rel="canonical" href="https://domainkamu/si/berita" />
+            </Helmet>
             {/* Hero Section */}
             <div className="relative h-[400px] lg:h-[800px] bg-gradient-to-r from-gray-900/90 to-gray-800/90">
                 <div

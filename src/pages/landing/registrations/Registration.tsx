@@ -4,6 +4,7 @@ import { Upload, Camera, FileText, CheckCircle, AlertCircle, Users, X } from 'lu
 import MainLayout from "../../../components/layout/landing/MainLayout";
 import { registrationService } from '../../../services/registrationServices';
 import Modal from '../../../components/common/Modal';
+import { Helmet } from 'react-helmet-async';
 
 const PendaftaranPage = () => {
     const navigate = useNavigate();
@@ -221,6 +222,44 @@ const PendaftaranPage = () => {
     return (
         <>
             <MainLayout>
+                <Helmet>
+                    {/* TITLE */}
+                    <title>Pendaftaran Peserta Didik Baru | SDI Ikhlas Bakti Umat</title>
+
+                    {/* META DESCRIPTION */}
+                    <meta
+                        name="description"
+                        content="Pendaftaran Peserta Didik Baru SDI Ikhlas Bakti Umat. Daftarkan anak Anda melalui formulir online resmi dengan proses mudah dan aman."
+                    />
+
+                    {/* KEYWORDS */}
+                    <meta
+                        name="keywords"
+                        content="Pendaftaran SDI, PPDB SDI Ikhlas Bakti Umat, Pendaftaran Sekolah Dasar Islam, PPDB SDI"
+                    />
+
+                    {/* ROBOTS */}
+                    <meta name="robots" content="index, follow" />
+
+                    {/* OPEN GRAPH */}
+                    <meta
+                        property="og:title"
+                        content="Pendaftaran Peserta Didik Baru | SDI Ikhlas Bakti Umat"
+                    />
+                    <meta
+                        property="og:description"
+                        content="Formulir pendaftaran online resmi SDI Ikhlas Bakti Umat untuk calon peserta didik baru."
+                    />
+                    <meta property="og:type" content="website" />
+                    <meta property="og:url" content={window.location.href} />
+
+                    {/* OG IMAGE */}
+                    <meta
+                        property="og:image"
+                        content="https://www.sdiibu.com/og/pendaftaran.jpg"
+                    />
+                </Helmet>
+
                 {/* Hero Section */}
                 <div className="relative bg-gradient-to-r from-blue-700 via-blue-600 to-blue-800 py-16 overflow-hidden">
                     {/* Decorative Elements */}

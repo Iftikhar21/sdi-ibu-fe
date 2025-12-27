@@ -3,6 +3,7 @@ import { Calendar, Eye, Share2, Images, ChevronLeft, ChevronRight } from 'lucide
 import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../api/api';
+import { Helmet } from "react-helmet-async";
 
 interface Photo {
     id: number;
@@ -142,6 +143,62 @@ const BeritaDetailPage = () => {
 
     return (
         <MainLayout>
+            <Helmet>
+                {/* TITLE DINAMIS */}
+                <title>
+                    {news.title} | SDI Ikhlas Bakti Umat
+                </title>
+
+                {/* META DESCRIPTION (ambil dari konten) */}
+                <meta
+                    name="description"
+                    content={
+                        news.content
+                            .replace(/<[^>]*>/g, "")
+                            .substring(0, 160)
+                    }
+                />
+
+                {/* KEYWORDS (opsional tapi aman) */}
+                <meta
+                    name="keywords"
+                    content={`Berita SDI Ikhlas Bakti Umat, ${news.title}, Sekolah Dasar Islam Jakarta Timur`}
+                />
+
+                {/* CANONICAL */}
+                <link
+                    rel="canonical"
+                    href={`https://sdi-ibu.id/berita/${news.slug}`}
+                />
+
+                {/* OPEN GRAPH (WA / FB) */}
+                <meta property="og:title" content={news.title} />
+                <meta
+                    property="og:description"
+                    content={
+                        news.content
+                            .replace(/<[^>]*>/g, "")
+                            .substring(0, 160)
+                    }
+                />
+                <meta property="og:type" content="article" />
+                <meta
+                    property="og:url"
+                    content={`https://sdi-ibu.id/berita/${news.slug}`}
+                />
+                <meta
+                    property="og:image"
+                    content={
+                        news.thumbnail_url ||
+                        "https://sdi-ibu.id/default-og.jpg"
+                    }
+                />
+
+                {/* ARTICLE META */}
+                <meta property="article:published_time" content={news.created_at} />
+                <meta property="article:modified_time" content={news.updated_at} />
+            </Helmet>
+
             {/* Hero Section */}
             <div className="relative h-[400px] lg:h-[800px] bg-gradient-to-r from-gray-900/90 to-gray-800/90">
                 <div

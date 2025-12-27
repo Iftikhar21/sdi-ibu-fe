@@ -3,6 +3,7 @@ import { Phone, Mail, MapPin, Share2, MessageCircle, Facebook, Instagram, Twitte
 import { useEffect, useState } from 'react';
 import api from '../../api/api';
 import bg_4 from "@/assets/img/bg_4.svg";
+import { Helmet } from "react-helmet-async";
 
 interface SocialMedia {
     id: number;
@@ -113,6 +114,36 @@ const KontakPage = () => {
 
     return (
         <MainLayout>
+            <>
+                <Helmet>
+                    <title>Kontak SDI Ikhlas Bakti Umat | SD Islam Jakarta Timur</title>
+
+                    <meta
+                        name="description"
+                        content="Hubungi SDI Ikhlas Bakti Umat Jakarta Timur melalui telepon, email, alamat, dan media sosial resmi."
+                    />
+
+                    <meta
+                        name="keywords"
+                        content="SDI Ikhlas Bakti Umat, SD Islam Jakarta Timur, Kontak SDI Ikhlas, Sekolah Dasar Islam"
+                    />
+
+                    {/* Open Graph (untuk share WA / FB) */}
+                    <meta property="og:title" content="Kontak SDI Ikhlas Bakti Umat" />
+                    <meta
+                        property="og:description"
+                        content="Informasi kontak resmi SDI Ikhlas Bakti Umat Jakarta Timur."
+                    />
+                    <meta property="og:type" content="website" />
+                    <meta property="og:url" content="https://domainkamu/si/kontak" />
+
+                    {/* SEO Teknis */}
+                    <link rel="canonical" href="https://domainkamu/si/kontak" />
+                </Helmet>
+
+                {/* isi halaman kamu */}
+            </>
+
             {/* Hero Section */}
             <div className="relative h-[400px] lg:h-[800px] bg-gradient-to-r from-blue-900/90 to-blue-800/90">
                 <div

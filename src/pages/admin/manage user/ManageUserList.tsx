@@ -28,6 +28,7 @@ import {
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { userService } from '../../../services/manageUserServices';
+import { Helmet } from 'react-helmet-async';
 
 // Interface untuk filter state
 interface FilterState {
@@ -257,6 +258,9 @@ export default function UserList() {
 
     return (
         <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
             <Layout title="Kelola Semua Pengguna">
                 {/* Header Dashboard Style */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">

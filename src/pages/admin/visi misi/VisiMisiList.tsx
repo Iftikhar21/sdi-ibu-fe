@@ -15,6 +15,7 @@ import {
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import type { VisionMision } from '../../../types/visionMision';
+import { Helmet } from 'react-helmet-async';
 
 export default function VisiMisiList() {
     const [data, setData] = useState<VisionMision[]>([]);
@@ -90,6 +91,9 @@ export default function VisiMisiList() {
 
     return (
         <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
             <Layout title="Kelola Visi & Misi">
                 {/* Header Dashboard Style */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">

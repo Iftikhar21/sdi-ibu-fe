@@ -4,6 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../../api/api';
 import bg_1 from "@/assets/img/bg_1.svg";
+import { Helmet } from "react-helmet-async";
 
 interface ProgramDetail {
     id: number;
@@ -68,6 +69,10 @@ const ProgramDetailPage = () => {
         });
     };
 
+    const truncateSeo = (text: string, max = 155) => {
+        return text.length > max ? text.substring(0, max) + "…" : text;
+    };
+
     if (loading) {
         return (
             <MainLayout>
@@ -100,6 +105,45 @@ const ProgramDetailPage = () => {
 
     return (
         <MainLayout>
+            {program && (
+                <Helmet>
+                    {/* TITLE */}
+                    <title>{program.title} | Program Unggulan SDI Ibu</title>
+
+                    {/* SEO DESCRIPTION */}
+                    <meta
+                        name="description"
+                        content={truncateSeo(program.description.replace(/<[^>]+>/g, ""))}
+                    />
+
+                    {/* OPEN GRAPH */}
+                    <meta
+                        property="og:title"
+                        content={`${program.title} | SDI Ibu`}
+                    />
+                    <meta
+                        property="og:description"
+                        content={truncateSeo(program.description.replace(/<[^>]+>/g, ""))}
+                    />
+                    <meta
+                        property="og:type"
+                        content="article"
+                    />
+                    <meta
+                        property="og:url"
+                        content={window.location.href}
+                    />
+
+                    {/* OG IMAGE */}
+                    {program.thumbnail_url && (
+                        <meta
+                            property="og:image"
+                            content={program.thumbnail_url}
+                        />
+                    )}
+                </Helmet>
+            )}
+
             {/* Hero Section */}
             <div className="relative h-[400px] lg:h-[800px]">
                 <div
@@ -148,8 +192,8 @@ const ProgramDetailPage = () => {
 
                             {/* Meta Info */}
                             <div className="mt-8 pt-6 text-sm text-gray-500">
-                                <a href="https://www.SDIIkhlasBaktiUmat.com" className="text-blue-600 hover:text-blue-700 underline">
-                                    https://www.sdiibu.com
+                                <a href="https://sdi-ibu.id" className="text-blue-600 hover:text-blue-700 underline">
+                                    https://sdi-ibu.id
                                 </a>
                                 <p>Dibuat pada <span className="font-semibold">{formatDate(program.created_at)}</span></p>
                                 {program.updated_at !== program.created_at && (

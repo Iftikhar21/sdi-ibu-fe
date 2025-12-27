@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import api from '../../../api/api';
 import bg_1 from "@/assets/img/bg_1.svg";
 import bg_2 from "@/assets/img/bg_2.svg";
+import { Helmet } from "react-helmet-async";
 
 interface ProgramData {
     id: number;
@@ -64,6 +65,24 @@ const ProgramPage = () => {
 
     return (
         <MainLayout>
+            <Helmet>
+                {/* TITLE */}
+                <title>Program Unggulan | SDI Ibu</title>
+
+                {/* META DESCRIPTION */}
+                <meta
+                    name="description"
+                    content="Program unggulan SDI Ibu untuk membentuk generasi berprestasi dan berakhlak dengan kurikulum Islami."
+                />
+
+                {/* OPEN GRAPH (WA / FB) */}
+                <meta property="og:title" content="Program Unggulan | SDI Ibu" />
+                <meta
+                    property="og:description"
+                    content="Program unggulan SDI Ibu dengan pendidikan Islami berkualitas dan terstruktur."
+                />
+                <meta property="og:type" content="website" />
+            </Helmet>
             {/* HERO */}
             <div className="relative h-[400px] lg:h-[800px]">
                 <div
@@ -132,7 +151,7 @@ const ProgramPage = () => {
                                             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                                         />
                                     </div>
-                                    
+
                                     {/* Content */}
                                     <div className="p-6">
                                         <h3 className="text-xl font-bold text-gray-800 mb-3">

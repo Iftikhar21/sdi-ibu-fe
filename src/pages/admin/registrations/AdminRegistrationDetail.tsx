@@ -22,6 +22,7 @@ import {
 import { registrationService } from '../../../services/registrationServices';
 import Layout from '../../../components/layout/panel/MainLayout';
 import type { Registration } from '../../../types/registration';
+import { Helmet } from 'react-helmet-async';
 
 interface RegistrationWithUser extends Registration {
     user?: {
@@ -432,84 +433,215 @@ export default function AdminRegistrationDetail() {
     const statusConfig = getStatusConfig(registration.status);
 
     return (
-        <Layout title={`Detail Pendaftaran - ${registration.full_name}`}>
-            {/* Modal Preview Dokumen */}
-            <ImagePreviewModal
-                isOpen={previewModal.isOpen}
-                onClose={closePreviewModal}
-                imageUrl={previewModal.imageUrl}
-                title={previewModal.title}
-            />
+        <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
+            <Layout title={`Detail Pendaftaran - ${registration.full_name}`}>
+                {/* Modal Preview Dokumen */}
+                <ImagePreviewModal
+                    isOpen={previewModal.isOpen}
+                    onClose={closePreviewModal}
+                    imageUrl={previewModal.imageUrl}
+                    title={previewModal.title}
+                />
 
-            {/* Modal Surat Penerimaan */}
-            <AcceptanceLetterModal
-                isOpen={acceptanceLetterModal}
-                onClose={() => setAcceptanceLetterModal(false)}
-                registration={registration}
-                onGeneratePDF={generateAcceptanceLetterPDF}
-            />
+                {/* Modal Surat Penerimaan */}
+                <AcceptanceLetterModal
+                    isOpen={acceptanceLetterModal}
+                    onClose={() => setAcceptanceLetterModal(false)}
+                    registration={registration}
+                    onGeneratePDF={generateAcceptanceLetterPDF}
+                />
 
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6 print:hidden">
-                <div className="mb-4 md:mb-0">
-                    <div className="flex items-center gap-3 mb-2">
-                        <Link
-                            to="/admin/registrations"
-                            className="inline-flex items-center text-gray-600 hover:text-gray-900"
-                        >
-                            <ArrowLeft className="w-5 h-5 mr-2" />
-                        </Link>
-                        <h1 className="text-2xl font-bold text-gray-800">
-                            Detail Pendaftaran
-                        </h1>
+                {/* Header */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6 print:hidden">
+                    <div className="mb-4 md:mb-0">
+                        <div className="flex items-center gap-3 mb-2">
+                            <Link
+                                to="/admin/registrations"
+                                className="inline-flex items-center text-gray-600 hover:text-gray-900"
+                            >
+                                <ArrowLeft className="w-5 h-5 mr-2" />
+                            </Link>
+                            <h1 className="text-2xl font-bold text-gray-800">
+                                Detail Pendaftaran
+                            </h1>
+                        </div>
+                        <p className="text-gray-600">
+                            ID: {registration.id} • {registration.full_name} ({registration.nickname})
+                        </p>
                     </div>
-                    <p className="text-gray-600">
-                        ID: {registration.id} • {registration.full_name} ({registration.nickname})
-                    </p>
+                    <div className="flex items-center gap-3">
+                        <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium border ${statusConfig.color}`}>
+                            {statusConfig.icon}
+                            <span className="ml-2">{statusConfig.text}</span>
+                        </span>
+                        <Link
+                            to={`/admin/registrations/${registration.id}/edit`}
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
+                        >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Edit Status
+                        </Link>
+                    </div>
                 </div>
-                <div className="flex items-center gap-3">
-                    <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium border ${statusConfig.color}`}>
-                        {statusConfig.icon}
-                        <span className="ml-2">{statusConfig.text}</span>
-                    </span>
-                    <Link
-                        to={`/admin/registrations/${registration.id}/edit`}
-                        className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
-                    >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Status
-                    </Link>
-                </div>
-            </div>
 
-            {/* Print Header (only visible when printing) */}
-            <div className="hidden print:block mb-8">
-                <div className="text-center border-b pb-4 mb-6">
-                    <h1 className="text-2xl font-bold text-gray-800">Detail Pendaftaran</h1>
-                    <p className="text-gray-600">SDI Ikhlas Bakti Umat</p>
-                    <p className="text-gray-600">Tanggal Cetak: {new Date().toLocaleDateString('id-ID')}</p>
+                {/* Print Header (only visible when printing) */}
+                <div className="hidden print:block mb-8">
+                    <div className="text-center border-b pb-4 mb-6">
+                        <h1 className="text-2xl font-bold text-gray-800">Detail Pendaftaran</h1>
+                        <p className="text-gray-600">SDI Ikhlas Bakti Umat</p>
+                        <p className="text-gray-600">Tanggal Cetak: {new Date().toLocaleDateString('id-ID')}</p>
+                    </div>
                 </div>
-            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Kolom Kiri: Data Pribadi */}
-                <div className="lg:col-span-2 space-y-6">
-                    {/* Info User */}
-                    {registration.user && (
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Kolom Kiri: Data Pribadi */}
+                    <div className="lg:col-span-2 space-y-6">
+                        {/* Info User */}
+                        {registration.user && (
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
+                                <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                                    <UserIcon className="w-5 h-5 inline mr-2" />
+                                    Data Pendaftar
+                                </h2>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">
+                                                Nama Pendaftar
+                                            </label>
+                                            <div className="flex items-center text-gray-900">
+                                                <User className="w-5 h-5 text-gray-400 mr-2" />
+                                                {registration.user.name}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">
+                                                Email
+                                            </label>
+                                            <div className="flex items-center text-gray-900">
+                                                <Mail className="w-5 h-5 text-gray-400 mr-2" />
+                                                {registration.user.email}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">
+                                                Tanggal Daftar Akun
+                                            </label>
+                                            <div className="flex items-center text-gray-900">
+                                                <Calendar className="w-5 h-5 text-gray-400 mr-2" />
+                                                {formatDate(registration.user.created_at)}
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-600 mb-1">
+                                                ID User
+                                            </label>
+                                            <div className="text-gray-900 font-mono">
+                                                #{registration.user.id}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Data Calon Murid */}
                         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
                             <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
-                                <UserIcon className="w-5 h-5 inline mr-2" />
-                                Data Pendaftar
+                                Data Calon Murid
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div>
                                         <label className="block text-sm font-medium text-gray-600 mb-1">
-                                            Nama Pendaftar
+                                            Nama Lengkap
                                         </label>
                                         <div className="flex items-center text-gray-900">
                                             <User className="w-5 h-5 text-gray-400 mr-2" />
-                                            {registration.user.name}
+                                            {registration.full_name}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                            Nama Panggilan
+                                        </label>
+                                        <div className="flex items-center text-gray-900">
+                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                            {registration.nickname}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                            Jenis Kelamin
+                                        </label>
+                                        <div className="flex items-center text-gray-900">
+                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                            {registration.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                            Tempat, Tanggal Lahir
+                                        </label>
+                                        <div className="flex items-center text-gray-900">
+                                            <Calendar className="w-5 h-5 text-gray-400 mr-2" />
+                                            {registration.birth_place}, {formatDate(registration.birth_date)}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                            Alamat
+                                        </label>
+                                        <div className="flex items-start text-gray-900">
+                                            <MapPin className="w-5 h-5 text-gray-400 mr-2 mt-0.5" />
+                                            <span className="flex-1">{registration.address}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Data Orang Tua */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
+                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                                Data Orang Tua
+                            </h2>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                            Nama Ayah
+                                        </label>
+                                        <div className="flex items-center text-gray-900">
+                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                            {registration.father_name}
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                            Nama Ibu
+                                        </label>
+                                        <div className="flex items-center text-gray-900">
+                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                            {registration.mother_name}
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                            Nomor Telepon
+                                        </label>
+                                        <div className="flex items-center text-gray-900">
+                                            <Phone className="w-5 h-5 text-gray-400 mr-2" />
+                                            {registration.phone}
                                         </div>
                                     </div>
                                     <div>
@@ -518,308 +650,182 @@ export default function AdminRegistrationDetail() {
                                         </label>
                                         <div className="flex items-center text-gray-900">
                                             <Mail className="w-5 h-5 text-gray-400 mr-2" />
-                                            {registration.user.email}
+                                            {registration.contact_email}
                                         </div>
                                     </div>
                                 </div>
-                                <div className="space-y-4">
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Kolom Kanan: Dokumen & Info */}
+                    <div className="space-y-6">
+                        {/* Status & Timeline */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
+                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                                Status Pendaftaran
+                            </h2>
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        Status Saat Ini
+                                    </label>
+                                    <div className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border ${statusConfig.color}`}>
+                                        {statusConfig.icon}
+                                        <span className="ml-2">{statusConfig.text}</span>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        ID Pendaftaran
+                                    </label>
+                                    <div className="text-gray-900 font-mono">
+                                        #{registration.id}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        Tanggal Daftar
+                                    </label>
+                                    <div className="text-gray-900">
+                                        {formatDateTime(registration.created_at)}
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        Terakhir Diupdate
+                                    </label>
+                                    <div className="text-gray-900">
+                                        {formatDateTime(registration.updated_at)}
+                                    </div>
+                                </div>
+                                {registration.notes && (
                                     <div>
                                         <label className="block text-sm font-medium text-gray-600 mb-1">
-                                            Tanggal Daftar Akun
+                                            Catatan Admin
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <Calendar className="w-5 h-5 text-gray-400 mr-2" />
-                                            {formatDate(registration.user.created_at)}
+                                        <div className="text-gray-900 bg-yellow-50 p-3 rounded-lg text-sm">
+                                            {registration.notes}
                                         </div>
                                     </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
-                                            ID User
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Dokumen Pendukung */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
+                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                                Dokumen Pendukung
+                            </h2>
+                            <div className="space-y-4">
+                                {registration.photo_url && (
+                                    <div className="flex flex-col items-center print:hidden">
+                                        <label className="w-full text-sm font-medium text-gray-600 mb-2 text-center">
+                                            Foto Calon Murid
                                         </label>
-                                        <div className="text-gray-900 font-mono">
-                                            #{registration.user.id}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    )}
 
-                    {/* Data Calon Murid */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
-                            Data Calon Murid
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Nama Lengkap
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <User className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.full_name}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Nama Panggilan
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <User className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.nickname}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Jenis Kelamin
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <User className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Tempat, Tanggal Lahir
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <Calendar className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.birth_place}, {formatDate(registration.birth_date)}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Alamat
-                                    </label>
-                                    <div className="flex items-start text-gray-900">
-                                        <MapPin className="w-5 h-5 text-gray-400 mr-2 mt-0.5" />
-                                        <span className="flex-1">{registration.address}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                        {/* max-w-[160px] agar ukuran pas untuk pas foto */}
+                                        <div className="relative w-full max-w-[160px] aspect-square rounded-2xl overflow-hidden border-2 border-gray-100 shadow-sm group bg-gray-50">
+                                            <img
+                                                src={registration.photo_url}
+                                                alt="Foto"
+                                                className="w-full h-full object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
+                                                onClick={() => openPreviewModal(registration.photo_url, 'Foto Calon Murid')}
+                                            />
 
-                    {/* Data Orang Tua */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
-                            Data Orang Tua
-                        </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Nama Ayah
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <User className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.father_name}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Nama Ibu
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <User className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.mother_name}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Nomor Telepon
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <Phone className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.phone}
-                                    </div>
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Email
-                                    </label>
-                                    <div className="flex items-center text-gray-900">
-                                        <Mail className="w-5 h-5 text-gray-400 mr-2" />
-                                        {registration.contact_email}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Kolom Kanan: Dokumen & Info */}
-                <div className="space-y-6">
-                    {/* Status & Timeline */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
-                            Status Pendaftaran
-                        </h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Status Saat Ini
-                                </label>
-                                <div className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border ${statusConfig.color}`}>
-                                    {statusConfig.icon}
-                                    <span className="ml-2">{statusConfig.text}</span>
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    ID Pendaftaran
-                                </label>
-                                <div className="text-gray-900 font-mono">
-                                    #{registration.id}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Tanggal Daftar
-                                </label>
-                                <div className="text-gray-900">
-                                    {formatDateTime(registration.created_at)}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-600 mb-1">
-                                    Terakhir Diupdate
-                                </label>
-                                <div className="text-gray-900">
-                                    {formatDateTime(registration.updated_at)}
-                                </div>
-                            </div>
-                            {registration.notes && (
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
-                                        Catatan Admin
-                                    </label>
-                                    <div className="text-gray-900 bg-yellow-50 p-3 rounded-lg text-sm">
-                                        {registration.notes}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Dokumen Pendukung */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 print:border print:shadow-none">
-                        <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
-                            Dokumen Pendukung
-                        </h2>
-                        <div className="space-y-4">
-                            {registration.photo_url && (
-                                <div className="flex flex-col items-center print:hidden">
-                                    <label className="w-full text-sm font-medium text-gray-600 mb-2 text-center">
-                                        Foto Calon Murid
-                                    </label>
-
-                                    {/* max-w-[160px] agar ukuran pas untuk pas foto */}
-                                    <div className="relative w-full max-w-[160px] aspect-square rounded-2xl overflow-hidden border-2 border-gray-100 shadow-sm group bg-gray-50">
-                                        <img
-                                            src={registration.photo_url}
-                                            alt="Foto"
-                                            className="w-full h-full object-cover cursor-pointer transition-transform duration-500 group-hover:scale-110"
-                                            onClick={() => openPreviewModal(registration.photo_url, 'Foto Calon Murid')}
-                                        />
-
-                                        {/* Overlay Hover */}
-                                        <div
-                                            className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
-                                            onClick={() => openPreviewModal(registration.photo_url, 'Foto Calon Murid')}
-                                        >
-                                            <div className="bg-white/20 backdrop-blur-md p-2 rounded-full">
-                                                <Eye className="w-6 h-6 text-white" />
+                                            {/* Overlay Hover */}
+                                            <div
+                                                className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+                                                onClick={() => openPreviewModal(registration.photo_url, 'Foto Calon Murid')}
+                                            >
+                                                <div className="bg-white/20 backdrop-blur-md p-2 rounded-full">
+                                                    <Eye className="w-6 h-6 text-white" />
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
 
-                                    <p className="text-[10px] text-gray-400 mt-2 italic">Klik untuk memperbesar</p>
+                                        <p className="text-[10px] text-gray-400 mt-2 italic">Klik untuk memperbesar</p>
+                                    </div>
+                                )}
+
+                                <div className="grid grid-cols-1 gap-3">
+                                    {registration.birth_certificate_url && (
+                                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group">
+                                            <div className="flex items-center">
+                                                <FileText className="w-5 h-5 text-gray-400 mr-3" />
+                                                <span className="text-gray-900">Akte Kelahiran</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => openPreviewModal(registration.birth_certificate_url, 'Akte Kelahiran')}
+                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                                                    title="Lihat dokumen"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {registration.family_card_url && (
+                                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group">
+                                            <div className="flex items-center">
+                                                <FileText className="w-5 h-5 text-gray-400 mr-3" />
+                                                <span className="text-gray-900">Kartu Keluarga</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => openPreviewModal(registration.family_card_url, 'Kartu Keluarga')}
+                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                                                    title="Lihat dokumen"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {registration.payment_proof_url && (
+                                        <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group">
+                                            <div className="flex items-center">
+                                                <FileText className="w-5 h-5 text-gray-400 mr-3" />
+                                                <span className="text-gray-900">Bukti Pembayaran</span>
+                                            </div>
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => openPreviewModal(registration.payment_proof_url, 'Bukti Pembayaran')}
+                                                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded transition-colors"
+                                                    title="Lihat dokumen"
+                                                >
+                                                    <Eye className="w-4 h-4" />
+                                                </button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-
-                            <div className="grid grid-cols-1 gap-3">
-                                {registration.birth_certificate_url && (
-                                    <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group">
-                                        <div className="flex items-center">
-                                            <FileText className="w-5 h-5 text-gray-400 mr-3" />
-                                            <span className="text-gray-900">Akte Kelahiran</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => openPreviewModal(registration.birth_certificate_url, 'Akte Kelahiran')}
-                                                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded transition-colors"
-                                                title="Lihat dokumen"
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {registration.family_card_url && (
-                                    <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group">
-                                        <div className="flex items-center">
-                                            <FileText className="w-5 h-5 text-gray-400 mr-3" />
-                                            <span className="text-gray-900">Kartu Keluarga</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => openPreviewModal(registration.family_card_url, 'Kartu Keluarga')}
-                                                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded transition-colors"
-                                                title="Lihat dokumen"
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
-
-                                {registration.payment_proof_url && (
-                                    <div className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group">
-                                        <div className="flex items-center">
-                                            <FileText className="w-5 h-5 text-gray-400 mr-3" />
-                                            <span className="text-gray-900">Bukti Pembayaran</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => openPreviewModal(registration.payment_proof_url, 'Bukti Pembayaran')}
-                                                className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-100 rounded transition-colors"
-                                                title="Lihat dokumen"
-                                            >
-                                                <Eye className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                )}
                             </div>
                         </div>
-                    </div>
 
-                    {/* Quick Actions */}
-                    <div className="print:hidden">
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
-                                Tindakan Cepat
-                            </h2>
-                            <div className="grid grid-cols-1 gap-3">
-                                <Link
-                                    to={`/admin/registrations/${registration.id}/edit`}
-                                    className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
-                                >
-                                    <Edit className="w-4 h-4" />
-                                    Update Status
-                                </Link>
+                        {/* Quick Actions */}
+                        <div className="print:hidden">
+                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                                <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                                    Tindakan Cepat
+                                </h2>
+                                <div className="grid grid-cols-1 gap-3">
+                                    <Link
+                                        to={`/admin/registrations/${registration.id}/edit`}
+                                        className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                                    >
+                                        <Edit className="w-4 h-4" />
+                                        Update Status
+                                    </Link>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </Layout>
+            </Layout>
+        </>
     );
 }

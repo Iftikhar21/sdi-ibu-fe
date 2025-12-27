@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
+import { Helmet } from 'react-helmet-async';
 
 export default function ProgramDetail() {
     const { id } = useParams();
@@ -118,6 +119,9 @@ export default function ProgramDetail() {
 
     return (
         <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
             <Layout title={program.title}>
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
@@ -134,8 +138,8 @@ export default function ProgramDetail() {
                         <h1 className="text-2xl font-bold text-gray-800">{program.title}</h1>
                         <div className="flex items-center mt-2 space-x-4">
                             <div className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${program.status === 'published'
-                                    ? 'bg-green-100 text-green-800'
-                                    : 'bg-yellow-100 text-yellow-800'
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-yellow-100 text-yellow-800'
                                 }`}>
                                 {program.status === 'published' ? (
                                     <>
@@ -253,8 +257,8 @@ export default function ProgramDetail() {
                                         </dt>
                                         <dd className="mt-1">
                                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${program.status === 'published'
-                                                    ? 'bg-green-100 text-green-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
+                                                ? 'bg-green-100 text-green-800'
+                                                : 'bg-yellow-100 text-yellow-800'
                                                 }`}>
                                                 {program.status === 'published' ? (
                                                     <>

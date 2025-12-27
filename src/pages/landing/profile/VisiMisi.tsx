@@ -5,6 +5,7 @@ import bg_1 from "@/assets/img/bg_1.svg";
 import image_visi_misi_1 from "@/assets/img/image_visi_misi_1.svg";
 import image_visi_misi_2 from "@/assets/img/image_visi_misi_2.svg";
 import image_visi_misi_3 from "@/assets/img/image_visi_misi_3.svg";
+import { Helmet } from "react-helmet-async";
 
 interface VisiMisiData {
     id: number;
@@ -51,6 +52,47 @@ const VisiMisiPage = () => {
 
     return (
         <MainLayout>
+            <Helmet>
+                {/* TITLE */}
+                <title>Visi & Misi SDI Ikhlas Bakti Umat | SDI Ibu</title>
+
+                {/* META DESCRIPTION */}
+                <meta
+                    name="description"
+                    content="Visi dan misi SDI Ikhlas Bakti Umat sebagai arah dan tujuan pendidikan Islam dalam membentuk generasi beriman, berilmu, dan berakhlak mulia."
+                />
+
+                {/* KEYWORDS (opsional tapi oke) */}
+                <meta
+                    name="keywords"
+                    content="Visi Misi SDI, SDI Ikhlas Bakti Umat, Visi Misi Sekolah Islam, Sekolah Dasar Islam"
+                />
+
+                {/* OPEN GRAPH */}
+                <meta
+                    property="og:title"
+                    content="Visi & Misi SDI Ikhlas Bakti Umat | SDI Ibu"
+                />
+                <meta
+                    property="og:description"
+                    content="Arah dan tujuan pendidikan SDI Ikhlas Bakti Umat dalam membentuk generasi Islami yang unggul."
+                />
+                <meta
+                    property="og:type"
+                    content="website"
+                />
+                <meta
+                    property="og:url"
+                    content={window.location.href}
+                />
+
+                {/* OG IMAGE (opsional) */}
+                <meta
+                    property="og:image"
+                    content="https://www.sdiibu.com/og/visi-misi.jpg"
+                />
+            </Helmet>
+
             {/* HERO */}
             <div className="relative h-[400px] lg:h-[800px]">
                 <div

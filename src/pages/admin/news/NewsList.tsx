@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
+import { Helmet } from 'react-helmet-async';
 
 export default function NewsList() {
     const [data, setData] = useState<News[]>([]);
@@ -125,6 +126,9 @@ export default function NewsList() {
 
     return (
         <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
             <Layout title="Kelola Berita">
                 {/* Header Dashboard Style */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
@@ -364,8 +368,8 @@ export default function NewsList() {
                                                                     key={page}
                                                                     onClick={() => paginate(page)}
                                                                     className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200 ${currentPage === page
-                                                                            ? 'bg-blue-600 text-white'
-                                                                            : 'text-gray-700 hover:bg-gray-100'
+                                                                        ? 'bg-blue-600 text-white'
+                                                                        : 'text-gray-700 hover:bg-gray-100'
                                                                         }`}
                                                                 >
                                                                     {page}

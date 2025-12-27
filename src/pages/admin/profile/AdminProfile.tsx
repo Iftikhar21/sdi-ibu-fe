@@ -20,6 +20,7 @@ import {
 import Layout from '../../../components/layout/panel/MainLayout';
 import { useAuth } from '../../../auth/AuthContext';
 import { adminService } from '../../../services/adminServices';
+import { Helmet } from 'react-helmet-async';
 
 interface ProfileData {
     name: string;
@@ -196,259 +197,264 @@ export default function AdminProfile() {
     }, []);
 
     return (
-        <Layout title="Profil Admin">
-            {/* Header Dashboard Style */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
-                <div className="mb-4 md:mb-0">
-                    <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
-                        Profil Administrator
-                    </h1>
-                    <p className="text-gray-600 text-sm sm:text-base">
-                        Kelola informasi akun Anda
-                    </p>
-                </div>
-            </div>
-
-            {/* Success Message Banner */}
-            {successMessage && (
-                <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                    <div className="flex items-center">
-                        <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                        <span className="text-green-800">{successMessage}</span>
-                    </div>
-                    <button
-                        onClick={() => setSuccessMessage('')}
-                        className="text-green-600 hover:text-green-800"
-                    >
-                        <X className="w-4 h-4" />
-                    </button>
-                </div>
-            )}
-
-            {/* Error Message Banner */}
-            {errorMessage && (
-                <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
-                    <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
-                    <span className="text-red-800">{errorMessage}</span>
-                </div>
-            )}
-
-            {/* Content */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {/* Left Column - Profile Card */}
-                <div className="lg:col-span-1 space-y-6">
-                    {/* Profile Info Card */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-6">
-                            <div className="flex flex-col items-center text-center">
-                                {/* Avatar */}
-                                <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
-                                    <span className="text-white text-4xl font-bold">
-                                        {authUser?.name?.charAt(0).toUpperCase() || 'A'}
-                                    </span>
-                                </div>
-
-                                {/* Name & Role */}
-                                <h2 className="text-xl font-bold text-gray-800 mb-1">
-                                    {authUser?.name || 'Administrator'}
-                                </h2>
-                                <div className="inline-flex items-center px-3 py-1 mb-4 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
-                                    <Shield className="w-3 h-3 mr-2" />
-                                    Administrator
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Account Info */}
-                        <div className="border-t border-gray-200 p-6 bg-gray-50">
-                            <h3 className="font-semibold text-gray-800 mb-4">Informasi Akun</h3>
-                            <div className="space-y-3">
-                                <div className="flex items-center text-sm">
-                                    <Mail className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
-                                    <span className="text-gray-700 truncate">{authUser?.email}</span>
-                                </div>
-                                <div className="flex items-center text-sm">
-                                    <Calendar className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
-                                    <span className="text-gray-700">
-                                        ID: {authUser?.id || '-'}
-                                    </span>
-                                </div>
-                                <div className="flex items-center text-sm">
-                                    <Phone className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
-                                    <span className="text-gray-700">
-                                        {formData.phone || 'Belum diisi'}
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Quick Info */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                        <h3 className="font-semibold text-gray-800 mb-4">Informasi Penting</h3>
-                        <div className="space-y-3">
-                            <div className="p-3 bg-blue-50 rounded-lg">
-                                <p className="text-xs font-medium text-blue-800 mb-1">Nama</p>
-                                <p className="text-sm text-gray-700">{formData.name}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-lg">
-                                <p className="text-xs font-medium text-gray-800 mb-1">Email</p>
-                                <p className="text-sm text-gray-700">{formData.email}</p>
-                            </div>
-                            <div className="p-3 bg-gray-50 rounded-lg">
-                                <p className="text-xs font-medium text-gray-800 mb-1">Telepon</p>
-                                <p className="text-sm text-gray-700">{formData.phone || 'Belum diisi'}</p>
-                            </div>
-                        </div>
+        <>
+            <Helmet>
+                <title>Admin Dashboard | SDI Ikhlas Bakti Umat</title>
+            </Helmet>
+            <Layout title="Profil Admin">
+                {/* Header Dashboard Style */}
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                    <div className="mb-4 md:mb-0">
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                            Profil Administrator
+                        </h1>
+                        <p className="text-gray-600 text-sm sm:text-base">
+                            Kelola informasi akun Anda
+                        </p>
                     </div>
                 </div>
 
-                {/* Right Column - Edit Form */}
-                <div className="lg:col-span-2">
-                    {/* Profile Form */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                        <div className="p-6 border-b border-gray-200">
-                            <h3 className="text-lg font-semibold text-gray-800">
-                                <Edit2 className="w-5 h-5 inline mr-2 text-blue-600" />
-                                Edit Informasi Profil
-                            </h3>
-                            <p className="text-sm text-gray-600 mt-1">
-                                Perbarui informasi akun Anda
-                            </p>
+                {/* Success Message Banner */}
+                {successMessage && (
+                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
+                        <div className="flex items-center">
+                            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
+                            <span className="text-green-800">{successMessage}</span>
                         </div>
+                        <button
+                            onClick={() => setSuccessMessage('')}
+                            className="text-green-600 hover:text-green-800"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+                    </div>
+                )}
 
-                        {loading ? (
-                            <div className="text-center py-8">
-                                <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                                <p className="text-gray-600">Memuat data profil...</p>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit} className="p-6">
-                                <div className="space-y-6">
-                                    {/* Nama & Email */}
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Nama Lengkap
-                                                <span className="text-red-500 ml-1">*</span>
-                                            </label>
-                                            <div className="relative">
-                                                <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                                <input
-                                                    type="text"
-                                                    name="name"
-                                                    value={formData.name}
-                                                    onChange={handleInputChange}
-                                                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                    placeholder="Nama lengkap"
-                                                    required
-                                                />
-                                            </div>
-                                        </div>
+                {/* Error Message Banner */}
+                {errorMessage && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+                        <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
+                        <span className="text-red-800">{errorMessage}</span>
+                    </div>
+                )}
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Email
-                                                <span className="text-red-500 ml-1">*</span>
-                                            </label>
-                                            <div className="relative">
-                                                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                                <input
-                                                    type="email"
-                                                    name="email"
-                                                    value={formData.email}
-                                                    onChange={handleInputChange}
-                                                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                    placeholder="email@example.com"
-                                                    required
-                                                />
-                                            </div>
-                                        </div>
+                {/* Content */}
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    {/* Left Column - Profile Card */}
+                    <div className="lg:col-span-1 space-y-6">
+                        {/* Profile Info Card */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div className="p-6">
+                                <div className="flex flex-col items-center text-center">
+                                    {/* Avatar */}
+                                    <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
+                                        <span className="text-white text-4xl font-bold">
+                                            {authUser?.name?.charAt(0).toUpperCase() || 'A'}
+                                        </span>
                                     </div>
 
-                                    {/* Password */}
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Password Baru
-                                            <span className="text-gray-500 ml-2 text-xs font-normal">
-                                                (Kosongkan jika tidak ingin mengubah)
-                                            </span>
-                                        </label>
-                                        <div className="relative">
-                                            <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <input
-                                                type={showPassword ? "text" : "password"}
-                                                name="password"
-                                                value={formData.password}
-                                                onChange={handleInputChange}
-                                                className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="Masukkan password baru"
-                                                minLength={6}
-                                            />
+                                    {/* Name & Role */}
+                                    <h2 className="text-xl font-bold text-gray-800 mb-1">
+                                        {authUser?.name || 'Administrator'}
+                                    </h2>
+                                    <div className="inline-flex items-center px-3 py-1 mb-4 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
+                                        <Shield className="w-3 h-3 mr-2" />
+                                        Administrator
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Account Info */}
+                            <div className="border-t border-gray-200 p-6 bg-gray-50">
+                                <h3 className="font-semibold text-gray-800 mb-4">Informasi Akun</h3>
+                                <div className="space-y-3">
+                                    <div className="flex items-center text-sm">
+                                        <Mail className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
+                                        <span className="text-gray-700 truncate">{authUser?.email}</span>
+                                    </div>
+                                    <div className="flex items-center text-sm">
+                                        <Calendar className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
+                                        <span className="text-gray-700">
+                                            ID: {authUser?.id || '-'}
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center text-sm">
+                                        <Phone className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
+                                        <span className="text-gray-700">
+                                            {formData.phone || 'Belum diisi'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Quick Info */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                            <h3 className="font-semibold text-gray-800 mb-4">Informasi Penting</h3>
+                            <div className="space-y-3">
+                                <div className="p-3 bg-blue-50 rounded-lg">
+                                    <p className="text-xs font-medium text-blue-800 mb-1">Nama</p>
+                                    <p className="text-sm text-gray-700">{formData.name}</p>
+                                </div>
+                                <div className="p-3 bg-gray-50 rounded-lg">
+                                    <p className="text-xs font-medium text-gray-800 mb-1">Email</p>
+                                    <p className="text-sm text-gray-700">{formData.email}</p>
+                                </div>
+                                <div className="p-3 bg-gray-50 rounded-lg">
+                                    <p className="text-xs font-medium text-gray-800 mb-1">Telepon</p>
+                                    <p className="text-sm text-gray-700">{formData.phone || 'Belum diisi'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column - Edit Form */}
+                    <div className="lg:col-span-2">
+                        {/* Profile Form */}
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                            <div className="p-6 border-b border-gray-200">
+                                <h3 className="text-lg font-semibold text-gray-800">
+                                    <Edit2 className="w-5 h-5 inline mr-2 text-blue-600" />
+                                    Edit Informasi Profil
+                                </h3>
+                                <p className="text-sm text-gray-600 mt-1">
+                                    Perbarui informasi akun Anda
+                                </p>
+                            </div>
+
+                            {loading ? (
+                                <div className="text-center py-8">
+                                    <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
+                                    <p className="text-gray-600">Memuat data profil...</p>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit} className="p-6">
+                                    <div className="space-y-6">
+                                        {/* Nama & Email */}
+                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Nama Lengkap
+                                                    <span className="text-red-500 ml-1">*</span>
+                                                </label>
+                                                <div className="relative">
+                                                    <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                    <input
+                                                        type="text"
+                                                        name="name"
+                                                        value={formData.name}
+                                                        onChange={handleInputChange}
+                                                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        placeholder="Nama lengkap"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                    Email
+                                                    <span className="text-red-500 ml-1">*</span>
+                                                </label>
+                                                <div className="relative">
+                                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                    <input
+                                                        type="email"
+                                                        name="email"
+                                                        value={formData.email}
+                                                        onChange={handleInputChange}
+                                                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        placeholder="email@example.com"
+                                                        required
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Password */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Password Baru
+                                                <span className="text-gray-500 ml-2 text-xs font-normal">
+                                                    (Kosongkan jika tidak ingin mengubah)
+                                                </span>
+                                            </label>
+                                            <div className="relative">
+                                                <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <input
+                                                    type={showPassword ? "text" : "password"}
+                                                    name="password"
+                                                    value={formData.password}
+                                                    onChange={handleInputChange}
+                                                    className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                    placeholder="Masukkan password baru"
+                                                    minLength={6}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowPassword(!showPassword)}
+                                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                >
+                                                    {showPassword ? (
+                                                        <EyeOff className="w-4 h-4" />
+                                                    ) : (
+                                                        <Eye className="w-4 h-4" />
+                                                    )}
+                                                </button>
+                                            </div>
+                                            <p className="mt-1 text-xs text-gray-500">
+                                                Minimal 6 karakter
+                                            </p>
+                                        </div>
+
+                                        {/* Telepon */}
+                                        <div className="max-w-md">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                Nomor Telepon
+                                            </label>
+                                            <div className="relative">
+                                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <input
+                                                    type="tel"
+                                                    name="phone"
+                                                    value={formData.phone}
+                                                    onChange={handleInputChange}
+                                                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                    placeholder="08xxxxxxxxxx"
+                                                />
+                                            </div>
+                                            <p className="mt-1 text-xs text-gray-500">
+                                                Opsional
+                                            </p>
+                                        </div>
+
+                                        {/* Submit Button */}
+                                        <div className="flex justify-end pt-6 border-t border-gray-200">
                                             <button
-                                                type="button"
-                                                onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                type="submit"
+                                                disabled={saving}
+                                                className="inline-flex items-center px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                             >
-                                                {showPassword ? (
-                                                    <EyeOff className="w-4 h-4" />
+                                                {saving ? (
+                                                    <>
+                                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                                        Menyimpan...
+                                                    </>
                                                 ) : (
-                                                    <Eye className="w-4 h-4" />
+                                                    <>
+                                                        <Save className="w-4 h-4 mr-2" />
+                                                        Simpan Perubahan
+                                                    </>
                                                 )}
                                             </button>
                                         </div>
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Minimal 6 karakter
-                                        </p>
                                     </div>
-
-                                    {/* Telepon */}
-                                    <div className="max-w-md">
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                                            Nomor Telepon
-                                        </label>
-                                        <div className="relative">
-                                            <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleInputChange}
-                                                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                                placeholder="08xxxxxxxxxx"
-                                            />
-                                        </div>
-                                        <p className="mt-1 text-xs text-gray-500">
-                                            Opsional
-                                        </p>
-                                    </div>
-
-                                    {/* Submit Button */}
-                                    <div className="flex justify-end pt-6 border-t border-gray-200">
-                                        <button
-                                            type="submit"
-                                            disabled={saving}
-                                            className="inline-flex items-center px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
-                                        >
-                                            {saving ? (
-                                                <>
-                                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                                    Menyimpan...
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Save className="w-4 h-4 mr-2" />
-                                                    Simpan Perubahan
-                                                </>
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        )}
+                                </form>
+                            )}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Layout>
+            </Layout>
+        </>
     );
 }
