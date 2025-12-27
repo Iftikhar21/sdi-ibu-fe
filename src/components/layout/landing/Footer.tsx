@@ -241,7 +241,12 @@ const Footer = () => {
                                         <div className="flex items-center">
                                             <Phone className="w-4 h-4 text-white mr-2 flex-shrink-0" />
                                             <a
-                                                href={`tel:${contactData.telepon}`}
+                                                href={`https://wa.me/${contactData.telepon.startsWith("0")
+                                                        ? `62${contactData.telepon.slice(1)}`
+                                                        : contactData.telepon
+                                                    }`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
                                                 className="text-white/80 text-sm hover:text-white transition-colors"
                                             >
                                                 {contactData.telepon}
