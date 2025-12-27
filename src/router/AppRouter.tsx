@@ -67,7 +67,7 @@ import UserProfile from "../pages/user/profile/UserProfile";
 
 export default function AppRouter() {
     return (
-        <BrowserRouter basename="/si">
+        <BrowserRouter>
             <Routes>
                 {/* ========================= */}
                 {/* LANDING / PUBLIC ROUTES */}
