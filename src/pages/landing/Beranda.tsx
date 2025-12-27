@@ -10,6 +10,7 @@ import logo_sdi from '@/assets/img/logo-sdi-ibu.svg';
 import image_visi_misi_2 from "@/assets/img/image_visi_misi_2.svg";
 import bg_2 from "@/assets/img/bg_2.svg";
 import image_sejarah_1 from '@/assets/img/image_sejarah_1.svg';
+import { Helmet } from 'react-helmet-async';
 
 interface ProgramData {
     id: number;
@@ -186,6 +187,31 @@ const HomePage = () => {
 
     return (
         <MainLayout>
+            <Helmet>
+                <title>SDI Ikhlas Bakti Umat | Sekolah Dasar Islam</title>
+
+                <meta
+                    name="description"
+                    content="SDI Ikhlas Bakti Umat adalah Sekolah Dasar Islam yang fokus pada pendidikan iman, adab, dan prestasi akademik."
+                />
+
+                <meta
+                    name="keywords"
+                    content="SDI Ikhlas Bakti Umat, Sekolah Dasar Islam, SD Islam, Sekolah Islam Terpadu"
+                />
+
+                {/* Open Graph (buat share WA / FB) */}
+                <meta property="og:title" content="SDI Ikhlas Bakti Umat" />
+                <meta
+                    property="og:description"
+                    content="Sekolah Dasar Islam yang membentuk generasi beriman, berakhlak, dan berprestasi."
+                />
+                <meta property="og:type" content="website" />
+                <meta property="og:image" content="/og-image.jpg" />
+
+                {/* SEO dasar */}
+                <meta name="robots" content="index, follow" />
+            </Helmet>
             {/* Hero Section */}
             <div className="relative overflow-hidden min-h-screen flex items-center justify-center">
                 {/* Decorative Wave */}
