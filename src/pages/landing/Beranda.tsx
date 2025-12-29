@@ -229,14 +229,14 @@ const HomePage = () => {
                         <div className="text-white text-center lg:text-left">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                                 SDI
-                                <span className="text-yellow-400"> IBU<br />(Ikhlas Bakti Umat)</span>
+                                <span className="text-white"> IBU<br />(Ikhlas Bakti Umat)</span>
                             </h1>
                             <p className="text-lg text-gray-200 mb-8 max-w-lg mx-auto lg:mx-0">
                                 Mendidik dengan Iman, Membimbing dengan Adab dan Akhlak Mulia. Pendidikan Iman dan Adab Terintegrasi dalam Kurikulum dan Lingkungan Sekolah.
                             </p>
                             <Link
                                 to="/pendaftaran"
-                                className="inline-block px-8 py-3 bg-[#CEBB2A] hover:bg-yellow-500 text-white font-semibold rounded-full transition-colors shadow-lg"
+                                className="inline-block px-8 py-3 bg-[#E13131] hover:bg-yellow-500 text-white font-semibold rounded-full transition-colors shadow-lg"
                             >
                                 Daftar Sekarang
                             </Link>
