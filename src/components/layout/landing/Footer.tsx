@@ -150,11 +150,11 @@ const Footer = () => {
                             </div>
                             <div>
                                 <h3 className="text-2xl font-bold leading-tight">
-                                    SDI <span className="text-[#E9D21F]">Ikhlas</span>
+                                    SDI <span className="text-[#E9D21F]">IBU</span>
                                 </h3>
-                                <h3 className="text-2xl font-bold leading-tight">
+                                {/* <h3 className="text-2xl font-bold leading-tight">
                                     <span className="text-[#E9D21F]">Bakti Umat</span>
-                                </h3>
+                                </h3> */}
                             </div>
                         </div>
 

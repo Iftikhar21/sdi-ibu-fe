@@ -228,8 +228,7 @@ const HomePage = () => {
                         {/* Text Content */}
                         <div className="text-white text-center lg:text-left">
                             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
-                                Sekolah Dasar<br />
-                                Islam <span className="text-yellow-400">Ikhlas Bakti<br />Umat</span>
+                                SDI <span className="text-yellow-400">IBU</span>
                             </h1>
                             <p className="text-lg text-gray-200 mb-8 max-w-lg mx-auto lg:mx-0">
                                 Mendidik dengan Iman, Membimbing dengan Adab dan Akhlak Mulia. Pendidikan Iman dan Adab Terintegrasi dalam Kurikulum dan Lingkungan Sekolah.
@@ -274,7 +273,7 @@ const HomePage = () => {
                             <img src={logo_sdi} alt="Logo SDI" className="w-full h-full object-contain" />
                         </div>
                         <p className="text-gray-800 font-semibold text-lg mb-2">
-                            Selamat Datang di SDI Ikhlas Bakti Umat
+                            Selamat Datang di SDI IBU
                         </p>
                         <h2 className="text-4xl md:text-5xl font-bold text-gray-800">
                             Belajar, Berakhlak, dan <span className="text-red-600">Berprestasi</span>
@@ -417,7 +416,7 @@ const HomePage = () => {
                                     Berita & Kegiatan <span className="text-[#E13131]">Terbaru</span>
                                 </h2>
                                 <p className="text-gray-600 mt-2">
-                                    Berita seputar Sekolah Dasar Islam Ikhlas Bakti Umat
+                                    Berita seputar SDI Ikhlas Bakti Umat
                                 </p>
                             </div>
                             <Link
