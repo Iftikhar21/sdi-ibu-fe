@@ -153,6 +153,7 @@ const Header = ({ title, onMenuToggle }: AdminHeaderProps) => {
                 confirmText="Ya, Logout"
                 cancelText="Ke Beranda"
                 onConfirm={confirmLogout}
+                onCancel={goToHome}
                 isLoading={isLoggingOut}
                 size="sm"
             >
