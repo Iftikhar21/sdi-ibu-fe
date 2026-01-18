@@ -151,12 +151,8 @@ const BeritaDetailPage = () => {
 
                 {/* META DESCRIPTION (ambil dari konten) */}
                 <meta
-                    name="description"
-                    content={
-                        news.content
-                            .replace(/<[^>]*>/g, "")
-                            .substring(0, 160)
-                    }
+                    property="og:description"
+                    content={`Baca Berita: ${news.title}`}
                 />
 
                 {/* KEYWORDS (opsional tapi aman) */}
@@ -175,11 +171,7 @@ const BeritaDetailPage = () => {
                 <meta property="og:title" content={news.title} />
                 <meta
                     property="og:description"
-                    content={
-                        news.content
-                            .replace(/<[^>]*>/g, "")
-                            .substring(0, 160)
-                    }
+                    content={`Baca Berita: ${news.title}`}
                 />
                 <meta property="og:type" content="article" />
                 <meta
