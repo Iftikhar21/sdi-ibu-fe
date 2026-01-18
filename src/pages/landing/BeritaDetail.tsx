@@ -149,16 +149,20 @@ const BeritaDetailPage = () => {
                     {news.title} | SDI Ikhlas Bakti Umat
                 </title>
 
-                {/* META DESCRIPTION (ambil dari konten) */}
+                {/* META DESCRIPTION (buat lebih deskriptif) */}
+                <meta
+                    name="description"
+                    content={`${news.title} - Baca berita terbaru dari SDI Ikhlas Bakti Umat Jakarta Timur.`}
+                />
                 <meta
                     property="og:description"
-                    content={`Baca Berita: ${news.title}`}
+                    content={`${news.title} - Baca berita terbaru dari SDI Ikhlas Bakti Umat Jakarta Timur.`}
                 />
 
-                {/* KEYWORDS (opsional tapi aman) */}
+                {/* KEYWORDS */}
                 <meta
                     name="keywords"
-                    content={`Berita SDI Ikhlas Bakti Umat, ${news.title}, Sekolah Dasar Islam Jakarta Timur`}
+                    content={`SDI Ikhlas Bakti Umat, ${news.title}, Berita Sekolah, Jakarta Timur, Pendidikan Islam`}
                 />
 
                 {/* CANONICAL */}
@@ -167,12 +171,9 @@ const BeritaDetailPage = () => {
                     href={`https://sdi-ibu.id/berita/${news.slug}`}
                 />
 
-                {/* OPEN GRAPH (WA / FB) */}
+                {/* OPEN GRAPH - WAJIB untuk share */}
                 <meta property="og:title" content={news.title} />
-                <meta
-                    property="og:description"
-                    content={`Baca Berita: ${news.title}`}
-                />
+                <meta property="og:site_name" content="SDI Ikhlas Bakti Umat" />
                 <meta property="og:type" content="article" />
                 <meta
                     property="og:url"
@@ -180,15 +181,22 @@ const BeritaDetailPage = () => {
                 />
                 <meta
                     property="og:image"
-                    content={
-                        news.thumbnail_url ||
-                        "https://sdi-ibu.id/default-og.jpg"
-                    }
+                    content={news.thumbnail_url || "https://sdi-ibu.id/default-og.jpg"}
                 />
+                <meta property="og:image:width" content="1200" />
+                <meta property="og:image:height" content="630" />
+                <meta property="og:image:alt" content={news.title} />
+
+                {/* TWITTER CARD (opsional tapi baik) */}
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content={news.title} />
+                <meta name="twitter:description" content={`${news.title} - Berita SDI Ikhlas Bakti Umat`} />
+                <meta name="twitter:image" content={news.thumbnail_url || "https://sdi-ibu.id/default-og.jpg"} />
 
                 {/* ARTICLE META */}
                 <meta property="article:published_time" content={news.created_at} />
                 <meta property="article:modified_time" content={news.updated_at} />
+                <meta property="article:section" content="Berita" />
             </Helmet>
 
             {/* Hero Section */}
