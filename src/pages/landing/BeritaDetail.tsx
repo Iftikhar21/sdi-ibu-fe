@@ -337,7 +337,7 @@ const BeritaDetailPage = () => {
                                             if (navigator.share) {
                                                 navigator.share({
                                                     title: news.title,
-                                                    text: news.content.substring(0, 100).replace(/<[^>]*>/g, '') + '...',
+                                                    text: `Baca Berita: ${news.title}`,
                                                     url: window.location.href,
                                                 });
                                             } else {
