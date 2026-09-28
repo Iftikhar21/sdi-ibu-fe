@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Save, Loader2, Eye, EyeOff } from 'lucide-react';
+import SearchableSelect from '../../../components/common/SearchableSelect';
 
 interface Props {
     title: string;
@@ -127,7 +128,7 @@ export default function UserForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Nama */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-body mb-2">
                         Nama Lengkap
                         <span className="text-red-500 ml-1">*</span>
                     </label>
@@ -136,7 +137,7 @@ export default function UserForm({
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border ${errors.name ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
+                        className={`w-full px-4 py-3 border ${errors.name ? 'border-red-300' : 'border-line'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
                         placeholder="Masukkan nama lengkap"
                     />
                     {errors.name && (
@@ -146,7 +147,7 @@ export default function UserForm({
 
                 {/* Email */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-body mb-2">
                         Email
                         <span className="text-red-500 ml-1">*</span>
                     </label>
@@ -155,7 +156,7 @@ export default function UserForm({
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
-                        className={`w-full px-4 py-3 border ${errors.email ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
+                        className={`w-full px-4 py-3 border ${errors.email ? 'border-red-300' : 'border-line'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
                         placeholder="contoh@email.com"
                     />
                     {errors.email && (
@@ -167,7 +168,7 @@ export default function UserForm({
                 {!isEdit ? (
                     <>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-body mb-2">
                                 Password
                                 <span className="text-red-500 ml-1">*</span>
                             </label>
@@ -177,13 +178,13 @@ export default function UserForm({
                                     name="password"
                                     value={formData.password}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border ${errors.password ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
+                                    className={`w-full px-4 py-3 border ${errors.password ? 'border-red-300' : 'border-line'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
                                     placeholder="Minimal 6 karakter"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-3 top-3 text-muted hover:text-muted"
                                 >
                                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
@@ -195,7 +196,7 @@ export default function UserForm({
 
                         {/* Confirm Password */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-sm font-medium text-body mb-2">
                                 Konfirmasi Password
                                 <span className="text-red-500 ml-1">*</span>
                             </label>
@@ -205,13 +206,13 @@ export default function UserForm({
                                     name="confirmPassword"
                                     value={formData.confirmPassword}
                                     onChange={handleChange}
-                                    className={`w-full px-4 py-3 border ${errors.confirmPassword ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
+                                    className={`w-full px-4 py-3 border ${errors.confirmPassword ? 'border-red-300' : 'border-line'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
                                     placeholder="Ulangi password"
                                 />
                                 <button
                                     type="button"
                                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                    className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-3 top-3 text-muted hover:text-muted"
                                 >
                                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                                 </button>
@@ -224,7 +225,7 @@ export default function UserForm({
                 ) : (
                     // Password update untuk edit (opsional)
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-body mb-2">
                             Password Baru (Opsional)
                         </label>
                         <div className="relative">
@@ -233,48 +234,52 @@ export default function UserForm({
                                 name="password"
                                 value={formData.password}
                                 onChange={handleChange}
-                                className={`w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
+                                className={`w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400`}
                                 placeholder="Kosongkan jika tidak ingin mengubah"
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
-                                className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
+                                className="absolute right-3 top-3 text-muted hover:text-muted"
                             >
                                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                             </button>
                         </div>
-                        <p className="mt-1 text-xs text-gray-500">Isi hanya jika ingin mengubah password</p>
+                        <p className="mt-1 text-xs text-muted">Isi hanya jika ingin mengubah password</p>
                     </div>
                 )}
 
                 {/* Role */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-body mb-2">
                         Role
                         <span className="text-red-500 ml-1">*</span>
                     </label>
-                    <select
-                        name="role"
+                    <SearchableSelect
+                        options={[
+                            { value: 'admin', label: 'Admin', description: 'Akses penuh ke panel admin' },
+                            { value: 'user', label: 'User', description: 'Portal pengguna / orang tua' },
+                        ]}
                         value={formData.role}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-3 border ${errors.role ? 'border-red-300' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400 bg-white`}
-                    >
-                        <option value="">Pilih Role</option>
-                        <option value="admin">Admin</option>
-                        <option value="user">User</option>
-                    </select>
+                        onChange={(value) => {
+                            setFormData((previous) => ({ ...previous, role: String(value) }));
+                            setErrors((previous) => ({ ...previous, role: '' }));
+                        }}
+                        placeholder="Pilih Role"
+                        searchPlaceholder="Cari role..."
+                        ariaLabel="Role pengguna"
+                    />
                     {errors.role && (
                         <p className="mt-1 text-sm text-red-600">{errors.role}</p>
                     )}
                 </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-3 pt-6 border-t border-line">
                 <button
                     type="button"
                     onClick={() => window.history.back()}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+                    className="px-5 py-2.5 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
                 >
                     Batal
                 </button>

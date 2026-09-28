@@ -107,7 +107,7 @@ const VisiMisiPage = () => {
                     <h2 className="text-3xl md:text-4xl font-bold">
                         Islam <span className="text-yellow-400">Ikhlas Bakti Umat</span>
                     </h2>
-                    <p className="mt-4 text-lg text-gray-200 max-w-2xl">
+                    <p className="mt-4 text-lg text-muted max-w-2xl">
                         Arah dan tujuan pendidikan SDI Ikhlas Bakti Umat
                     </p>
                 </div>
@@ -124,20 +124,20 @@ const VisiMisiPage = () => {
 
                         {hasVisi ? (
                             <div className="relative">
-                                <div className="text-6xl text-gray-800 font-serif absolute -top-4 -left-2">
+                                <div className="text-6xl text-body font-serif absolute -top-4 -left-2">
                                     "
                                 </div>
                                 <div className="pl-8">
-                                    <h2 className="text-3xl md:text-4xl font-bold text-gray-800 leading-tight">
+                                    <h2 className="text-3xl md:text-4xl font-bold text-body leading-tight">
                                         {visiMisi!.vision}
                                     </h2>
                                 </div>
-                                <div className="text-6xl text-gray-800 font-serif text-right mt-2">
+                                <div className="text-6xl text-body font-serif text-right mt-2">
                                     "
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-gray-500 italic">
+                            <p className="text-muted italic">
                                 Visi belum ditambahkan
                             </p>
                         )}
@@ -180,14 +180,14 @@ const VisiMisiPage = () => {
                                             alt="icon"
                                             className="w-12 h-12 mt-1"
                                         />
-                                        <p className="text-gray-700 leading-relaxed pt-3">
+                                        <p className="text-body leading-relaxed pt-3">
                                             {text}
                                         </p>
                                     </div>
                                 ))}
                             </div>
                         ) : (
-                            <p className="text-gray-500 italic">
+                            <p className="text-muted italic">
                                 Misi belum ditambahkan
                             </p>
                         )}

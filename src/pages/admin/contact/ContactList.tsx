@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { Contact } from '../../../types/contact';
 import { contactService } from '../../../services/contactServices';
 import {
@@ -8,8 +8,6 @@ import {
     Trash2,
     Loader2,
     AlertCircle,
-    CheckCircle,
-    X,
     Building,
     Phone,
     Mail,
@@ -22,39 +20,16 @@ import {
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function ContactList() {
+    const toast = useToast();
     const [data, setData] = useState<Contact[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Contact | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
-
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    // Cek URL parameters untuk success message
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const message = params.get('message');
-        const success = params.get('success') === 'true';
-
-        if (success && message) {
-            setSuccessMessage(message);
-
-            // Hapus parameters dari URL
-            navigate('/admin/contacts', { replace: true });
-
-            // Auto-hide success message setelah 5 detik
-            const timer = setTimeout(() => {
-                setSuccessMessage('');
-            }, 5000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [location, navigate]);
-
     const fetchData = async () => {
         try {
             const res = await contactService.getAll();
@@ -79,11 +54,11 @@ export default function ContactList() {
         setDeletingId(selectedItem.id);
         try {
             await contactService.delete(selectedItem.id);
-            setSuccessMessage('Informasi kontak berhasil dihapus');
+            toast.success('Informasi kontak berhasil dihapus');
             fetchData();
         } catch (error) {
             console.error('Error deleting:', error);
-            alert('Gagal menghapus informasi kontak');
+            toast.error('Gagal menghapus informasi kontak', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setDeletingId(null);
             setSelectedItem(null);
@@ -111,12 +86,12 @@ export default function ContactList() {
             </Helmet>
             <Layout title="Kelola Kontak">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Kelola Kontak SDI Ibu
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             {canAddNew
                                 ? 'Tambahkan informasi kontak organisasi'
                                 : 'Kelola informasi kontak organisasi'}
@@ -124,27 +99,11 @@ export default function ContactList() {
                     </div>
                     <div className="text-left md:text-right">
                         <p className="font-medium text-2xl sm:text-3xl text-blue-600">{data.length}/1</p>
-                        <p className="text-xs sm:text-sm text-gray-700">
+                        <p className="text-xs sm:text-sm text-body">
                             {data.length === 1 ? 'Kontak Aktif' : 'Belum Ada'}
                         </p>
                     </div>
                 </div>
-
-                {/* Success Message Banner */}
-                {successMessage && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                        <div className="flex items-center">
-                            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                            <span className="text-green-800">{successMessage}</span>
-                        </div>
-                        <button
-                            onClick={() => setSuccessMessage('')}
-                            className="text-green-600 hover:text-green-800"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                )}
 
                 <div className="mx-auto">
                     {/* Action Bar */}
@@ -159,7 +118,7 @@ export default function ContactList() {
                                     Tambah Kontak
                                 </Link>
                             ) : (
-                                <div className="flex items-center gap-2 px-4 py-2.5 bg-gray-100 text-gray-500 font-medium text-sm rounded-lg">
+                                <div className="flex items-center gap-2 px-4 py-2.5 bg-surface-muted text-muted font-medium text-sm rounded-lg">
                                     <Eye className="w-4 h-4" />
                                     Hanya Dapat 1 Kontak
                                 </div>
@@ -168,19 +127,19 @@ export default function ContactList() {
                     </div>
 
                     {/* Content */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                         {loading ? (
                             <div className="py-12 text-center">
                                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                                <p className="text-gray-600">Memuat data kontak...</p>
+                                <p className="text-muted">Memuat data kontak...</p>
                             </div>
                         ) : data.length === 0 ? (
                             <div className="py-12 text-center">
-                                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                <AlertCircle className="w-12 h-12 text-muted mx-auto mb-4" />
+                                <h3 className="text-lg font-medium text-body mb-2">
                                     Belum ada Informasi Kontak
                                 </h3>
-                                <p className="text-gray-600 max-w-md mx-auto mb-6">
+                                <p className="text-muted max-w-md mx-auto mb-6">
                                     Mulai dengan menambahkan informasi kontak organisasi Anda.
                                 </p>
                                 <Link
@@ -192,13 +151,13 @@ export default function ContactList() {
                                 </Link>
                             </div>
                         ) : (
-                            <div className="divide-y divide-gray-200">
+                            <div className="divide-y divide-line">
                                 {data.map((item) => (
-                                    <div key={item.id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
+                                    <div key={item.id} className="p-6 hover:bg-surface-muted transition-colors duration-150">
                                         <div className="flex flex-col lg:flex-row gap-6">
                                             {/* Logo */}
                                             <div className="lg:w-48 flex-shrink-0">
-                                                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                                                <div className="aspect-square rounded-lg overflow-hidden bg-surface-muted border border-line">
                                                     {item.logo_url ? (
                                                         <img
                                                             src={item.logo_url}
@@ -206,8 +165,8 @@ export default function ContactList() {
                                                             className="w-full h-full object-contain p-4"
                                                         />
                                                     ) : (
-                                                        <div className="w-full h-full flex items-center justify-center bg-gray-200">
-                                                            <Building className="w-12 h-12 text-gray-400" />
+                                                        <div className="w-full h-full flex items-center justify-center bg-line">
+                                                            <Building className="w-12 h-12 text-muted" />
                                                         </div>
                                                     )}
                                                 </div>
@@ -217,7 +176,7 @@ export default function ContactList() {
                                             <div className="flex-1">
                                                 <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 mb-3">
                                                     <div className="flex-1">
-                                                        <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                                                        <h3 className="text-lg font-semibold text-body mb-3">
                                                             Informasi Kontak Organisasi
                                                         </h3>
 
@@ -227,8 +186,8 @@ export default function ContactList() {
                                                             <div className="flex items-start">
                                                                 <MapPin className="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                                                                 <div>
-                                                                    <p className="text-sm font-medium text-gray-700">Alamat</p>
-                                                                    <p className="text-sm text-gray-600">
+                                                                    <p className="text-sm font-medium text-body">Alamat</p>
+                                                                    <p className="text-sm text-muted">
                                                                         {item.alamat || 'Belum diisi'}
                                                                     </p>
                                                                 </div>
@@ -238,8 +197,8 @@ export default function ContactList() {
                                                             <div className="flex items-start">
                                                                 <Phone className="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                                                                 <div>
-                                                                    <p className="text-sm font-medium text-gray-700">Telepon</p>
-                                                                    <p className="text-sm text-gray-600">
+                                                                    <p className="text-sm font-medium text-body">Telepon</p>
+                                                                    <p className="text-sm text-muted">
                                                                         {item.telepon || 'Belum diisi'}
                                                                     </p>
                                                                 </div>
@@ -249,8 +208,8 @@ export default function ContactList() {
                                                             <div className="flex items-start">
                                                                 <Mail className="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                                                                 <div>
-                                                                    <p className="text-sm font-medium text-gray-700">Email</p>
-                                                                    <p className="text-sm text-gray-600">
+                                                                    <p className="text-sm font-medium text-body">Email</p>
+                                                                    <p className="text-sm text-muted">
                                                                         {item.email || 'Belum diisi'}
                                                                     </p>
                                                                 </div>
@@ -260,8 +219,8 @@ export default function ContactList() {
                                                             <div className="flex items-start">
                                                                 <Globe className="w-4 h-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
                                                                 <div>
-                                                                    <p className="text-sm font-medium text-gray-700">Media Sosial</p>
-                                                                    <p className="text-sm text-gray-600">
+                                                                    <p className="text-sm font-medium text-body">Media Sosial</p>
+                                                                    <p className="text-sm text-muted">
                                                                         {item.socials?.length || 0} platform
                                                                     </p>
                                                                 </div>
@@ -271,7 +230,7 @@ export default function ContactList() {
                                                         {/* Deskripsi */}
                                                         {item.deskripsi && (
                                                             <div className="mb-3">
-                                                                <p className="text-sm text-gray-600 line-clamp-2">
+                                                                <p className="text-sm text-muted line-clamp-2">
                                                                     {item.deskripsi}
                                                                 </p>
                                                             </div>
@@ -280,7 +239,7 @@ export default function ContactList() {
                                                 </div>
 
                                                 {/* Metadata */}
-                                                <div className="flex items-center text-sm text-gray-500">
+                                                <div className="flex items-center text-sm text-muted">
                                                     <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
                                                         ID: {item.id}
                                                     </span>
@@ -290,10 +249,10 @@ export default function ContactList() {
 
                                         {/* Map Section - TAMBAHAN BARU */}
                                         {item.map_embed && (
-                                            <div className="mt-6 pt-4 border-t border-gray-200">
+                                            <div className="mt-6 pt-4 border-t border-line">
                                                 <div className="flex items-center mb-4">
                                                     <Map className="w-5 h-5 text-blue-600 mr-2" />
-                                                    <h3 className="text-md font-semibold text-gray-800">
+                                                    <h3 className="text-md font-semibold text-body">
                                                         Lokasi Peta
                                                     </h3>
                                                 </div>
@@ -311,22 +270,22 @@ export default function ContactList() {
 
                                         {/* Social Media Details */}
                                         {item.socials && item.socials.length > 0 && (
-                                            <div className="mt-6 pt-4 border-t border-gray-200">
+                                            <div className="mt-6 pt-4 border-t border-line">
                                                 <div className="flex items-center mb-4">
                                                     <Globe className="w-5 h-5 text-blue-600 mr-2" />
-                                                    <h3 className="text-md font-semibold text-gray-800">
+                                                    <h3 className="text-md font-semibold text-body">
                                                         Media Sosial
                                                     </h3>
                                                 </div>
 
                                                 <div className="space-y-2">
                                                     {item.socials.map((social, index) => (
-                                                        <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                                        <div key={index} className="flex items-center justify-between p-3 bg-surface-muted rounded-lg">
                                                             <div className="flex items-center">
-                                                                <Globe className="w-4 h-4 text-gray-500 mr-3" />
+                                                                <Globe className="w-4 h-4 text-muted mr-3" />
                                                                 <div>
-                                                                    <p className="font-medium text-gray-900">{social.platform}</p>
-                                                                    <p className="text-sm text-gray-600 truncate max-w-xs">
+                                                                    <p className="font-medium text-body">{social.platform}</p>
+                                                                    <p className="text-sm text-muted truncate max-w-xs">
                                                                         {social.url}
                                                                     </p>
                                                                 </div>
@@ -346,7 +305,7 @@ export default function ContactList() {
                                         )}
 
                                         {/* Action Buttons */}
-                                        <div className="flex justify-end space-x-2 mt-6 pt-4 border-t border-gray-200">
+                                        <div className="flex justify-end space-x-2 mt-6 pt-4 border-t border-line">
                                             <Link
                                                 to={`/admin/contacts/${item.id}/edit`}
                                                 className="inline-flex items-center px-4 py-2 text-sm font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-lg hover:bg-amber-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-colors duration-200"
@@ -403,10 +362,10 @@ export default function ContactList() {
                 isLoading={deletingId !== null}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">
+                    <p className="text-body">
                         Apakah Anda yakin ingin menghapus informasi kontak ini?
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-muted mt-2">
                         Tindakan ini tidak dapat dibatalkan. Setelah dihapus, Anda dapat menambahkan kontak baru.
                     </p>
                 </div>

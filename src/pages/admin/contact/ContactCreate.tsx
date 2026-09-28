@@ -6,9 +6,12 @@ import { useState } from 'react';
 import Modal from '../../../components/common/Modal';
 import ContactForm from './ContactForm';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function ContactCreate() {
     const navigate = useNavigate();
+    const toast = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [formData, setFormData] = useState<{
@@ -46,10 +49,11 @@ export default function ContactCreate() {
         try {
             await contactService.create(formData);
             // Redirect ke list dengan parameter success
-            navigate('/admin/contacts?success=true&message=Informasi kontak berhasil ditambahkan');
+            toast.success('Informasi kontak berhasil ditambahkan');
+            navigate('/admin/contacts');
         } catch (error) {
             console.error('Error creating contact:', error);
-            alert('Gagal menambahkan informasi kontak');
+            toast.error('Gagal menambahkan informasi kontak', getApiErrorMessage(error, 'silakan coba lagi'));
             setShowConfirmModal(false);
         } finally {
             setIsSubmitting(false);
@@ -63,19 +67,19 @@ export default function ContactCreate() {
             </Helmet>
             <Layout title="Tambah Kontak Baru">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Tambah Kontak Baru
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Isi informasi kontak organisasi Anda
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate('/admin/contact')}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted transition-colors duration-200"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Kembali
@@ -84,7 +88,7 @@ export default function ContactCreate() {
                 </div>
 
                 <div className="max-w-6xl mx-auto">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                         <div className="p-6">
                             <ContactForm
                                 title="Tambah Kontak"
@@ -108,8 +112,8 @@ export default function ContactCreate() {
                 isLoading={isSubmitting}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">Apakah Anda yakin ingin menambahkan informasi kontak baru?</p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-body">Apakah Anda yakin ingin menambahkan informasi kontak baru?</p>
+                    <p className="text-sm text-muted mt-2">
                         Hanya dapat memiliki 1 informasi kontak aktif. Pastikan isi sudah benar.
                     </p>
                 </div>

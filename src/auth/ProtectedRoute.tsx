@@ -8,10 +8,12 @@ export default function ProtectedRoute({
     role,
 }: {
     children: JSX.Element;
-    role?: string;
+    role?: string | string[];
 }) {
     const { user } = useAuth();
     const location = useLocation();
+
+    const allowedRoles = role ? (Array.isArray(role) ? role : [role]) : null;
 
 
     // Jika tidak ada user, redirect ke login dengan state untuk kembali
@@ -28,18 +30,15 @@ export default function ProtectedRoute({
     }
 
     // Jika role di-spesifikasikan dan user role tidak cocok
-    if (role && user.role.role_name !== role) {
+    if (allowedRoles && !allowedRoles.includes(user.role.role_name)) {
         // JANGAN redirect ke /forbidden, tapi redirect ke dashboard yang sesuai
-
-        // Debug: console log untuk melihat apa yang terjadi
-        console.log(`User role: ${user.role.role_name}, Required role: ${role}`);
 
         // Redirect ke dashboard sesuai role user
         if (user.role.role_name === "admin") {
-            console.log("Redirecting admin to /admin/dashboard");
             return <Navigate to="/admin/dashboard" replace />;
+        } else if (user.role.role_name === "guru") {
+            return <Navigate to="/guru/dashboard" replace />;
         } else if (user.role.role_name === "user") {
-            console.log("Redirecting user to /user/dashboard");
             return <Navigate to="/user/dashboard" replace />;
         }
 

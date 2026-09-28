@@ -1,4 +1,4 @@
-export type RoleName = "admin" | "user";
+export type RoleName = "admin" | "user" | "guru";
 
 export interface Role {
     id: number;
@@ -11,6 +11,8 @@ export interface User {
     email: string;
     role_id: number;
     role: Role;
+    /** Wajib ganti password saat login pertama (akun baru dari admin). */
+    must_change_password?: boolean;
 }
 
 export interface AuthResponse {

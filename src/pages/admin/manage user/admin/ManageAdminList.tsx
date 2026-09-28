@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { User } from '../../../../types/user';
 import {
     PlusCircle,
@@ -7,8 +7,6 @@ import {
     Trash2,
     Loader2,
     AlertCircle,
-    CheckCircle,
-    X,
     User as UserIcon,
     Shield,
     Phone,
@@ -18,42 +16,23 @@ import {
 } from 'lucide-react';
 import Layout from '../../../../components/layout/panel/MainLayout';
 import Modal from '../../../../components/common/Modal';
+import TablePagination from '../../../../components/common/TablePagination';
+import { useTablePagination } from '../../../../components/common/useTablePagination';
 import { userService } from '../../../../services/manageUserServices';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../../context/toast';
+import { getApiErrorMessage } from '../../../../utils/apiError';
 
 export default function ManageAdminList() {
+    const toast = useToast();
     const [admins, setAdmins] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedAdmin, setSelectedAdmin] = useState<User | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
     const [showResetPasswordModal, setShowResetPasswordModal] = useState(false);
     const [resettingPasswordId, setResettingPasswordId] = useState<number | null>(null);
-
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    // Cek URL parameters untuk success message
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const message = params.get('message');
-        const success = params.get('success') === 'true';
-
-        if (success && message) {
-            setSuccessMessage(message);
-
-            // Hapus parameters dari URL
-            navigate('/admin/manage-admin', { replace: true });
-
-            // Auto-hide success message setelah 5 detik
-            const timer = setTimeout(() => {
-                setSuccessMessage('');
-            }, 5000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [location, navigate]);
+    const { pageItems, pagination } = useTablePagination(admins);
 
     const fetchAdmins = async () => {
         try {
@@ -61,7 +40,7 @@ export default function ManageAdminList() {
             setAdmins(res);
         } catch (error) {
             console.error('Error fetching admins:', error);
-            alert('Gagal memuat data admin');
+            toast.error('Gagal memuat data admin', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setLoading(false);
         }
@@ -78,11 +57,11 @@ export default function ManageAdminList() {
         setDeletingId(selectedAdmin.id);
         try {
             await userService.delete(selectedAdmin.id);
-            setSuccessMessage('Admin berhasil dihapus');
+            toast.success('Admin berhasil dihapus');
             fetchAdmins();
         } catch (error) {
             console.error('Error deleting admin:', error);
-            alert('Gagal menghapus admin');
+            toast.error('Gagal menghapus admin', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setDeletingId(null);
             setSelectedAdmin(null);
@@ -101,10 +80,10 @@ export default function ManageAdminList() {
         setResettingPasswordId(selectedAdmin.id);
         try {
             const res = await userService.resetPassword(selectedAdmin.id);
-            setSuccessMessage(res.data.message);
+            toast.success(res.data.message || 'Password berhasil direset');
             setShowResetPasswordModal(false);
         } catch (error) {
-            alert('Gagal mereset password');
+            toast.error('Gagal mereset password', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setResettingPasswordId(null);
             setSelectedAdmin(null);
@@ -153,12 +132,12 @@ export default function ManageAdminList() {
             </Helmet>
             <Layout title="Kelola Admin">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Kelola Admin
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Lihat dan kelola semua administrator sistem
                         </p>
                     </div>
@@ -173,7 +152,7 @@ export default function ManageAdminList() {
                         </Link> */}
                         <Link
                             to="/admin/user"
-                            className="inline-flex items-center justify-center px-4 py-2.5 bg-gray-200 text-gray-700 font-medium text-sm rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 shadow-sm"
+                            className="inline-flex items-center justify-center px-4 py-2.5 bg-line text-body font-medium text-sm rounded-lg hover:bg-line focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 shadow-sm"
                         >
                             <UserIcon className="w-4 h-4 mr-2" />
                             Lihat Semua User
@@ -181,56 +160,40 @@ export default function ManageAdminList() {
                     </div>
                 </div>
 
-                {/* Success Message Banner */}
-                {successMessage && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                        <div className="flex items-center">
-                            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                            <span className="text-green-800">{successMessage}</span>
-                        </div>
-                        <button
-                            onClick={() => setSuccessMessage('')}
-                            className="text-green-600 hover:text-green-800"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                )}
-
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-blue-100 rounded-lg">
                                 <Shield className="w-6 h-6 text-blue-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Total Admin</p>
-                                <p className="text-2xl font-bold text-gray-900">{admins.length}</p>
+                                <p className="text-sm text-muted">Total Admin</p>
+                                <p className="text-2xl font-bold text-body">{admins.length}</p>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-green-100 rounded-lg">
                                 <UserCheck className="w-6 h-6 text-green-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Profil Lengkap</p>
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-sm text-muted">Profil Lengkap</p>
+                                <p className="text-2xl font-bold text-body">
                                     {admins.filter(a => a.admin).length}
                                 </p>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-yellow-100 rounded-lg">
                                 <UserX className="w-6 h-6 text-yellow-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Belum Lengkap</p>
-                                <p className="text-2xl font-bold text-gray-900">
+                                <p className="text-sm text-muted">Belum Lengkap</p>
+                                <p className="text-2xl font-bold text-body">
                                     {admins.filter(a => !a.admin).length}
                                 </p>
                             </div>
@@ -254,19 +217,19 @@ export default function ManageAdminList() {
                 </div>
 
                 {/* Content */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                     {loading ? (
                         <div className="py-12 text-center">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                            <p className="text-gray-600">Memuat data admin...</p>
+                            <p className="text-muted">Memuat data admin...</p>
                         </div>
                     ) : admins.length === 0 ? (
                         <div className="py-12 text-center">
-                            <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <AlertCircle className="w-12 h-12 text-muted mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-body mb-2">
                                 Belum ada admin
                             </h3>
-                            <p className="text-gray-600 max-w-md mx-auto mb-6">
+                            <p className="text-muted max-w-md mx-auto mb-6">
                                 Tambahkan admin pertama untuk mengelola sistem.
                             </p>
                             <Link
@@ -279,41 +242,42 @@ export default function ManageAdminList() {
                             </Link>
                         </div>
                     ) : (
+                        <>
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
+                            <table className="min-w-full divide-y divide-line">
+                                <thead className="bg-surface-muted">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                             Admin
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                             Status Profil
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                             Kontak
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                             Tanggal Bergabung
                                         </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                             Aksi
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {admins.map((admin) => {
+                                <tbody className="bg-surface divide-y divide-line">
+                                    {pageItems.map((admin) => {
                                         const status = getAdminStatus(admin);
                                         const isProtected = isProtectedAdmin(admin.id);
 
                                         return (
-                                            <tr key={admin.id} className="hover:bg-gray-50 transition-colors duration-150">
+                                            <tr key={admin.id} className="hover:bg-surface-muted transition-colors duration-150">
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10 bg-purple-100 rounded-full flex items-center justify-center">
                                                             <Shield className="h-5 w-5 text-purple-600" />
                                                         </div>
                                                         <div className="ml-4">
-                                                            <div className="text-sm font-medium text-gray-900">
+                                                            <div className="text-sm font-medium text-body">
                                                                 {admin.name}
                                                                 {isProtected && (
                                                                     <span className="ml-2 px-2 py-0.5 text-xs bg-red-100 text-red-800 rounded-full">
@@ -321,10 +285,10 @@ export default function ManageAdminList() {
                                                                     </span>
                                                                 )}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">
+                                                            <div className="text-sm text-muted">
                                                                 {admin.email}
                                                             </div>
-                                                            <div className="text-xs text-gray-400 mt-1">
+                                                            <div className="text-xs text-muted mt-1">
                                                                 ID: {admin.id}
                                                             </div>
                                                         </div>
@@ -339,18 +303,18 @@ export default function ManageAdminList() {
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     {admin.admin ? (
                                                         <div className="flex items-center">
-                                                            <Phone className="w-4 h-4 text-gray-400 mr-2" />
-                                                            <span className="text-sm text-gray-900">
+                                                            <Phone className="w-4 h-4 text-muted mr-2" />
+                                                            <span className="text-sm text-body">
                                                                 {admin.admin.phone}
                                                             </span>
                                                         </div>
                                                     ) : (
-                                                        <span className="text-sm text-gray-500 italic">
+                                                        <span className="text-sm text-muted italic">
                                                             Belum diisi
                                                         </span>
                                                     )}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                                                     {formatDate(admin.created_at)}
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -382,7 +346,7 @@ export default function ManageAdminList() {
                                                         {/* <button
                                                             disabled
                                                             title="Admin tidak dapat dihapus"
-                                                            className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-gray-400 bg-gray-100 border border-gray-200 rounded-lg cursor-not-allowed"
+                                                            className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-muted bg-surface-muted border border-line rounded-lg cursor-not-allowed"
                                                         >
                                                             <Trash2 className="w-3 h-3 mr-1" />
                                                             Hapus
@@ -391,7 +355,7 @@ export default function ManageAdminList() {
                                                         {/* Tombol Lengkapi Profil (hanya untuk yang belum lengkap) */}
                                                         {!admin.admin && !isProtected && (
                                                             <button
-                                                                onClick={() => alert('Fitur melengkapi profil admin akan segera tersedia')}
+                                                                onClick={() => toast.info('Fitur melengkapi profil admin akan segera tersedia')}
                                                                 className="inline-flex items-center px-3 py-1.5 text-xs font-medium text-green-700 bg-green-50 border border-green-200 rounded-lg hover:bg-green-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
                                                             >
                                                                 <UserIcon className="w-3 h-3 mr-1" />
@@ -406,12 +370,14 @@ export default function ManageAdminList() {
                                 </tbody>
                             </table>
                         </div>
+                        <TablePagination {...pagination} />
+                        </>
                     )}
                 </div>
 
                 {/* Catatan Kaki */}
-                <div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-lg">
-                    <p className="text-xs text-gray-600 text-center">
+                <div className="mt-6 p-4 bg-surface-muted border border-line rounded-lg">
+                    <p className="text-xs text-muted text-center">
                         <strong>Catatan:</strong> Semua admin hanya dapat dilihat dan ditambah.
                         Untuk perubahan data admin, silakan hubungi administrator sistem.
                     </p>
@@ -430,10 +396,10 @@ export default function ManageAdminList() {
                 isLoading={deletingId !== null}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">
+                    <p className="text-body">
                         Apakah Anda yakin ingin menghapus admin <strong>{selectedAdmin?.name}</strong>?
                     </p>
-                    <div className="mt-3 text-sm text-gray-600 space-y-1">
+                    <div className="mt-3 text-sm text-muted space-y-1">
                         <p><strong>Email:</strong> {selectedAdmin?.email}</p>
                         <p><strong>Role:</strong> {selectedAdmin?.role.role_name}</p>
                     </div>
@@ -455,10 +421,10 @@ export default function ManageAdminList() {
                 isLoading={resettingPasswordId !== null}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">
+                    <p className="text-body">
                         Apakah Anda yakin ingin mereset password untuk admin <strong>{selectedAdmin?.name}</strong>?
                     </p>
-                    <div className="mt-3 text-sm text-gray-600 space-y-1">
+                    <div className="mt-3 text-sm text-muted space-y-1">
                         <p><strong>Email:</strong> {selectedAdmin?.email}</p>
                         <p><strong>Password baru:</strong> password123 (default)</p>
                     </div>

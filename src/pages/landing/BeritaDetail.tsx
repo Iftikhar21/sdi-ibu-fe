@@ -4,6 +4,8 @@ import { Link, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../../api/api';
 import { Helmet } from "react-helmet-async";
+import { useToast } from '../../context/toast';
+import ErrorPage from '../../components/common/ErrorPage';
 
 interface Photo {
     id: number;
@@ -46,6 +48,7 @@ interface ApiResponse {
 
 const BeritaDetailPage = () => {
     const { slug } = useParams<{ slug: string }>();
+    const toast = useToast();
     const [news, setNews] = useState<NewsDetail | null>(null);
     const [latestNews, setLatestNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -131,12 +134,11 @@ const BeritaDetailPage = () => {
     if (!news) {
         return (
             <MainLayout>
-                <div className="container mx-auto px-4 py-16 text-center">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-4">Berita tidak ditemukan</h1>
-                    <Link to="/berita" className="text-blue-600 hover:text-blue-700 underline">
-                        Kembali ke halaman berita
-                    </Link>
-                </div>
+                <ErrorPage
+                    code={404}
+                    variant="embedded"
+                    description="Berita yang kamu cari tidak tersedia atau sudah dihapus. Silakan lihat berita terbaru lainnya."
+                />
             </MainLayout>
         );
     }
@@ -211,10 +213,10 @@ const BeritaDetailPage = () => {
                 <div className="absolute inset-0 bg-black/60" />
                 <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
                     <div className="flex items-center gap-2 text-sm mb-4">
-                        <Link to="/berita" className="text-gray-300 hover:text-white transition-colors">
+                        <Link to="/berita" className="text-muted hover:text-white transition-colors">
                             Berita
                         </Link>
-                        <span className="text-gray-400">&gt;</span>
+                        <span className="text-muted">&gt;</span>
                         <span className="text-yellow-400 block max-w-[250px] truncate">{news.title}</span>
                     </div>
 
@@ -229,24 +231,24 @@ const BeritaDetailPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-lg">
+                        <div className="bg-surface rounded-lg">
                             {/* Article Title */}
-                            <h1 className="text-3xl font-bold text-gray-800 mb-8">
+                            <h1 className="text-3xl font-bold text-body mb-8">
                                 {news.title}
                             </h1>
 
                             {/* Article Meta */}
                             <div className="flex items-center gap-6 mb-8 pb-6 border-b">
-                                <div className="flex items-center text-[#004AAD]">
+                                <div className="flex items-center text-brand">
                                     <Calendar className="w-4 h-4 mr-2" />
                                     <span className="text-sm">{formatDate(news.created_at)}</span>
                                 </div>
-                                <div className="flex items-center text-[#004AAD]">
+                                <div className="flex items-center text-brand">
                                     <Eye className="w-4 h-4 mr-2" />
                                     <span className="text-sm">{formatViews(news.views)} Kali</span>
                                 </div>
                                 {news.photos && news.photos.length > 0 && (
-                                    <div className="flex items-center text-[#004AAD]">
+                                    <div className="flex items-center text-brand">
                                         <Images className="w-4 h-4 mr-2" />
                                         <span className="text-sm">{news.photos.length} Foto</span>
                                     </div>
@@ -254,7 +256,7 @@ const BeritaDetailPage = () => {
                             </div>
 
                             {/* Article Content */}
-                            <div className="prose prose-lg max-w-none text-gray-700 space-y-4 mb-8">
+                            <div className="prose prose-lg max-w-none text-body space-y-4 mb-8">
                                 <div
                                     dangerouslySetInnerHTML={{
                                         __html: news.content.replace(/\n/g, "<br />"),
@@ -272,7 +274,7 @@ const BeritaDetailPage = () => {
                                             className="w-full object-cover"
                                         />
                                     </div>
-                                    <p className="text-center text-sm text-gray-500 mt-3 italic">
+                                    <p className="text-center text-sm text-muted mt-3 italic">
                                         {news.title}
                                     </p>
                                 </div>
@@ -282,8 +284,8 @@ const BeritaDetailPage = () => {
                             {news.photos && news.photos.length > 0 && (
                                 <div className="mb-8">
                                     <div className="flex items-center justify-between mb-4">
-                                        <h3 className="text-xl font-semibold text-gray-800">Galeri Foto</h3>
-                                        <span className="text-sm text-gray-500">
+                                        <h3 className="text-xl font-semibold text-body">Galeri Foto</h3>
+                                        <span className="text-sm text-muted">
                                             {news.photos.length} foto
                                         </span>
                                     </div>
@@ -320,9 +322,9 @@ const BeritaDetailPage = () => {
                             )}
 
                             {/* Additional Info */}
-                            <div className="prose prose-lg max-w-none text-gray-700 space-y-4 mb-8">
+                            <div className="prose prose-lg max-w-none text-body space-y-4 mb-8">
                                 {news.updated_at !== news.created_at && (
-                                    <p className="text-sm text-gray-500 pt-4">
+                                    <p className="text-sm text-muted pt-4">
                                         Diperbarui pada {formatDate(news.updated_at)}
                                     </p>
                                 )}
@@ -330,7 +332,7 @@ const BeritaDetailPage = () => {
 
                             {/* Share Section */}
                             <div className="pt-6 border-t">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-4">Bagikan</h3>
+                                <h3 className="text-lg font-semibold text-body mb-4">Bagikan</h3>
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => {
@@ -342,13 +344,13 @@ const BeritaDetailPage = () => {
                                                 });
                                             } else {
                                                 navigator.clipboard.writeText(window.location.href);
-                                                alert('Link berhasil disalin!');
+                                                toast.success('Link berhasil disalin');
                                             }
                                         }}
-                                        className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+                                        className="w-10 h-10 bg-surface-muted hover:bg-line rounded-full flex items-center justify-center transition-colors"
                                         aria-label="Share"
                                     >
-                                        <Share2 className="w-5 h-5 text-gray-600" />
+                                        <Share2 className="w-5 h-5 text-muted" />
                                     </button>
                                 </div>
                             </div>
@@ -357,12 +359,12 @@ const BeritaDetailPage = () => {
 
                     {/* Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg p-6 sticky top-4">
+                        <div className="bg-surface rounded-lg p-6 sticky top-4">
                             <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-bold text-gray-800">Berita Terbaru</h3>
+                                <h3 className="text-xl font-bold text-body">Berita Terbaru</h3>
                                 <Link
                                     to="/berita"
-                                    className="text-sm text-gray-500 hover:text-blue-700 font-medium"
+                                    className="text-sm text-muted hover:text-blue-700 font-medium"
                                 >
                                     Lihat Semua
                                 </Link>
@@ -385,26 +387,26 @@ const BeritaDetailPage = () => {
 
                                                 {/* Badge Foto */}
                                                 {item.photos && item.photos.length > 0 && (
-                                                    <div className="absolute top-1 right-1 bg-white/90 rounded-full p-1">
+                                                    <div className="absolute top-1 right-1 bg-surface/90 rounded-full p-1">
                                                         <Images className="w-2.5 h-2.5 text-blue-600" />
                                                     </div>
                                                 )}
                                             </div>
                                             <div className="flex-1">
-                                                <p className="text-xs text-[#004AAD] mb-1">
+                                                <p className="text-xs text-brand mb-1">
                                                     {formatDate(item.created_at)}
                                                 </p>
-                                                <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                                <h4 className="text-sm font-semibold text-body line-clamp-2 group-hover:text-blue-600 transition-colors">
                                                     {item.title}
                                                 </h4>
-                                                <p className="text-gray-400 text-xs mt-1">
+                                                <p className="text-muted text-xs mt-1">
                                                     {item.views || 0}x dilihat
                                                 </p>
                                             </div>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-gray-500 text-sm">Belum ada berita lainnya</p>
+                                    <p className="text-muted text-sm">Belum ada berita lainnya</p>
                                 )}
                             </div>
                         </div>

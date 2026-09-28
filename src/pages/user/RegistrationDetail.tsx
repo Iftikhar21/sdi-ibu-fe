@@ -18,9 +18,12 @@ import { registrationService } from '../../services/registrationServices';
 import type { Registration } from '../../types/registration';
 import Layout from '../../components/layout/panel/MainLayout';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../context/toast';
+import { getApiErrorMessage } from '../../utils/apiError';
 
 export default function RegistrationDetail() {
     const { id } = useParams();
+    const toast = useToast();
     const [registration, setRegistration] = useState<Registration | null>(null);
     const [loading, setLoading] = useState(true);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -34,14 +37,14 @@ export default function RegistrationDetail() {
                 setRegistration(data);
             } catch (error) {
                 console.error('Error fetching registration:', error);
-                alert('Gagal memuat data pendaftaran');
+                toast.error('Gagal memuat data pendaftaran', getApiErrorMessage(error, 'silakan coba lagi'));
             } finally {
                 setLoading(false);
             }
         };
 
         fetchRegistration();
-    }, [id]);
+    }, [id, toast]);
 
     const getStatusConfig = (status: string) => {
         const configs: Record<string, { color: string; icon: React.ReactNode; text: string }> = {
@@ -68,7 +71,7 @@ export default function RegistrationDetail() {
         };
 
         return configs[status] || {
-            color: 'bg-gray-100 text-gray-800 border-gray-200',
+            color: 'bg-surface-muted text-body border-line',
             icon: <FileText className="w-5 h-5" />,
             text: status
         };
@@ -153,7 +156,7 @@ export default function RegistrationDetail() {
             <Layout title="Loading...">
                 <div className="py-12 text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                    <p className="text-gray-600 mt-4">Memuat data pendaftaran...</p>
+                    <p className="text-muted mt-4">Memuat data pendaftaran...</p>
                 </div>
             </Layout>
         );
@@ -163,9 +166,9 @@ export default function RegistrationDetail() {
         return (
             <Layout title="Data Tidak Ditemukan">
                 <div className="text-center py-12">
-                    <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h2 className="text-xl font-bold text-gray-800 mb-2">Data Tidak Ditemukan</h2>
-                    <p className="text-gray-600 mb-6">Pendaftaran yang Anda cari tidak ditemukan.</p>
+                    <FileText className="w-16 h-16 text-muted mx-auto mb-4" />
+                    <h2 className="text-xl font-bold text-body mb-2">Data Tidak Ditemukan</h2>
+                    <p className="text-muted mb-6">Pendaftaran yang Anda cari tidak ditemukan.</p>
                     <Link
                         to="/user/dashboard"
                         className="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -187,22 +190,30 @@ export default function RegistrationDetail() {
             </Helmet>
             <Layout title={`Detail Pendaftaran - ${registration.full_name}`}>
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
                         <div className="flex items-center gap-3 mb-2">
                             <Link
                                 to="/user/dashboard"
-                                className="inline-flex items-center text-gray-600 hover:text-gray-900"
+                                className="inline-flex items-center text-muted hover:text-body"
                             >
                                 <ArrowLeft className="w-5 h-5 mr-2" />
                             </Link>
-                            <h1 className="text-2xl font-bold text-gray-800">
+                            <h1 className="text-2xl font-bold text-body">
                                 Detail Pendaftaran
                             </h1>
                         </div>
-                        <p className="text-gray-600">
+                        <p className="text-muted">
                             {registration.full_name} ({registration.nickname})
                         </p>
+                        {registration.registration_number && (
+                            <p className="mt-1 text-sm text-muted">
+                                Nomor Pendaftaran:{' '}
+                                <span className="font-semibold text-body">
+                                    {registration.registration_number}
+                                </span>
+                            </p>
+                        )}
                     </div>
                     <span className={`inline-flex items-center px-4 py-2 rounded-lg text-sm font-medium border ${statusConfig.color}`}>
                         {statusConfig.icon}
@@ -214,56 +225,56 @@ export default function RegistrationDetail() {
                     {/* Kolom Kiri: Data Pribadi */}
                     <div className="lg:col-span-2 space-y-6">
                         {/* Data Calon Murid */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
+                            <h2 className="text-xl font-bold text-body mb-6 pb-3 border-b border-line">
                                 Data Calon Murid
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Nama Lengkap
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <User className="w-5 h-5 text-muted mr-2" />
                                             {registration.full_name}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Nama Panggilan
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <User className="w-5 h-5 text-muted mr-2" />
                                             {registration.nickname}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Jenis Kelamin
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <User className="w-5 h-5 text-muted mr-2" />
                                             {registration.gender === 'L' ? 'Laki-laki' : 'Perempuan'}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Tempat, Tanggal Lahir
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <Calendar className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <Calendar className="w-5 h-5 text-muted mr-2" />
                                             {registration.birth_place}, {formatDate(registration.birth_date)}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Alamat
                                         </label>
-                                        <div className="flex items-start text-gray-900">
-                                            <MapPin className="w-5 h-5 text-gray-400 mr-2 mt-0.5" />
+                                        <div className="flex items-start text-body">
+                                            <MapPin className="w-5 h-5 text-muted mr-2 mt-0.5" />
                                             <span className="flex-1">{registration.address}</span>
                                         </div>
                                     </div>
@@ -272,47 +283,47 @@ export default function RegistrationDetail() {
                         </div>
 
                         {/* Data Orang Tua */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
+                            <h2 className="text-xl font-bold text-body mb-6 pb-3 border-b border-line">
                                 Data Orang Tua
                             </h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Nama Ayah
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <User className="w-5 h-5 text-muted mr-2" />
                                             {registration.father_name}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Nama Ibu
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <User className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <User className="w-5 h-5 text-muted mr-2" />
                                             {registration.mother_name}
                                         </div>
                                     </div>
                                 </div>
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Nomor Telepon
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <Phone className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <Phone className="w-5 h-5 text-muted mr-2" />
                                             {registration.phone}
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Email
                                         </label>
-                                        <div className="flex items-center text-gray-900">
-                                            <Mail className="w-5 h-5 text-gray-400 mr-2" />
+                                        <div className="flex items-center text-body">
+                                            <Mail className="w-5 h-5 text-muted mr-2" />
                                             {registration.contact_email}
                                         </div>
                                     </div>
@@ -324,13 +335,13 @@ export default function RegistrationDetail() {
                     {/* Kolom Kanan: Dokumen & Info */}
                     <div className="space-y-6">
                         {/* Status & Timeline */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
+                            <h2 className="text-xl font-bold text-body mb-6 pb-3 border-b border-line">
                                 Status Pendaftaran
                             </h2>
                             <div className="space-y-4">
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                    <label className="block text-sm font-medium text-muted mb-1">
                                         Status Saat Ini
                                     </label>
                                     <div className={`inline-flex items-center px-3 py-1.5 rounded-lg text-sm font-medium border ${statusConfig.color}`}>
@@ -339,19 +350,19 @@ export default function RegistrationDetail() {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                                    <label className="block text-sm font-medium text-muted mb-1">
                                         Tanggal Daftar
                                     </label>
-                                    <div className="text-gray-900">
+                                    <div className="text-body">
                                         {formatDate(registration.created_at)}
                                     </div>
                                 </div>
                                 {registration.notes && (
                                     <div>
-                                        <label className="block text-sm font-medium text-gray-600 mb-1">
+                                        <label className="block text-sm font-medium text-muted mb-1">
                                             Catatan
                                         </label>
-                                        <div className="text-gray-900 bg-yellow-50 p-3 rounded-lg text-sm">
+                                        <div className="text-body bg-yellow-50 p-3 rounded-lg text-sm">
                                             {registration.notes}
                                         </div>
                                     </div>
@@ -360,19 +371,19 @@ export default function RegistrationDetail() {
                         </div>
 
                         {/* Dokumen Pendukung */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h2 className="text-xl font-bold text-gray-800 mb-6 pb-3 border-b border-gray-200">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
+                            <h2 className="text-xl font-bold text-body mb-6 pb-3 border-b border-line">
                                 Dokumen Pendukung
                             </h2>
                             <div className="space-y-4">
                                 {/* Foto Preview */}
                                 {registration.photo_url && (
                                     <div className="flex flex-col items-center"> {/* Tambahkan items-center di sini agar label & foto ke tengah */}
-                                        <label className="w-full text-sm font-medium text-gray-600 mb-2 text-center md:text-left">
+                                        <label className="w-full text-sm font-medium text-muted mb-2 text-center md:text-left">
                                             Foto Calon Murid
                                         </label>
 
-                                        <div className="relative rounded-xl overflow-hidden border-2 border-gray-100 shadow-sm max-w-[200px] w-full group">
+                                        <div className="relative rounded-xl overflow-hidden border-2 border-line shadow-sm max-w-[200px] w-full group">
                                             <img
                                                 src={registration.photo_url}
                                                 alt="Foto"
@@ -389,7 +400,7 @@ export default function RegistrationDetail() {
                                             </div>
                                         </div>
 
-                                        <p className="text-[10px] text-gray-400 mt-2 italic">Klik foto untuk memperbesar</p>
+                                        <p className="text-[10px] text-muted mt-2 italic">Klik foto untuk memperbesar</p>
                                     </div>
                                 )}
 
@@ -397,55 +408,55 @@ export default function RegistrationDetail() {
                                 <div className="grid grid-cols-1 gap-3">
                                     {registration.birth_certificate_url && (
                                         <div
-                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
+                                            className="flex items-center justify-between p-3 border border-line rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
                                             onClick={() => handleViewImage(registration.birth_certificate_url!, 'birth_certificate')}
                                         >
                                             <div className="flex items-center">
-                                                <FileText className="w-5 h-5 text-gray-400 mr-3" />
+                                                <FileText className="w-5 h-5 text-muted mr-3" />
                                                 <div>
-                                                    <span className="text-gray-900 block">Akte Kelahiran</span>
-                                                    <span className="text-xs text-gray-500">
+                                                    <span className="text-body block">Akte Kelahiran</span>
+                                                    <span className="text-xs text-muted">
                                                         Klik untuk melihat dokumen
                                                     </span>
                                                 </div>
                                             </div>
-                                            <Eye className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
+                                            <Eye className="w-4 h-4 text-muted group-hover:text-blue-600" />
                                         </div>
                                     )}
 
                                     {registration.family_card_url && (
                                         <div
-                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
+                                            className="flex items-center justify-between p-3 border border-line rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
                                             onClick={() => handleViewImage(registration.family_card_url!, 'family_card')}
                                         >
                                             <div className="flex items-center">
-                                                <FileText className="w-5 h-5 text-gray-400 mr-3" />
+                                                <FileText className="w-5 h-5 text-muted mr-3" />
                                                 <div>
-                                                    <span className="text-gray-900 block">Kartu Keluarga</span>
-                                                    <span className="text-xs text-gray-500">
+                                                    <span className="text-body block">Kartu Keluarga</span>
+                                                    <span className="text-xs text-muted">
                                                         Klik untuk melihat dokumen
                                                     </span>
                                                 </div>
                                             </div>
-                                            <Eye className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
+                                            <Eye className="w-4 h-4 text-muted group-hover:text-blue-600" />
                                         </div>
                                     )}
 
                                     {registration.payment_proof_url && (
                                         <div
-                                            className="flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
+                                            className="flex items-center justify-between p-3 border border-line rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
                                             onClick={() => handleViewImage(registration.payment_proof_url!, 'payment_proof')}
                                         >
                                             <div className="flex items-center">
-                                                <FileText className="w-5 h-5 text-gray-400 mr-3" />
+                                                <FileText className="w-5 h-5 text-muted mr-3" />
                                                 <div>
-                                                    <span className="text-gray-900 block">Bukti Pembayaran</span>
-                                                    <span className="text-xs text-gray-500">
+                                                    <span className="text-body block">Bukti Pembayaran</span>
+                                                    <span className="text-xs text-muted">
                                                         Klik untuk melihat dokumen
                                                     </span>
                                                 </div>
                                             </div>
-                                            <Eye className="w-4 h-4 text-gray-400 group-hover:text-blue-600" />
+                                            <Eye className="w-4 h-4 text-muted group-hover:text-blue-600" />
                                         </div>
                                     )}
                                 </div>
@@ -460,9 +471,9 @@ export default function RegistrationDetail() {
                         className="fixed inset-0 backdrop-blur-sm bg-opacity-75 z-50 flex items-center justify-center p-4"
                         onClick={() => setShowImageModal(false)}
                     >
-                        <div className="relative max-w-4xl w-full mx-auto my-auto bg-white rounded-lg overflow-hidden shadow-2xl flex flex-col">
+                        <div className="relative max-w-4xl w-full mx-auto my-auto bg-surface rounded-lg overflow-hidden shadow-2xl flex flex-col">
                             {/* Header */}
-                            <div className="p-4 bg-gray-100 border-b flex justify-between items-center">
+                            <div className="p-4 bg-surface-muted border-b flex justify-between items-center">
                                 <span className="font-medium">{getDocumentLabel(selectedDocumentType)}</span>
                                 <button onClick={() => setShowImageModal(false)}>✕</button>
                             </div>
@@ -477,7 +488,7 @@ export default function RegistrationDetail() {
                             </div>
 
                             {/* Footer */}
-                            <div className="p-4 bg-gray-50 border-t flex justify-end">
+                            <div className="p-4 bg-surface-muted border-t flex justify-end">
                                 <button
                                     onClick={() => setShowImageModal(false)}
                                     className="px-6 py-2 bg-blue-600 text-white rounded-lg"

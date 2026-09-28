@@ -17,8 +17,11 @@ import {
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function NewsDetail() {
+    const toast = useToast();
     const { id } = useParams();
     const navigate = useNavigate();
     const [news, setNews] = useState<News | null>(null);
@@ -47,10 +50,11 @@ export default function NewsDetail() {
         setDeleting(true);
         try {
             await newsService.delete(Number(id));
-            navigate('/admin/news?success=true&message=Berita berhasil dihapus');
+            toast.success('Berita berhasil dihapus');
+            navigate('/admin/news');
         } catch (err) {
             console.error('Error deleting news:', err);
-            alert('Gagal menghapus berita');
+            toast.error('Gagal menghapus berita', getApiErrorMessage(err, 'silakan coba lagi'));
         } finally {
             setDeleting(false);
             setShowDeleteModal(false);
@@ -76,7 +80,7 @@ export default function NewsDetail() {
                 <div className="flex items-center justify-center min-h-screen">
                     <div className="text-center">
                         <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
-                        <p className="text-gray-600">Memuat detail berita...</p>
+                        <p className="text-muted">Memuat detail berita...</p>
                     </div>
                 </div>
             </Layout>
@@ -88,14 +92,14 @@ export default function NewsDetail() {
             <Layout title="Berita Tidak Ditemukan">
                 <div className="flex flex-col items-center justify-center min-h-screen px-4">
                     <AlertCircle className="w-16 h-16 text-red-500 mb-4" />
-                    <h1 className="text-2xl font-bold text-gray-800 mb-2">Berita Tidak Ditemukan</h1>
-                    <p className="text-gray-600 mb-6 text-center">
+                    <h1 className="text-2xl font-bold text-body mb-2">Berita Tidak Ditemukan</h1>
+                    <p className="text-muted mb-6 text-center">
                         {error || 'Berita yang Anda cari tidak ditemukan atau telah dihapus.'}
                     </p>
                     <div className="flex space-x-3">
                         <button
                             onClick={() => navigate(-1)}
-                            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            className="px-4 py-2 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted transition-colors duration-200"
                         >
                             <ArrowLeft className="w-4 h-4 inline mr-2" />
                             Kembali
@@ -119,7 +123,7 @@ export default function NewsDetail() {
             </Helmet>
             <Layout title={news.title}>
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
                         <div className="flex items-center mb-2">
                             <button
@@ -130,9 +134,9 @@ export default function NewsDetail() {
                                 Kembali ke Daftar
                             </button>
                         </div>
-                        <h1 className="text-2xl font-bold text-gray-800">{news.title}</h1>
+                        <h1 className="text-2xl font-bold text-body">{news.title}</h1>
                         <div className="flex items-center mt-2 space-x-4">
-                            <div className="text-sm text-gray-500">
+                            <div className="text-sm text-muted">
                                 <Newspaper className="w-4 h-4 inline mr-1" />
                                 {news.slug}
                             </div>
@@ -163,15 +167,15 @@ export default function NewsDetail() {
                     <div className="lg:col-span-2">
                         {/* Thumbnail */}
                         {news.thumbnail_url && (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mb-6">
-                                <div className="p-4 border-b border-gray-200 bg-gray-50">
-                                    <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                            <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden mb-6">
+                                <div className="p-4 border-b border-line bg-surface-muted">
+                                    <h2 className="text-lg font-semibold text-body flex items-center">
                                         <ImageIcon className="w-5 h-5 mr-2 text-blue-600" />
                                         Thumbnail Berita
                                     </h2>
                                 </div>
                                 <div className="p-4">
-                                    <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
+                                    <div className="aspect-video rounded-lg overflow-hidden bg-surface-muted">
                                         <img
                                             src={news.thumbnail_url}
                                             alt={news.title}
@@ -183,9 +187,9 @@ export default function NewsDetail() {
                         )}
 
                         {/* Content */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="p-4 border-b border-gray-200 bg-gray-50">
-                                <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
+                            <div className="p-4 border-b border-line bg-surface-muted">
+                                <h2 className="text-lg font-semibold text-body flex items-center">
                                     <Newspaper className="w-5 h-5 mr-2 text-blue-600" />
                                     Konten Berita
                                 </h2>
@@ -193,7 +197,7 @@ export default function NewsDetail() {
                             <div className="p-6">
                                 <div className="prose max-w-none">
                                     {news.content.split('\n').map((paragraph, index) => (
-                                        <p key={index} className="text-gray-700 mb-4 leading-relaxed">
+                                        <p key={index} className="text-body mb-4 leading-relaxed">
                                             {paragraph}
                                         </p>
                                     ))}
@@ -203,9 +207,9 @@ export default function NewsDetail() {
 
                         {/* Photos */}
                         {news.photos && news.photos.length > 0 && (
-                            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
-                                <div className="p-4 border-b border-gray-200 bg-gray-50">
-                                    <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                            <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden mt-6">
+                                <div className="p-4 border-b border-line bg-surface-muted">
+                                    <h2 className="text-lg font-semibold text-body flex items-center">
                                         <ImageIcon className="w-5 h-5 mr-2 text-blue-600" />
                                         Foto Lainnya ({news.photos.length})
                                     </h2>
@@ -214,7 +218,7 @@ export default function NewsDetail() {
                                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                         {news.photos.map((photo) => (
                                             <div key={photo.id} className="relative">
-                                                <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                                                <div className="aspect-square rounded-lg overflow-hidden bg-surface-muted">
                                                     <img
                                                         src={photo.photo_url}
                                                         alt={`Foto ${photo.id}`}
@@ -232,9 +236,9 @@ export default function NewsDetail() {
                     {/* Right Column - Metadata */}
                     <div className="space-y-6">
                         {/* News Info Card */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="p-4 border-b border-gray-200 bg-gray-50">
-                                <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
+                            <div className="p-4 border-b border-line bg-surface-muted">
+                                <h2 className="text-lg font-semibold text-body flex items-center">
                                     <Newspaper className="w-5 h-5 mr-2 text-blue-600" />
                                     Informasi Berita
                                 </h2>
@@ -242,14 +246,14 @@ export default function NewsDetail() {
                             <div className="p-4">
                                 <dl className="space-y-4">
                                     <div>
-                                        <dt className="text-sm font-medium text-gray-500">Slug</dt>
-                                        <dd className="mt-1 text-sm text-gray-900 bg-gray-50 p-2 rounded">
+                                        <dt className="text-sm font-medium text-muted">Slug</dt>
+                                        <dd className="mt-1 text-sm text-body bg-surface-muted p-2 rounded">
                                             {news.slug}
                                         </dd>
                                     </div>
                                     <div>
-                                        <dt className="text-sm font-medium text-gray-500">Total Foto</dt>
-                                        <dd className="mt-1 text-sm font-medium text-gray-900">
+                                        <dt className="text-sm font-medium text-muted">Total Foto</dt>
+                                        <dd className="mt-1 text-sm font-medium text-body">
                                             {news.photos?.length || 0} foto
                                         </dd>
                                     </div>
@@ -258,9 +262,9 @@ export default function NewsDetail() {
                         </div>
 
                         {/* Timeline Card */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="p-4 border-b border-gray-200 bg-gray-50">
-                                <h2 className="text-lg font-semibold text-gray-800 flex items-center">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
+                            <div className="p-4 border-b border-line bg-surface-muted">
+                                <h2 className="text-lg font-semibold text-body flex items-center">
                                     <Clock className="w-5 h-5 mr-2 text-blue-600" />
                                     Timeline
                                 </h2>
@@ -268,30 +272,30 @@ export default function NewsDetail() {
                             <div className="p-4">
                                 <div className="space-y-4">
                                     <div>
-                                        <div className="flex items-center text-sm text-gray-500 mb-1">
+                                        <div className="flex items-center text-sm text-muted mb-1">
                                             <Calendar className="w-4 h-4 mr-2" />
                                             Dibuat Pada
                                         </div>
-                                        <div className="text-sm font-medium text-gray-900">
+                                        <div className="text-sm font-medium text-body">
                                             {formatDate(news.created_at)}
                                         </div>
                                     </div>
 
                                     {news.updated_at && news.updated_at !== news.created_at && (
                                         <div>
-                                            <div className="flex items-center text-sm text-gray-500 mb-1">
+                                            <div className="flex items-center text-sm text-muted mb-1">
                                                 <Clock className="w-4 h-4 mr-2" />
                                                 Terakhir Diperbarui
                                             </div>
-                                            <div className="text-sm font-medium text-gray-900">
+                                            <div className="text-sm font-medium text-body">
                                                 {formatDate(news.updated_at)}
                                             </div>
                                         </div>
                                     )}
 
-                                    <div className="pt-4 border-t border-gray-200">
-                                        <div className="text-xs text-gray-500">
-                                            ID Berita: <span className="font-mono text-gray-700">{news.id}</span>
+                                    <div className="pt-4 border-t border-line">
+                                        <div className="text-xs text-muted">
+                                            ID Berita: <span className="font-mono text-body">{news.id}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -313,7 +317,7 @@ export default function NewsDetail() {
                 isLoading={deleting}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">
+                    <p className="text-body">
                         Apakah Anda yakin ingin menghapus berita "<strong>{news.title}</strong>"?
                     </p>
                     <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">

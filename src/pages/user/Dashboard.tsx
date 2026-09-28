@@ -76,7 +76,7 @@ export default function DashboardUser() {
         };
 
         const config = statusConfig[status] || {
-            color: 'bg-gray-100 text-gray-800 border-gray-200',
+            color: 'bg-surface-muted text-body border-line',
             icon: <FileText className="w-4 h-4" />,
             text: status
         };
@@ -104,12 +104,12 @@ export default function DashboardUser() {
             </Helmet>
             <Layout title="Dashboard Pendaftaran">
                 {/* Header */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-2xl font-bold text-body mb-2">
                             Dashboard Pendaftaran
                         </h1>
-                        <p className="text-gray-600">
+                        <p className="text-muted">
                             Kelola pendaftaran anak Anda di SDI Ibu
                         </p>
                     </div>
@@ -124,47 +124,47 @@ export default function DashboardUser() {
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-blue-100 rounded-lg">
                                 <Users className="w-6 h-6 text-blue-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Total Pendaftaran</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                                <p className="text-sm text-muted">Total Pendaftaran</p>
+                                <p className="text-2xl font-bold text-body">{stats.total}</p>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-yellow-100 rounded-lg">
                                 <Clock className="w-6 h-6 text-yellow-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Dalam Proses</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.submitted}</p>
+                                <p className="text-sm text-muted">Dalam Proses</p>
+                                <p className="text-2xl font-bold text-body">{stats.submitted}</p>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-green-100 rounded-lg">
                                 <CheckCircle className="w-6 h-6 text-green-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Diterima</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.approved}</p>
+                                <p className="text-sm text-muted">Diterima</p>
+                                <p className="text-2xl font-bold text-body">{stats.approved}</p>
                             </div>
                         </div>
                     </div>
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-red-100 rounded-lg">
                                 <XCircle className="w-6 h-6 text-red-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Ditolak</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.rejected}</p>
+                                <p className="text-sm text-muted">Ditolak</p>
+                                <p className="text-2xl font-bold text-body">{stats.rejected}</p>
                             </div>
                         </div>
                     </div>
@@ -193,9 +193,9 @@ export default function DashboardUser() {
                 )}
 
                 {/* Daftar Pendaftaran */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                    <div className="p-6 border-b border-gray-100 flex justify-between items-center">
-                        <h2 className="text-xl font-bold text-gray-800">
+                <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
+                    <div className="p-6 border-b border-line flex justify-between items-center">
+                        <h2 className="text-xl font-bold text-body">
                             Daftar Pendaftaran Anak
                         </h2>
                     </div>
@@ -203,17 +203,17 @@ export default function DashboardUser() {
                     {loading ? (
                         <div className="py-20 text-center">
                             <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
-                            <p className="text-gray-500 mt-4 font-medium">Memuat data...</p>
+                            <p className="text-muted mt-4 font-medium">Memuat data...</p>
                         </div>
                     ) : registrations.length === 0 ? (
                         <div className="py-16 text-center px-4">
                             <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <User className="w-10 h-10 text-blue-400" />
                             </div>
-                            <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                            <h3 className="text-lg font-semibold text-body mb-1">
                                 Belum Ada Pendaftaran
                             </h3>
-                            <p className="text-gray-500 max-w-xs mx-auto mb-8 text-sm">
+                            <p className="text-muted max-w-xs mx-auto mb-8 text-sm">
                                 Anda belum mendaftarkan anak. Silakan klik tombol di bawah untuk mulai.
                             </p>
                             <Link
@@ -225,7 +225,7 @@ export default function DashboardUser() {
                             </Link>
                         </div>
                     ) : (
-                        <div className="divide-y divide-gray-100">
+                        <div className="divide-y divide-line">
                             {registrations.map((reg) => (
                                 <div key={reg.id} className="p-5 md:p-6 hover:bg-gray-50/50 transition-colors">
                                     <div className="flex flex-col lg:flex-row gap-6">
@@ -239,38 +239,38 @@ export default function DashboardUser() {
                                                         className="w-20 h-20 md:w-24 md:h-24 object-cover rounded-2xl border-2 border-white shadow-md"
                                                     />
                                                 ) : (
-                                                    <div className="w-20 h-20 md:w-24 md:h-24 bg-gray-100 rounded-2xl border border-gray-200 flex items-center justify-center">
-                                                        <User className="w-10 h-10 text-gray-300" />
+                                                    <div className="w-20 h-20 md:w-24 md:h-24 bg-surface-muted rounded-2xl border border-line flex items-center justify-center">
+                                                        <User className="w-10 h-10 text-muted" />
                                                     </div>
                                                 )}
                                             </div>
 
                                             <div className="flex-1 min-w-0">
                                                 <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                                                    <h3 className="text-lg font-bold text-gray-900 truncate">
+                                                    <h3 className="text-lg font-bold text-body truncate">
                                                         {reg.full_name}
                                                     </h3>
-                                                    <span className="text-xs font-medium px-2 py-0.5 bg-gray-100 text-gray-500 rounded-full">
+                                                    <span className="text-xs font-medium px-2 py-0.5 bg-surface-muted text-muted rounded-full">
                                                         {reg.nickname}
                                                     </span>
                                                     {getStatusBadge(reg.status)}
                                                 </div>
 
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-gray-600 mt-3">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5 text-sm text-muted mt-3">
                                                     <div className="flex items-center gap-2">
-                                                        <Calendar className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                        <Calendar className="w-4 h-4 text-muted flex-shrink-0" />
                                                         <span className="truncate">{reg.birth_place}, {formatDate(reg.birth_date)}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                        <Phone className="w-4 h-4 text-muted flex-shrink-0" />
                                                         <span>{reg.phone}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <User className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                        <User className="w-4 h-4 text-muted flex-shrink-0" />
                                                         <span>{reg.gender === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2">
-                                                        <Mail className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                                                        <Mail className="w-4 h-4 text-muted flex-shrink-0" />
                                                         <span className="truncate">{reg.contact_email}</span>
                                                     </div>
                                                 </div>
@@ -278,7 +278,7 @@ export default function DashboardUser() {
                                         </div>
 
                                         {/* Kolom Actions & Status */}
-                                        <div className="flex flex-row lg:flex-col justify-between lg:justify-center gap-3 lg:border-l lg:pl-6 border-gray-100 lg:min-w-[200px]">
+                                        <div className="flex flex-row lg:flex-col justify-between lg:justify-center gap-3 lg:border-l lg:pl-6 border-line lg:min-w-[200px]">
                                             <Link
                                                 to={`/user/registrations/${reg.id}`}
                                                 className="flex-1 lg:flex-none inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold text-blue-600 bg-blue-50 rounded-xl hover:bg-blue-100 transition-colors"

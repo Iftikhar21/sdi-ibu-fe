@@ -172,10 +172,10 @@ export default function Register() {
                         </div>
 
                         <div className="mb-6 text-center">
-                            <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                            <h2 className="text-2xl font-bold text-body mb-2">
                                 Buat Akun Baru
                             </h2>
-                            <p className="text-gray-600 text-sm">
+                            <p className="text-muted text-sm">
                                 Lengkapi data untuk membuat akun.
                             </p>
                         </div>
@@ -196,13 +196,13 @@ export default function Register() {
 
                         <form onSubmit={submit} className="space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                                <label className="block text-sm font-medium text-body mb-2">Nama Lengkap</label>
                                 <div className="relative">
-                                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                     <input
                                         type="text"
                                         name="name"
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                        className="w-full pl-10 pr-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
                                         placeholder="Masukkan nama lengkap anda"
                                         value={formData.name}
                                         onChange={handleChange}
@@ -213,13 +213,13 @@ export default function Register() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
+                                <label className="block text-sm font-medium text-body mb-2">Email</label>
                                 <div className="relative">
-                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                     <input
                                         type="email"
                                         name="email"
-                                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                        className="w-full pl-10 pr-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
                                         placeholder="Masukkan email anda"
                                         value={formData.email}
                                         onChange={handleChange}
@@ -230,13 +230,13 @@ export default function Register() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                <label className="block text-sm font-medium text-body mb-2">Password</label>
                                 <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                     <input
                                         type={showPassword ? "text" : "password"}
                                         name="password"
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                        className="w-full pl-10 pr-12 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
                                         placeholder="Masukkan password anda (min. 6 karakter)"
                                         value={formData.password}
                                         onChange={handleChange}
@@ -246,7 +246,7 @@ export default function Register() {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
                                         disabled={loading}
                                     >
                                         {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
@@ -255,13 +255,13 @@ export default function Register() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">Konfirmasi Password</label>
+                                <label className="block text-sm font-medium text-body mb-2">Konfirmasi Password</label>
                                 <div className="relative">
-                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                     <input
                                         type={showConfirmPassword ? "text" : "password"}
                                         name="confirmPassword"
-                                        className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
+                                        className="w-full pl-10 pr-12 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 focus:outline-none transition-colors"
                                         placeholder="Konfirmasi password anda"
                                         value={formData.confirmPassword}
                                         onChange={handleChange}
@@ -271,7 +271,7 @@ export default function Register() {
                                     <button
                                         type="button"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
                                         disabled={loading}
                                     >
                                         {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
@@ -281,7 +281,7 @@ export default function Register() {
 
                             <button
                                 type="submit"
-                                className="w-full bg-[#004AAD] hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 rounded-lg transition-all shadow-md mt-6 flex items-center justify-center"
+                                className="w-full bg-brand hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 rounded-lg transition-all shadow-md mt-6 flex items-center justify-center"
                                 disabled={loading}
                             >
                                 {loading ? (
@@ -294,9 +294,9 @@ export default function Register() {
                                 )}
                             </button>
 
-                            <p className="text-center text-sm text-gray-600 mt-6">
+                            <p className="text-center text-sm text-muted mt-6">
                                 Sudah memiliki akun?{' '}
-                                <Link to="/login" className="text-[#004AAD] hover:text-blue-700 font-semibold">
+                                <Link to="/login" className="text-brand hover:text-blue-700 font-semibold">
                                     Sign In
                                 </Link>
                             </p>
@@ -304,7 +304,7 @@ export default function Register() {
                     </div>
 
                     {/* --- SEKARANG DI KANAN: Branding/Image --- */}
-                    <div className="relative bg-gradient-to-b from-[#004AAD] to-[#001E47] p-12 flex flex-col justify-center items-center text-white order-1 lg:order-2 rounded-3xl overflow-hidden">
+                    <div className="relative bg-gradient-to-b from-brand to-[#001E47] p-12 flex flex-col justify-center items-center text-white order-1 lg:order-2 rounded-3xl overflow-hidden">
                         <img
                             src={bg_6}
                             alt="Background"

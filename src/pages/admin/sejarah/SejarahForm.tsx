@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Save, Loader2 } from 'lucide-react';
+import { useToast } from '../../../context/toast';
 
 interface Props {
     title: string;
@@ -14,13 +15,14 @@ export default function SejarahForm({
     onSubmit,
     loading,
 }: Props) {
+    const toast = useToast();
     const [content, setContent] = useState(initialValue);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!content.trim()) {
-            alert('Konten tidak boleh kosong');
+            toast.warning('Konten tidak boleh kosong');
             return;
         }
 
@@ -35,30 +37,30 @@ export default function SejarahForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     Konten Sejarah
                     <span className="text-red-500 ml-1">*</span>
                 </label>
                 <div className="relative">
                     <textarea
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
+                        className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
                         rows={12}
                         value={content}
                         onChange={e => setContent(e.target.value)}
                         placeholder="Masukkan konten sejarah di sini..."
                         required
                     />
-                    <div className="mt-2 text-xs text-gray-500">
+                    <div className="mt-2 text-xs text-muted">
                         Karakter: {content.length}
                     </div>
                 </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
+            <div className="flex justify-end space-x-3 pt-4 border-t border-line">
                 <button
                     type="button"
                     onClick={() => window.history.back()}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+                    className="px-5 py-2.5 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
                 >
                     Batal
                 </button>

@@ -7,6 +7,11 @@ interface AuthContextType {
     token: string | null;
     login: (email: string, password: string) => Promise<void>;
     logout: () => void;
+    changePassword: (
+        currentPassword: string,
+        password: string,
+        confirmation: string
+    ) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType>({} as AuthContextType);
@@ -76,12 +81,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setToken(null);
         setUser(null);
     };
+
+    // Ganti password sendiri; dipakai juga untuk wajib ganti di login pertama
+    const changePassword = async (
+        currentPassword: string,
+        password: string,
+        confirmation: string
+    ) => {
+        await api.post("/change-password", {
+            current_password: currentPassword,
+            password,
+            password_confirmation: confirmation,
+        });
+
+        setUser((previous) => {
+            if (!previous) return previous;
+
+            const updated = { ...previous, must_change_password: false };
+
+            localStorage.setItem("user", JSON.stringify(updated));
+
+            return updated;
+        });
+    };
     
 
     if (loading) return null; // atau loader
 
     return (
-        <AuthContext.Provider value={{ user, token, login, logout }}>
+        <AuthContext.Provider value={{ user, token, login, logout, changePassword }}>
             {children}
         </AuthContext.Provider>
     );

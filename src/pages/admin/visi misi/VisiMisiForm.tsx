@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Save, Loader2, Plus, Trash2, Eye, Target } from 'lucide-react';
+import { useToast } from '../../../context/toast';
 
 interface Props {
     title: string;
@@ -17,6 +18,7 @@ export default function VisiMisiForm({
     onSubmit,
     loading,
 }: Props) {
+    const toast = useToast();
     const [vision, setVision] = useState(initialData.vision);
     const [missions, setMissions] = useState<string[]>(
         initialData.missions.length > 0 ? initialData.missions : ['']
@@ -46,7 +48,7 @@ export default function VisiMisiForm({
         const validMissions = missions.filter(mission => mission.trim() !== '');
 
         if (!vision.trim() && validMissions.length === 0) {
-            alert('Harap isi visi atau setidaknya satu misi');
+            toast.warning('Harap isi visi atau setidaknya satu misi');
             return;
         }
 
@@ -59,18 +61,18 @@ export default function VisiMisiForm({
             <div>
                 <div className="flex items-center mb-3">
                     <Eye className="w-5 h-5 text-blue-600 mr-2" />
-                    <label className="block text-lg font-semibold text-gray-800">
+                    <label className="block text-lg font-semibold text-body">
                         Visi
                     </label>
                 </div>
                 <textarea
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
                     rows={4}
                     value={vision}
                     onChange={(e) => setVision(e.target.value)}
                     placeholder="Masukkan visi organisasi di sini..."
                 />
-                <div className="mt-2 text-xs text-gray-500">
+                <div className="mt-2 text-xs text-muted">
                     Karakter: {vision.length}
                 </div>
             </div>
@@ -80,7 +82,7 @@ export default function VisiMisiForm({
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center">
                         <Target className="w-5 h-5 text-green-600 mr-2" />
-                        <label className="block text-lg font-semibold text-gray-800">
+                        <label className="block text-lg font-semibold text-body">
                             Misi
                         </label>
                     </div>
@@ -102,7 +104,7 @@ export default function VisiMisiForm({
                             </div>
                             <div className="flex-1">
                                 <textarea
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
+                                    className="w-full px-4 py-2 border border-line rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
                                     rows={2}
                                     value={mission}
                                     onChange={(e) => handleMissionChange(index, e.target.value)}
@@ -122,17 +124,17 @@ export default function VisiMisiForm({
                     ))}
                 </div>
 
-                <div className="mt-2 text-xs text-gray-500">
+                <div className="mt-2 text-xs text-muted">
                     Total misi: {missions.filter(m => m.trim() !== '').length}
                 </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-3 pt-6 border-t border-line">
                 <button
                     type="button"
                     onClick={() => window.history.back()}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+                    className="px-5 py-2.5 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
                 >
                     Batal
                 </button>

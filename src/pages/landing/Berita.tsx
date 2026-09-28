@@ -217,25 +217,25 @@ const BeritaPage = () => {
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         Berita
                     </h1>
-                    <p className="text-lg text-gray-200 mb-8 max-w-2xl">
+                    <p className="text-lg text-muted mb-8 max-w-2xl">
                         Berita seputar Sekolah Dasar Islam Ikhlas Bakti Umat
                     </p>
 
                     {/* Search Bar */}
                     <div className="w-full max-w-2xl">
                         <div className="relative">
-                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                             <input
                                 type="text"
                                 placeholder="Cari berita berdasarkan judul atau isi..."
                                 value={searchQuery}
                                 onChange={handleSearchChange}
-                                className="w-full pl-12 pr-10 py-3 rounded-full bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
+                                className="w-full pl-12 pr-10 py-3 rounded-full bg-surface text-body focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder-gray-500"
                             />
                             {searchQuery && (
                                 <button
                                     onClick={clearSearch}
-                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                    className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
@@ -258,16 +258,16 @@ const BeritaPage = () => {
                         {/* Search Results Header */}
                         <div className="flex justify-between items-center mb-8">
                             <div>
-                                <h2 className="text-2xl font-bold text-gray-800 mb-2">
+                                <h2 className="text-2xl font-bold text-body mb-2">
                                     Hasil Pencarian
                                 </h2>
-                                <p className="text-gray-600">
+                                <p className="text-muted">
                                     Ditemukan {filteredNews.length} berita untuk "{searchQuery}"
                                 </p>
                             </div>
                             <button
                                 onClick={clearSearch}
-                                className="text-gray-500 hover:text-gray-700 text-sm flex items-center gap-1"
+                                className="text-muted hover:text-body text-sm flex items-center gap-1"
                             >
                                 <X className="w-4 h-4" />
                                 Hapus pencarian
@@ -276,11 +276,11 @@ const BeritaPage = () => {
 
                         {filteredNews.length === 0 ? (
                             <div className="text-center py-16">
-                                <Search className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                                <h3 className="text-xl font-semibold text-gray-700 mb-2">
+                                <Search className="w-16 h-16 text-muted mx-auto mb-4" />
+                                <h3 className="text-xl font-semibold text-body mb-2">
                                     Tidak ada hasil ditemukan
                                 </h3>
-                                <p className="text-gray-500 mb-6">
+                                <p className="text-muted mb-6">
                                     Tidak ada berita yang sesuai dengan pencarian "{searchQuery}"
                                 </p>
                                 <button
@@ -297,7 +297,7 @@ const BeritaPage = () => {
                                     <Link
                                         key={news.id}
                                         to={`/berita/${news.slug}`}
-                                        className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
+                                        className="bg-surface rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
                                     >
                                         <div className="relative h-56 overflow-hidden">
                                             <img
@@ -306,7 +306,7 @@ const BeritaPage = () => {
                                                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
                                             {news.photos && news.photos.length > 0 && (
-                                                <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+                                                <div className="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
                                                     <Images className="w-3 h-3 text-blue-600" />
                                                     <span className="text-xs font-medium text-blue-600">
                                                         {news.photos.length}
@@ -316,23 +316,23 @@ const BeritaPage = () => {
                                         </div>
                                         <div className="p-5">
                                             <div className="flex items-center justify-between mb-2">
-                                                <p className="text-[#004AAD] text-sm">
+                                                <p className="text-brand text-sm">
                                                     {formatDate(news.created_at)}
                                                 </p>
-                                                <p className="text-gray-500 text-xs">
+                                                <p className="text-muted text-xs">
                                                     {news.views || 0} dilihat
                                                 </p>
                                             </div>
-                                            <h3 className="text-lg font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                            <h3 className="text-lg font-bold text-body mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                                 {highlightText(news.title, searchQuery)}
                                             </h3>
-                                            <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                                            <p className="text-muted text-sm mb-3 line-clamp-2">
                                                 {highlightText(
                                                     generateExcerpt(news.content, 100),
                                                     searchQuery
                                                 )}
                                             </p>
-                                            <div className="flex items-center text-[#004AAD] font-medium text-sm">
+                                            <div className="flex items-center text-brand font-medium text-sm">
                                                 Baca Selengkapnya
                                                 <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                                             </div>
@@ -348,7 +348,7 @@ const BeritaPage = () => {
                         {/* Berita Populer Badge - Tampilkan jika ada featured news */}
                         {featuredNews && (
                             <>
-                                <div className="inline-block bg-[#004AAD33] text-[#004AAD] px-5 py-2 rounded-full text-sm font-medium mb-8">
+                                <div className="inline-block bg-brand/20 text-brand px-5 py-2 rounded-full text-sm font-medium mb-8">
                                     Berita Populer
                                 </div>
 
@@ -362,7 +362,7 @@ const BeritaPage = () => {
                                                 className="w-full h-[400px] object-cover group-hover:scale-105 transition-transform duration-300"
                                             />
                                             {featuredNews.photos && featuredNews.photos.length > 0 && (
-                                                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                                                <div className="absolute top-4 right-4 bg-surface/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
                                                     <Images className="w-4 h-4 text-blue-600" />
                                                     <span className="text-sm font-medium text-blue-600">
                                                         {featuredNews.photos.length} Foto
@@ -372,21 +372,21 @@ const BeritaPage = () => {
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-3 mb-3">
-                                                <p className="text-[#004AAD] text-sm font-medium">
+                                                <p className="text-brand text-sm font-medium">
                                                     {formatDate(featuredNews.created_at)}
                                                 </p>
-                                                <span className="text-gray-400">•</span>
-                                                <p className="text-gray-500 text-sm">
+                                                <span className="text-muted">•</span>
+                                                <p className="text-muted text-sm">
                                                     {featuredNews.views || 0} dilihat
                                                 </p>
                                             </div>
-                                            <h2 className="text-3xl font-bold text-gray-800 mb-4 group-hover:text-blue-600 transition-colors">
+                                            <h2 className="text-3xl font-bold text-body mb-4 group-hover:text-blue-600 transition-colors">
                                                 {featuredNews.title}
                                             </h2>
-                                            <p className="text-gray-600 leading-relaxed mb-6">
+                                            <p className="text-muted leading-relaxed mb-6">
                                                 {generateExcerpt(featuredNews.content)}
                                             </p>
-                                            <div className="flex items-center text-[#004AAD] font-medium group-hover:text-blue-700">
+                                            <div className="flex items-center text-brand font-medium group-hover:text-blue-700">
                                                 Baca Selengkapnya
                                                 <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                                             </div>
@@ -401,7 +401,7 @@ const BeritaPage = () => {
                                                 <Link
                                                     key={news.id}
                                                     to={`/berita/${news.slug}`}
-                                                    className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
+                                                    className="bg-surface rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
                                                 >
                                                     <div className="relative h-56 overflow-hidden">
                                                         <img
@@ -410,7 +410,7 @@ const BeritaPage = () => {
                                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                         />
                                                         {news.photos && news.photos.length > 0 && (
-                                                            <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+                                                            <div className="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
                                                                 <Images className="w-3 h-3 text-blue-600" />
                                                                 <span className="text-xs font-medium text-blue-600">
                                                                     {news.photos.length}
@@ -420,17 +420,17 @@ const BeritaPage = () => {
                                                     </div>
                                                     <div className="p-5">
                                                         <div className="flex items-center justify-between mb-2">
-                                                            <p className="text-[#004AAD] text-sm">
+                                                            <p className="text-brand text-sm">
                                                                 {formatDate(news.created_at)}
                                                             </p>
-                                                            <p className="text-gray-500 text-xs">
+                                                            <p className="text-muted text-xs">
                                                                 {news.views || 0} dilihat
                                                             </p>
                                                         </div>
-                                                        <h3 className="text-lg font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                                        <h3 className="text-lg font-bold text-body mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                                             {news.title}
                                                         </h3>
-                                                        <div className="flex items-center text-[#004AAD] font-medium text-sm">
+                                                        <div className="flex items-center text-brand font-medium text-sm">
                                                             Baca Selengkapnya
                                                             <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                                                         </div>
@@ -448,7 +448,7 @@ const BeritaPage = () => {
                         {/* Berita Terbaru Badge */}
                         {newsData?.recent_news && newsData.recent_news.length > 0 && (
                             <>
-                                <div className="inline-block bg-[#004AAD33] text-[#004AAD] px-5 py-2 rounded-full text-sm font-medium mb-8">
+                                <div className="inline-block bg-brand/20 text-brand px-5 py-2 rounded-full text-sm font-medium mb-8">
                                     Berita Terbaru
                                 </div>
 
@@ -458,7 +458,7 @@ const BeritaPage = () => {
                                         <Link
                                             key={news.id}
                                             to={`/berita/${news.slug}`}
-                                            className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
+                                            className="bg-surface rounded-xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group"
                                         >
                                             <div className="relative h-56 overflow-hidden">
                                                 <img
@@ -467,7 +467,7 @@ const BeritaPage = () => {
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                 />
                                                 {news.photos && news.photos.length > 0 && (
-                                                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
+                                                    <div className="absolute top-3 right-3 bg-surface/90 backdrop-blur-sm rounded-full px-2 py-1 flex items-center gap-1">
                                                         <Images className="w-3 h-3 text-blue-600" />
                                                         <span className="text-xs font-medium text-blue-600">
                                                             {news.photos.length}
@@ -477,17 +477,17 @@ const BeritaPage = () => {
                                             </div>
                                             <div className="p-5">
                                                 <div className="flex items-center justify-between mb-2">
-                                                    <p className="text-[#004AAD] text-sm">
+                                                    <p className="text-brand text-sm">
                                                         {formatDate(news.created_at)}
                                                     </p>
-                                                    <p className="text-gray-500 text-xs">
+                                                    <p className="text-muted text-xs">
                                                         {news.views || 0} dilihat
                                                     </p>
                                                 </div>
-                                                <h3 className="text-lg font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                                <h3 className="text-lg font-bold text-body mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
                                                     {news.title}
                                                 </h3>
-                                                <div className="flex items-center text-[#004AAD] font-medium text-sm">
+                                                <div className="flex items-center text-brand font-medium text-sm">
                                                     Baca Selengkapnya
                                                     <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                                                 </div>
@@ -501,7 +501,7 @@ const BeritaPage = () => {
                         {/* Rekomendasi Berita Badge */}
                         {newsData?.recommended_news && newsData.recommended_news.length > 0 && (
                             <>
-                                <div className="inline-block bg-[#004AAD33] text-[#004AAD] px-5 py-2 rounded-full text-sm font-medium mb-8">
+                                <div className="inline-block bg-brand/20 text-brand px-5 py-2 rounded-full text-sm font-medium mb-8">
                                     Rekomendasi Berita
                                 </div>
 
@@ -511,7 +511,7 @@ const BeritaPage = () => {
                                         <Link
                                             key={news.id}
                                             to={`/berita/${news.slug}`}
-                                            className="flex gap-4 bg-white rounded-lg p-4 shadow hover:shadow-lg transition-shadow duration-300 group"
+                                            className="flex gap-4 bg-surface rounded-lg p-4 shadow hover:shadow-lg transition-shadow duration-300 group"
                                         >
                                             <div className="relative w-32 h-24 flex-shrink-0 rounded-lg overflow-hidden">
                                                 <img
@@ -520,24 +520,24 @@ const BeritaPage = () => {
                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                                 />
                                                 {news.photos && news.photos.length > 0 && (
-                                                    <div className="absolute top-1 right-1 bg-white/90 rounded-full p-1">
+                                                    <div className="absolute top-1 right-1 bg-surface/90 rounded-full p-1">
                                                         <Images className="w-3 h-3 text-blue-600" />
                                                     </div>
                                                 )}
                                             </div>
                                             <div className="flex-1">
                                                 <div className="flex items-center justify-between mb-1">
-                                                    <p className="text-[#004AAD] text-xs">
+                                                    <p className="text-brand text-xs">
                                                         {formatDate(news.created_at)}
                                                     </p>
-                                                    <p className="text-gray-400 text-xs">
+                                                    <p className="text-muted text-xs">
                                                         {news.views || 0} views
                                                     </p>
                                                 </div>
-                                                <h4 className="text-base font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors mb-2">
+                                                <h4 className="text-base font-semibold text-body line-clamp-2 group-hover:text-blue-600 transition-colors mb-2">
                                                     {news.title}
                                                 </h4>
-                                                <div className="flex items-center text-[#004AAD] font-medium text-sm">
+                                                <div className="flex items-center text-brand font-medium text-sm">
                                                     Baca Selengkapnya
                                                     <ArrowRight className="w-3 h-3 ml-1 group-hover:translate-x-1 transition-transform" />
                                                 </div>

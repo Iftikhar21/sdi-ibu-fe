@@ -1,7 +1,7 @@
 // components/layout/AdminSidebar.tsx
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Box, ChevronDown, Database, LayoutDashboard, User, ChevronRight, School, Newspaper, Phone, BookText, LogOut, Shield, Users as UsersIcon, Home } from 'lucide-react';
+import { Award, BarChart3, BookOpen, CalendarCheck, CalendarClock, CalendarDays, CalendarRange, ChevronDown, ClipboardList, Database, FileText, GraduationCap, Layers, LayoutDashboard, Network, TrendingUp, User, UserCheck, ChevronRight, School, Newspaper, Phone, BookText, LogOut, Shield, Users as UsersIcon, Home, HelpCircle, Images, Tags } from 'lucide-react';
 import logo_sdi from "@/assets/img/logo-sdi-ibu.svg";
 import { useAuth } from '../../../auth/AuthContext';
 import Modal from '../../common/Modal';
@@ -42,31 +42,82 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 roles: ['admin'],
             },
             {
-                label: 'Konten Website',
-                icon: Database,
+                // Alur kerja kesiswaan: dari pendaftaran sampai lulus
+                label: 'Kesiswaan',
+                icon: UsersIcon,
                 roles: ['admin'],
                 children: [
-                    { route: '/admin/news', label: 'Berita', icon: Newspaper, roles: ['admin'] },
-                    { route: '/admin/program', label: 'Program', icon: School, roles: ['admin'] },
-                    { route: '/admin/sejarah', label: 'Sejarah', icon: BookText, roles: ['admin'] },
-                    { route: '/admin/visi-misi', label: 'Visi & Misi', icon: BookText, roles: ['admin'] },
+                    { route: '/admin/registrations', label: 'Pendaftaran', icon: BookText, roles: ['admin'] },
+                    { route: '/admin/siswa', label: 'Siswa', icon: GraduationCap, roles: ['admin'] },
+                    { route: '/admin/penempatan-kelas', label: 'Penempatan Kelas', icon: Layers, roles: ['admin'] },
+                    { route: '/admin/kenaikan-kelas', label: 'Kenaikan Kelas', icon: TrendingUp, roles: ['admin'] },
+                    { route: '/admin/kelulusan', label: 'Kelulusan', icon: GraduationCap, roles: ['admin'] },
+                    { route: '/admin/lulusan', label: 'Lulusan', icon: Award, roles: ['admin'] },
                 ],
             },
             {
-                route: '/admin/contacts',
-                label: 'Kontak',
-                icon: Phone,
+                label: 'Master Data',
+                icon: Database,
                 roles: ['admin'],
+                children: [
+                    { route: '/admin/tahun-ajaran', label: 'Tahun Ajaran', icon: CalendarRange, roles: ['admin'] },
+                    { route: '/admin/kelas', label: 'Kelas', icon: Layers, roles: ['admin'] },
+                ],
             },
             {
-                route: '/admin/registrations',
-                label: 'Pendaftaran',
-                icon: BookText,
+                label: 'Akademik',
+                icon: BookOpen,
                 roles: ['admin'],
+                children: [
+                    { route: '/admin/dashboard-akademik', label: 'Dashboard Akademik', icon: BarChart3, roles: ['admin'] },
+                    { route: '/admin/penugasan-guru', label: 'Guru & Wali Kelas', icon: UserCheck, roles: ['admin'] },
+                    { route: '/admin/mata-pelajaran', label: 'Mata Pelajaran', icon: BookText, roles: ['admin'] },
+                    { route: '/admin/nilai', label: 'Input Nilai', icon: ClipboardList, roles: ['admin'] },
+                    { route: '/admin/absensi', label: 'Absensi', icon: CalendarCheck, roles: ['admin'] },
+                    { route: '/admin/jadwal', label: 'Jadwal Pelajaran', icon: CalendarClock, roles: ['admin'] },
+                    { route: '/admin/rapor', label: 'Rapor', icon: FileText, roles: ['admin'] },
+                ],
+            },
+            {
+                label: 'Profil',
+                icon: BookOpen,
+                roles: ['admin'],
+                children: [
+                    { route: '/admin/sejarah', label: 'Sejarah', icon: BookText, roles: ['admin'] },
+                    { route: '/admin/visi-misi', label: 'Visi & Misi', icon: BookText, roles: ['admin'] },
+                    { route: '/admin/struktur-organisasi', label: 'Struktur Organisasi', icon: Network, roles: ['admin'] },
+                    { route: '/admin/program', label: 'Program Unggulan', icon: School, roles: ['admin'] },
+                    { route: '/admin/profil-sekolah', label: 'Tentang Sekolah IBU', icon: School, roles: ['admin'] },
+                    { route: '/admin/nilai-pendidikan', label: 'Nilai Pendidikan', icon: BookOpen, roles: ['admin'] },
+                    { route: '/admin/kepala-sekolah', label: 'Kepala Sekolah', icon: User, roles: ['admin'] },
+                    { route: '/admin/guru', label: 'Guru & Tenaga Kependidikan', icon: UsersIcon, roles: ['admin'] },
+                    { route: '/admin/legalitas', label: 'Legalitas / NPSN', icon: Shield, roles: ['admin'] },
+                ],
+            },
+            {
+                label: 'Kegiatan',
+                icon: CalendarDays,
+                roles: ['admin'],
+                children: [
+                    { route: '/admin/news', label: 'Berita', icon: Newspaper, roles: ['admin'] },
+                    { route: '/admin/kegiatan/prestasi', label: 'Prestasi', icon: Award, roles: ['admin'] },
+                    { route: '/admin/kegiatan/agenda', label: 'Agenda Sekolah', icon: CalendarDays, roles: ['admin'] },
+                ],
+            },
+            {
+                label: 'Konten Website',
+                icon: Images,
+                roles: ['admin'],
+                children: [
+                    { route: '/admin/faq', label: 'FAQ', icon: HelpCircle, roles: ['admin'] },
+                    { route: '/admin/gallery', label: 'Galeri', icon: Images, roles: ['admin'] },
+                    { route: '/admin/gallery-categories', label: 'Kategori Galeri', icon: Tags, roles: ['admin'] },
+                    { route: '/admin/contacts', label: 'Kontak', icon: Phone, roles: ['admin'] },
+                ],
             },
             {
                 label: 'Manajemen Pengguna',
-                icon: UsersIcon,
+                icon: Shield,
                 roles: ['admin'],
                 children: [
                     { route: '/admin/kelola-pengguna', label: 'Semua Pengguna', icon: User, roles: ['admin'] },
@@ -92,9 +143,45 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
             },
         ];
 
+        // Menu khusus GURU: hanya lingkup pengajaran sendiri
+        const guruMenus: MenuItem[] = [
+            {
+                route: '/guru/dashboard',
+                label: 'Dashboard',
+                icon: LayoutDashboard,
+                roles: ['guru'],
+            },
+            {
+                route: '/guru/absensi',
+                label: 'Absensi',
+                icon: CalendarCheck,
+                roles: ['guru'],
+            },
+            {
+                route: '/guru/nilai',
+                label: 'Input Nilai',
+                icon: BookText,
+                roles: ['guru'],
+            },
+            {
+                route: '/guru/jadwal',
+                label: 'Jadwal Pelajaran',
+                icon: CalendarClock,
+                roles: ['guru'],
+            },
+            {
+                route: '/guru/rapor',
+                label: 'Rapor',
+                icon: FileText,
+                roles: ['guru'],
+            },
+        ];
+
         // Return menu berdasarkan role
         if (userRole === 'admin') {
             return adminMenus;
+        } else if (userRole === 'guru') {
+            return guruMenus;
         } else if (userRole === 'user') {
             return userMenus;
         }
@@ -103,6 +190,13 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     };
 
     const menus = getMenusByRole();
+
+    const isActive = (route: string) => {
+        if (route === '/admin/dashboard' || route === '/user/dashboard') {
+            return location.pathname === route;
+        }
+        return location.pathname === route || location.pathname.startsWith(route + '/');
+    };
 
     // Auto buka menu parent jika child aktif
     useEffect(() => {
@@ -131,13 +225,6 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
             newState[label] = !prev[label];
             return newState;
         });
-    };
-
-    const isActive = (route: string) => {
-        if (route === '/admin/dashboard' || route === '/user/dashboard') {
-            return location.pathname === route;
-        }
-        return location.pathname === route || location.pathname.startsWith(route + '/');
     };
 
     const isParentActive = (menu: MenuItem) => {
@@ -192,6 +279,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     // Tentukan title berdasarkan role
     const getSidebarTitle = () => {
         if (userRole === 'admin') return 'Admin Panel';
+        if (userRole === 'guru') return 'Panel Guru';
         if (userRole === 'user') return 'Portal User';
         return 'Dashboard';
     };
@@ -199,6 +287,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     // Tentukan subtitle berdasarkan role
     const getSidebarSubtitle = () => {
         if (userRole === 'admin') return 'SDI Ikhlas Bakti Umat';
+        if (userRole === 'guru') return 'SDI Ikhlas Bakti Umat';
         if (userRole === 'user') return 'SDI Ikhlas Bakti Umat';
         return '';
     };
@@ -206,6 +295,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     // Tentukan role display text
     const getRoleDisplay = () => {
         if (userRole === 'admin') return 'Administrator';
+        if (userRole === 'guru') return 'Guru';
         if (userRole === 'user') return 'Pengguna';
         return 'Pengguna';
     };
@@ -213,8 +303,8 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
     return (
         <>
             <aside
-                className={`fixed top-0 left-0 h-screen w-80 
-                        bg-gradient-to-b from-[#004AAD] to-[#004AAD]
+                className={`fixed top-0 left-0 h-screen w-80 lg:w-64
+                        bg-gradient-to-b from-brand to-brand
                         backdrop-blur-xl bg-opacity-90
                         text-white z-40 transform transition-transform duration-300 
                         flex flex-col border-r border-white/10 shadow-2xl
@@ -222,11 +312,11 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
             >
 
                 {/* Logo */}
-                <div className="p-6 border-b border-white/10 flex-shrink-0 bg-white/5 backdrop-blur-md">
-                    <div className="w-40 h-40 mx-auto flex flex-col items-center justify-center">
-                        <img src={logo_sdi} className="w-24 h-24 opacity-90" />
-                        <div className="mt-4 text-center">
-                            <h2 className="text-lg font-bold">{getSidebarTitle()}</h2>
+                <div className="p-6 lg:p-4 border-b border-white/10 flex-shrink-0 bg-white/5 backdrop-blur-md">
+                    <div className="w-40 h-40 lg:w-28 lg:h-28 mx-auto flex flex-col items-center justify-center">
+                        <img src={logo_sdi} className="w-24 h-24 lg:w-16 lg:h-16 opacity-90" />
+                        <div className="mt-4 lg:mt-2 text-center">
+                            <h2 className="text-lg lg:text-base font-bold">{getSidebarTitle()}</h2>
                             <p className="text-xs text-white/70">{getSidebarSubtitle()}</p>
                         </div>
                     </div>
@@ -234,8 +324,8 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
 
                 {/* Navigation Container dengan Scroll */}
                 <div className="flex-1 overflow-hidden flex flex-col">
-                    <nav className="p-4 flex-1 overflow-y-auto">
-                        <ul className="space-y-2">
+                    <nav className="sidebar-scroll p-4 lg:p-3 flex-1 overflow-y-auto">
+                        <ul className="space-y-2 lg:space-y-1">
                             {filteredMenus.map((menu, index) => (
                                 <li key={index} className="relative">
                                     {menu.children ? (
@@ -243,7 +333,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                         <div>
                                             <button
                                                 onClick={() => toggleMenu(menu.label)}
-                                                className={`flex items-center justify-between w-full px-4 py-3 rounded-lg transition-all duration-300 group
+                                                className={`flex items-center justify-between w-full px-4 py-3 lg:px-3 lg:py-2 rounded-lg transition-all duration-300 group
         ${isParentActive(menu)
                                                         ? 'bg-white/20 text-white shadow-lg'
                                                         : 'text-white/80 hover:bg-white/10 hover:text-white'
@@ -256,7 +346,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                                             : 'text-white/70 group-hover:text-white'
                                                             }`}
                                                     />
-                                                    <span className="font-medium text-sm">{menu.label}</span>
+                                                    <span className="font-medium text-sm lg:text-[13px]">{menu.label}</span>
                                                 </div>
 
                                                 <ChevronDown
@@ -267,9 +357,9 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                                 />
                                             </button>
 
-                                            {/* Dropdown Content */}
+                                            {/* Dropdown Content — semua submenu tampil penuh, tanpa scroll sendiri */}
                                             {openMenus[menu.label] && (
-                                                <div className="ml-4 mt-2 space-y-1 max-h-48 overflow-y-auto pr-2 scrollbar-hide">
+                                                <div className="ml-4 mt-2 lg:mt-1 space-y-1">
                                                     {menu.children.map((child, childIndex) => {
                                                         const active = child.route && isActive(child.route);
                                                         return (
@@ -277,13 +367,13 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                                                 <Link
                                                                     to={child.route!}
                                                                     onClick={onClose}
-                                                                    className={`block px-4 py-2.5 rounded-lg text-sm transition-all duration-300 ${active
-                                                                        ? 'bg-[#003A8C] text-white shadow-md border-l-4 border-white'
+                                                                    className={`block px-4 py-2.5 lg:px-3 lg:py-1.5 rounded-lg text-sm lg:text-[13px] transition-all duration-300 ${active
+                                                                        ? 'bg-brand-strong text-white shadow-md border-l-4 border-white'
                                                                         : 'text-white/70 hover:bg-white/10 hover:text-white'
                                                                         }`}
                                                                 >
                                                                     <div className="flex items-center">
-                                                                        <div className={`w-1.5 h-1.5 rounded-full mr-3 ${active ? 'bg-white' : 'bg-white/40 group-hover:bg-white'
+                                                                        <div className={`w-1.5 h-1.5 rounded-full mr-3 ${active ? 'bg-surface' : 'bg-white/40 group-hover:bg-surface'
                                                                             }`}></div>
                                                                         <span className="truncate">{child.label}</span>
                                                                         {active && (
@@ -302,14 +392,14 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                         <Link
                                             to={menu.route!}
                                             onClick={onClose}
-                                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 ${menu.route && isActive(menu.route)
+                                            className={`flex items-center gap-3 px-4 py-3 lg:px-3 lg:py-2 rounded-lg transition-all duration-300 ${menu.route && isActive(menu.route)
                                                 ? 'bg-white/20 text-white shadow-lg border-r-4 border-white'
                                                 : 'text-white/80 hover:bg-white/10 hover:text-white'
                                                 }`}
                                         >
-                                            <menu.icon className={`w-5 h-5 flex-shrink-0 ${menu.route && isActive(menu.route) ? 'text-white' : 'text-gray-400 group-hover:text-white'
+                                            <menu.icon className={`w-5 h-5 flex-shrink-0 ${menu.route && isActive(menu.route) ? 'text-white' : 'text-muted group-hover:text-white'
                                                 }`} />
-                                            <span className="font-medium text-sm">{menu.label}</span>
+                                            <span className="font-medium text-sm lg:text-[13px]">{menu.label}</span>
                                             {menu.route && isActive(menu.route) && (
                                                 <ChevronRight className="w-4 h-4 ml-auto text-blue-200" />
                                             )}
@@ -321,12 +411,12 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                     </nav>
 
                     {/* User Info & Logout - DIPINDAH KE SINI (setelah semua menu) */}
-                    <div className="p-4 border-t border-white/10 bg-white/5 backdrop-blur-md">
+                    <div className="p-4 lg:p-3 border-t border-white/10 bg-white/5 backdrop-blur-md">
                         <button
                             onClick={handleProfileClick}
-                            className="flex items-center gap-3 w-full px-2 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors duration-200 mb-4"
+                            className="flex items-center gap-3 w-full px-2 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors duration-200 mb-4 lg:mb-2"
                         >
-                            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
+                            <div className="w-10 h-10 lg:w-8 lg:h-8 bg-white/20 rounded-full flex items-center justify-center flex-shrink-0">
                                 {user?.name ? (
                                     <span className="text-white font-medium text-sm">
                                         {user.name.charAt(0).toUpperCase()}
@@ -343,7 +433,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
 
                         <button
                             onClick={handleLogout}
-                            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-200"
+                            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 lg:py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors duration-200"
                         >
                             <LogOut className="w-4 h-4" />
                             <span className="text-sm font-medium">Keluar</span>
@@ -375,7 +465,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 size="sm"
             >
                 <div className="py-4">
-                    <p className="text-gray-700 mb-2">Apa yang ingin Anda lakukan?</p>
+                    <p className="text-body mb-2">Apa yang ingin Anda lakukan?</p>
                     <div className="space-y-3">
                         <div className="flex items-start gap-3 p-3 bg-blue-50 rounded-lg">
                             <LogOut className="w-5 h-5 text-blue-600 mt-0.5" />
@@ -384,11 +474,11 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                                 <p className="text-sm text-blue-600">Keluar dari akun Anda dan kembali ke halaman login</p>
                             </div>
                         </div>
-                        <div className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg">
-                            <Home className="w-5 h-5 text-gray-600 mt-0.5" />
+                        <div className="flex items-start gap-3 p-3 bg-surface-muted rounded-lg">
+                            <Home className="w-5 h-5 text-muted mt-0.5" />
                             <div>
-                                <p className="font-medium text-gray-800">Ke Beranda</p>
-                                <p className="text-sm text-gray-600">Kembali ke halaman utama tanpa logout</p>
+                                <p className="font-medium text-body">Ke Beranda</p>
+                                <p className="text-sm text-muted">Kembali ke halaman utama tanpa logout</p>
                             </div>
                         </div>
                     </div>

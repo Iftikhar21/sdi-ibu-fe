@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { History } from '../../../types/history';
 import {
     PlusCircle,
@@ -7,47 +7,22 @@ import {
     Trash2,
     Loader2,
     AlertCircle,
-    CheckCircle,
     AlertTriangle,
-    X
 } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { historyService } from '../../../services/historyServices';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function SejarahList() {
+    const toast = useToast();
     const [data, setData] = useState<History[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<History | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
-
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    // Cek URL parameters untuk success message
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const message = params.get('message');
-        const success = params.get('success') === 'true';
-
-        if (success && message) {
-            setSuccessMessage(message);
-
-            // Hapus parameters dari URL
-            navigate('/admin/sejarah', { replace: true });
-
-            // Auto-hide success message setelah 5 detik
-            const timer = setTimeout(() => {
-                setSuccessMessage('');
-            }, 5000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [location, navigate]);
-
     const fetchData = async () => {
         try {
             const res = await historyService.getAll();
@@ -70,11 +45,11 @@ export default function SejarahList() {
         setDeletingId(selectedItem.id);
         try {
             await historyService.delete(selectedItem.id);
-            setSuccessMessage('Sejarah berhasil dihapus');
+            toast.success('Sejarah berhasil dihapus');
             fetchData();
         } catch (error) {
             console.error('Error deleting:', error);
-            alert('Gagal menghapus sejarah');
+            toast.error('Gagal menghapus sejarah', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setDeletingId(null);
             setSelectedItem(null);
@@ -95,34 +70,18 @@ export default function SejarahList() {
             </Helmet>
             <Layout title="Kelola Sejarah">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Kelola Sejarah SDI Ibu
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             {canAddNew
                                 ? 'Tambahkan sejarah organisasi Anda'
                                 : 'Kelola konten sejarah organisasi Anda'}
                         </p>
                     </div>
                 </div>
-
-                {/* Success Message Banner */}
-                {successMessage && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                        <div className="flex items-center">
-                            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                            <span className="text-green-800">{successMessage}</span>
-                        </div>
-                        <button
-                            onClick={() => setSuccessMessage('')}
-                            className="text-green-600 hover:text-green-800"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                )}
 
                 <div className="mx-auto">
                     {/* Action Bar */}
@@ -156,19 +115,19 @@ export default function SejarahList() {
                     )}
 
                     {/* Content */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden mt-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden mt-6">
                         {loading ? (
                             <div className="py-12 text-center">
                                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                                <p className="text-gray-600">Memuat data sejarah...</p>
+                                <p className="text-muted">Memuat data sejarah...</p>
                             </div>
                         ) : data.length === 0 ? (
                             <div className="py-12 text-center">
-                                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                <AlertCircle className="w-12 h-12 text-muted mx-auto mb-4" />
+                                <h3 className="text-lg font-medium text-body mb-2">
                                     Belum ada sejarah
                                 </h3>
-                                <p className="text-gray-600 max-w-md mx-auto mb-6">
+                                <p className="text-muted max-w-md mx-auto mb-6">
                                     Mulai dengan menambahkan sejarah organisasi Anda.
                                 </p>
                                 <Link
@@ -180,12 +139,12 @@ export default function SejarahList() {
                                 </Link>
                             </div>
                         ) : (
-                            <div className="divide-y divide-gray-200">
+                            <div className="divide-y divide-line">
                                 {data.map((item, index) => (
-                                    <div key={item.id} className="p-6 hover:bg-gray-50 transition-colors duration-150">
+                                    <div key={item.id} className="p-6 hover:bg-surface-muted transition-colors duration-150">
                                         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                                             <div className="flex-1">
-                                                <p className="text-gray-600 mb-4">
+                                                <p className="text-muted mb-4">
                                                     {item.content.split('\n').map((line, i) => (
                                                         <span key={i}>
                                                             {line}
@@ -193,8 +152,8 @@ export default function SejarahList() {
                                                         </span>
                                                     ))}
                                                 </p>
-                                                <div className="flex items-center text-sm text-gray-500">
-                                                    <span className="bg-gray-100 text-gray-800 text-xs px-2 py-1 rounded">
+                                                <div className="flex items-center text-sm text-muted">
+                                                    <span className="bg-surface-muted text-body text-xs px-2 py-1 rounded">
                                                         {item.content.length} karakter
                                                     </span>
                                                 </div>
@@ -243,10 +202,10 @@ export default function SejarahList() {
                 isLoading={deletingId !== null}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">
+                    <p className="text-body">
                         Apakah Anda yakin ingin menghapus sejarah ini?
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-muted mt-2">
                         Tindakan ini tidak dapat dibatalkan. Setelah dihapus, Anda dapat menambahkan sejarah baru.
                     </p>
                 </div>

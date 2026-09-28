@@ -54,6 +54,46 @@ export interface QuickStats {
     total_programs: number;
 }
 
+export interface SchoolSummary {
+    academic_years: Array<{ id: number; name: string; is_active: boolean }>;
+    academic_year: { id: number; name: string; is_active: boolean } | null;
+    registrations: {
+        total: number;
+        submitted: number;
+        review: number;
+        approved: number;
+        rejected: number;
+        without_academic_year: number;
+    };
+    students: {
+        total: number;
+        active: number;
+        inactive: number;
+        graduated: number;
+    };
+    classes: {
+        total: number;
+        capacity: number;
+        filled: number;
+        available: number;
+        rows: Array<{
+            id: number;
+            display_name: string;
+            grade_level: number;
+            quota: number;
+            filled: number;
+            available: number;
+            is_active: boolean;
+        }>;
+    };
+    unplaced_students: number;
+    graduates: {
+        total: number;
+        this_year: number;
+        by_year: Array<{ id: number; name: string; total: number }>;
+    };
+}
+
 export const dashboardService = {
     async getDashboardStats(): Promise<DashboardStats> {
         const response = await api.get("/admin/dashboard", {
@@ -70,6 +110,15 @@ export const dashboardService = {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
+        return response.data.data;
+    },
+
+    // Rekap data sekolah (mengikuti tahun ajaran yang dipilih)
+    async getSchoolSummary(academicYearId?: number): Promise<SchoolSummary> {
+        const response = await api.get("/admin/dashboard/school-summary", {
+            params: academicYearId ? { academic_year_id: academicYearId } : {}
+        });
+
         return response.data.data;
     }
 };

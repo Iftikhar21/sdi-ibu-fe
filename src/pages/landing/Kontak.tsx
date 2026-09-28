@@ -159,7 +159,7 @@ const KontakPage = () => {
                     <h1 className="text-4xl md:text-5xl font-bold mb-4">
                         Hubungi <span className="text-yellow-400">Kami</span>
                     </h1>
-                    <p className="text-lg text-gray-200 max-w-2xl">
+                    <p className="text-lg text-muted max-w-2xl">
                         Informasi dan layanan SDI Ikhlas Bakti Umat.
                     </p>
                 </div>
@@ -169,13 +169,13 @@ const KontakPage = () => {
             <div className="container mx-auto px-4 py-16">
                 {/* Section Header */}
                 <div className="text-center mb-12">
-                    <div className="inline-block bg-[#004AAD33] text-[#004AAD] px-5 py-2 rounded-full text-sm font-medium mb-4">
+                    <div className="inline-block bg-brand/20 text-brand px-5 py-2 rounded-full text-sm font-medium mb-4">
                         Kontak Kami
                     </div>
                     <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                        <span className="text-[#E13131]">Kontak</span>
+                        <span className="text-accent">Kontak</span>
                     </h2>
-                    <p className="text-gray-600 max-w-2xl mx-auto">
+                    <p className="text-muted max-w-2xl mx-auto">
                         Hubungi kami melalui berbagai saluran komunikasi yang tersedia
                     </p>
                 </div>
@@ -184,17 +184,17 @@ const KontakPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
                     {/* Telepon Card */}
                     <div
-                        className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center cursor-pointer"
+                        className="bg-surface rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center cursor-pointer"
                         onClick={() => {
                             const rawNumber = contactData?.telepon || defaultTelepon;
                             const waNumber = rawNumber.startsWith("0") ? `62${rawNumber.slice(1)}` : rawNumber;
                             window.open(`https://wa.me/${waNumber}`, "_blank");
                         }}
                     >
-                        <div className="w-16 h-16 bg-[#004AAD33] rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Phone className="w-7 h-7 text-[#004AAD]" />
+                        <div className="w-16 h-16 bg-brand/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <Phone className="w-7 h-7 text-brand" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">Telepon</h3>
+                        <h3 className="text-xl font-bold text-body mb-4">Telepon</h3>
                         <a
                             href={`https://wa.me/${(contactData?.telepon || defaultTelepon).startsWith("0")
                                     ? `62${(contactData?.telepon || defaultTelepon).slice(1)}`
@@ -202,7 +202,7 @@ const KontakPage = () => {
                                 }`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-gray-600 hover:text-green-600 transition-colors block"
+                            className="text-muted hover:text-green-600 transition-colors block"
                             onClick={(e) => e.stopPropagation()} // supaya klik nomor tidak ganda
                         >
                             {contactData?.telepon || defaultTelepon}
@@ -210,7 +210,7 @@ const KontakPage = () => {
                     </div>
 
                     {/* Email Card */}
-                    <div className="bg-[#004AAD] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                    <div className="bg-brand rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
                         <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Mail className="w-7 h-7 text-white" />
                         </div>
@@ -224,18 +224,18 @@ const KontakPage = () => {
                     </div>
 
                     {/* Alamat Card */}
-                    <div className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
-                        <div className="w-16 h-16 bg-[#004AAD33] rounded-full flex items-center justify-center mx-auto mb-6">
-                            <MapPin className="w-7 h-7 text-[#004AAD]" />
+                    <div className="bg-surface rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                        <div className="w-16 h-16 bg-brand/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <MapPin className="w-7 h-7 text-brand" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-800 mb-4">Alamat</h3>
-                        <p className="text-gray-600 text-sm leading-relaxed">
+                        <h3 className="text-xl font-bold text-body mb-4">Alamat</h3>
+                        <p className="text-muted text-sm leading-relaxed">
                             {contactData?.alamat || defaultAlamat}
                         </p>
                     </div>
 
                     {/* Sosial Media Card */}
-                    <div className="bg-[#004AAD] rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
+                    <div className="bg-brand rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow duration-300 text-center">
                         <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-6">
                             <Share2 className="w-7 h-7 text-white" />
                         </div>
@@ -290,7 +290,7 @@ const KontakPage = () => {
                 </div>
 
                 {/* Map Section */}
-                <div className="bg-white rounded-2xl overflow-hidden shadow-lg">
+                <div className="bg-surface rounded-2xl overflow-hidden shadow-lg">
                     <div className="aspect-video w-full">
                         <iframe
                             src={contactData?.map_embed || defaultMapEmbed}
@@ -307,11 +307,11 @@ const KontakPage = () => {
 
                 {/* Deskripsi Tambahan */}
                 {contactData?.deskripsi && (
-                    <div className="mt-12 bg-gray-50 rounded-2xl p-8">
-                        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+                    <div className="mt-12 bg-surface-muted rounded-2xl p-8">
+                        <h3 className="text-2xl font-bold text-body mb-4 text-center">
                             Tentang Kami
                         </h3>
-                        <p className="text-gray-600 text-center max-w-2xl mx-auto leading-relaxed">
+                        <p className="text-muted text-center max-w-2xl mx-auto leading-relaxed">
                             {contactData.deskripsi}
                         </p>
                     </div>

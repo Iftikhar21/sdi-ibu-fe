@@ -1,8 +1,306 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Poppins:wght@400;500;600;700&display=swap');
 
+/* Mode gelap diaktifkan lewat class `dark` pada <html> */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Warna semantik. Nilainya ditimpa di `.dark`, sehingga komponen cukup
+ * memakai bg-surface / text-body / border-line dan otomatis ikut berubah.
+ */
+@theme {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-body: #1f2937;
+  --color-muted: #6b7280;
+  --color-line: #e5e7eb;
+  /* Warna brand dipakai luas (sidebar, tombol, judul) */
+  --color-brand: #004aad;
+  --color-brand-strong: #003a8c;
+  /* Aksen merah untuk penekanan judul dan tombol tertentu */
+  --color-accent: #e13131;
+}
+
+.dark {
+  --color-surface: #111c2e;
+  --color-surface-muted: #0b1322;
+  --color-body: #e5e7eb;
+  --color-muted: #9aa7b8;
+  --color-line: #2b3a52;
+  /* Di mode gelap brand dibuat lebih pekat agar tidak menyilaukan */
+  --color-brand: #123a75;
+  --color-brand-strong: #0d2a56;
+  --color-accent: #f26d6d;
+
+  /*
+   * Warna pastel (-50/-100/-200) dan teks gelap (-700..-900) disesuaikan
+   * agar badge serta alert tetap terbaca di latar gelap.
+   */
+  --color-blue-50: color-mix(in oklab, var(--color-blue-500) 16%, transparent);
+  --color-blue-100: color-mix(in oklab, var(--color-blue-500) 24%, transparent);
+  --color-blue-200: color-mix(in oklab, var(--color-blue-500) 34%, transparent);
+  --color-blue-700: #93c5fd;
+  --color-blue-800: #bfdbfe;
+  --color-blue-900: #dbeafe;
+
+  --color-green-50: color-mix(in oklab, var(--color-green-500) 16%, transparent);
+  --color-green-100: color-mix(in oklab, var(--color-green-500) 24%, transparent);
+  --color-green-200: color-mix(in oklab, var(--color-green-500) 34%, transparent);
+  --color-green-700: #86efac;
+  --color-green-800: #bbf7d0;
+  --color-green-900: #dcfce7;
+
+  --color-red-50: color-mix(in oklab, var(--color-red-500) 16%, transparent);
+  --color-red-100: color-mix(in oklab, var(--color-red-500) 24%, transparent);
+  --color-red-200: color-mix(in oklab, var(--color-red-500) 34%, transparent);
+  --color-red-700: #fca5a5;
+  --color-red-800: #fecaca;
+  --color-red-900: #fee2e2;
+
+  --color-amber-50: color-mix(in oklab, var(--color-amber-500) 16%, transparent);
+  --color-amber-100: color-mix(in oklab, var(--color-amber-500) 24%, transparent);
+  --color-amber-200: color-mix(in oklab, var(--color-amber-500) 34%, transparent);
+  --color-amber-700: #fcd34d;
+  --color-amber-800: #fde68a;
+  --color-amber-900: #fef3c7;
+
+  --color-yellow-50: color-mix(in oklab, var(--color-yellow-500) 16%, transparent);
+  --color-yellow-100: color-mix(in oklab, var(--color-yellow-500) 24%, transparent);
+  --color-yellow-200: color-mix(in oklab, var(--color-yellow-500) 34%, transparent);
+  --color-yellow-700: #fde047;
+  --color-yellow-800: #fef08a;
+  --color-yellow-900: #fef9c3;
+
+  --color-purple-50: color-mix(in oklab, var(--color-purple-500) 16%, transparent);
+  --color-purple-100: color-mix(in oklab, var(--color-purple-500) 24%, transparent);
+  --color-purple-200: color-mix(in oklab, var(--color-purple-500) 34%, transparent);
+  --color-purple-700: #d8b4fe;
+  --color-purple-800: #e9d5ff;
+
+  --color-orange-50: color-mix(in oklab, var(--color-orange-500) 16%, transparent);
+  --color-orange-100: color-mix(in oklab, var(--color-orange-500) 24%, transparent);
+  --color-orange-200: color-mix(in oklab, var(--color-orange-500) 34%, transparent);
+  --color-orange-700: #fdba74;
+  --color-orange-800: #fed7aa;
+
+  --color-indigo-50: color-mix(in oklab, var(--color-indigo-500) 16%, transparent);
+  --color-indigo-100: color-mix(in oklab, var(--color-indigo-500) 24%, transparent);
+
+  --color-sky-50: color-mix(in oklab, var(--color-sky-500) 16%, transparent);
+  --color-sky-100: color-mix(in oklab, var(--color-sky-500) 24%, transparent);
+
+  --color-emerald-50: color-mix(in oklab, var(--color-emerald-500) 16%, transparent);
+  --color-emerald-100: color-mix(in oklab, var(--color-emerald-500) 24%, transparent);
+
+  --color-rose-50: color-mix(in oklab, var(--color-rose-500) 16%, transparent);
+  --color-rose-100: color-mix(in oklab, var(--color-rose-500) 24%, transparent);
+
+  --color-teal-50: color-mix(in oklab, var(--color-teal-500) 16%, transparent);
+  --color-teal-100: color-mix(in oklab, var(--color-teal-500) 24%, transparent);
+}
+
+/*
+ * Pengecualian: teks biru muda dipakai di atas blok berwarna biru
+ * (mis. header halaman pendaftaran), jadi harus tetap terang.
+ */
+.dark .text-blue-100,
+.dark .text-blue-200 {
+  color: #bfdbfe;
+}
+
+/*
+ * Di mode gelap, brand dipakai sebagai latar tombol (dengan teks putih) sehingga
+ * nilainya dibuat pekat. Saat brand dipakai sebagai warna teks/ikon di atas latar
+ * gelap (judul, ikon, badge bg-brand/20), warnanya perlu dibuat lebih terang
+ * supaya tidak menjadi gelap di atas gelap.
+ */
+.dark .text-brand,
+.dark .text-brand-strong,
+.dark .hover\:text-brand:hover,
+.dark .hover\:text-brand-strong:hover,
+.dark .group:hover .group-hover\:text-brand {
+  color: #8ab4f8;
+}
+
+/* Form control bawaan browser (scrollbar, date picker) ikut menyesuaikan */
+html {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
+body {
+  background-color: var(--color-surface-muted);
+  color: var(--color-body);
+}
+
+/* Panel admin dibuat lebih rapat pada layar laptop tanpa mengubah ukuran mobile. */
+@media screen and (min-width: 1024px) {
+  .admin-panel main h1.text-2xl {
+    font-size: 1.25rem;
+    line-height: 1.625rem;
+  }
+
+  .admin-panel main h2.text-xl {
+    font-size: 1.125rem;
+    line-height: 1.5rem;
+  }
+
+  .admin-panel main h3.text-lg {
+    font-size: 1rem;
+    line-height: 1.375rem;
+  }
+
+  .admin-panel main :is(button, a, label).text-sm,
+  .admin-panel main :is(input, select, textarea),
+  .admin-panel main button[aria-haspopup="listbox"] {
+    font-size: 0.8125rem;
+  }
+
+  .admin-panel main :is(input, select, textarea)[class*="py-3"],
+  .admin-panel main button[aria-haspopup="listbox"][class*="py-3"] {
+    padding-block: 0.625rem;
+  }
+
+  .admin-panel main table th {
+    font-size: 0.6875rem;
+    line-height: 1rem;
+  }
+
+  .admin-panel main table td {
+    font-size: 0.8125rem;
+    line-height: 1.35;
+  }
+
+  .admin-panel main table :is(th, td)[class*="px-6"] {
+    padding-inline: 0.875rem;
+  }
+
+  .admin-panel main table th[class*="py-3"] {
+    padding-block: 0.625rem;
+  }
+
+  .admin-panel main table td[class*="py-4"] {
+    padding-block: 0.75rem;
+  }
+
+  .admin-panel main table td .text-sm {
+    font-size: 0.8125rem;
+  }
+
+  .admin-panel main table td .text-xs,
+  .admin-panel main table td span.rounded-full {
+    font-size: 0.6875rem;
+  }
+
+  .admin-panel main span.rounded-full[class*="px-3"] {
+    padding-inline: 0.5rem;
+  }
+
+  .admin-panel main span.rounded-full.text-sm {
+    font-size: 0.75rem;
+  }
+
+  .admin-panel .registration-stats > div {
+    padding: 0.75rem;
+  }
+
+  .admin-panel .registration-stats .text-sm {
+    font-size: 0.75rem;
+  }
+
+  .admin-panel .registration-stats .text-lg {
+    font-size: 1rem;
+  }
+}
+
+@layer base {
+  button {
+    cursor: pointer;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
+}
+
 * {
   font-family: "Poppins", sans-serif;
+}
+
+/*
+ * Dipakai pada area cetak / berkas PDF agar tetap berlatar terang
+ * meskipun pengguna sedang memakai mode gelap.
+ */
+.force-light {
+  --color-surface: #ffffff;
+  --color-surface-muted: #f8fafc;
+  --color-body: #1f2937;
+  --color-muted: #6b7280;
+  --color-line: #e5e7eb;
+  color-scheme: light;
+  background-color: #ffffff;
+  color: #1f2937;
+}
+
+@media screen {
+  #rapor-cetak .report-preview-hidden {
+    display: none;
+  }
+
+  #rapor-cetak[data-export-all] .report-preview-hidden {
+    display: table-row;
+  }
+
+  #rapor-cetak[data-export-all] .report-pagination {
+    display: none;
+  }
+}
+
+/*
+ * Saat mencetak (termasuk Simpan sebagai PDF), paksa kembali ke tema terang
+ * supaya hasil cetak tidak gelap.
+ */
+@media print {
+  html,
+  body {
+    background: #ffffff !important;
+    color: #111827 !important;
+  }
+
+  .dark {
+    --color-surface: #ffffff;
+    --color-surface-muted: #ffffff;
+    --color-body: #111827;
+    --color-muted: #4b5563;
+    --color-line: #e5e7eb;
+  }
+
+  /*
+   * Halaman Rapor: saat dicetak hanya dokumen rapor yang tampil, supaya
+   * sidebar, header, dan filter tidak ikut tercetak. Dibatasi hanya untuk
+   * halaman yang memuat #rapor-cetak.
+   */
+  body:has(#rapor-cetak) * {
+    visibility: hidden;
+  }
+
+  body:has(#rapor-cetak) #rapor-cetak,
+  body:has(#rapor-cetak) #rapor-cetak * {
+    visibility: visible;
+  }
+
+  body:has(#rapor-cetak) #rapor-cetak {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    max-width: none;
+    border: 0;
+    box-shadow: none;
+  }
 }
 
 /* @import url('https://fonts.cdnfonts.com/css/satoshi');
@@ -10,3 +308,177 @@
 * {
   font-family: 'Satoshi', sans-serif;
 } */
+
+/* Animasi notifikasi (toast) */
+@keyframes toast-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(1.5rem) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes toast-slide-out {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(1.5rem) scale(0.98);
+  }
+}
+
+@keyframes toast-progress-shrink {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+.toast-enter {
+  animation: toast-slide-in 0.25s ease-out;
+}
+
+.toast-leave {
+  animation: toast-slide-out 0.18s ease-in forwards;
+}
+
+.toast-progress {
+  animation-name: toast-progress-shrink;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+/* ------------------------------------------------------------------ */
+/* Scrollbar                                                           */
+/* ------------------------------------------------------------------ */
+
+/* Scrollbar tipis untuk area berlatar gelap/biru (sidebar admin) */
+.sidebar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-scroll::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.18);
+  border-radius: 9999px;
+}
+
+/* Lebih jelas saat kursor berada di area tersebut */
+.sidebar-scroll:hover::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+.sidebar-scroll:hover {
+  scrollbar-color: rgba(255, 255, 255, 0.35) transparent;
+}
+
+/* Scrollbar tipis untuk area berlatar terang */
+.scroll-slim {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+}
+
+.scroll-slim::-webkit-scrollbar {
+  width: 6px;
+}
+
+.scroll-slim::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scroll-slim::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.5);
+  border-radius: 9999px;
+}
+
+.scroll-slim::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.7);
+}
+
+/* Sembunyikan scrollbar sepenuhnya (tetap bisa digulir) */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * Kolom tanggal: indikator kalender bawaan dibuat transparan menutupi
+ * seluruh kolom, jadi klik di mana pun langsung membuka pemilih tanggal.
+ * Ikon kalender milik aplikasi ditampilkan terpisah di sisi kiri.
+ */
+/* Kalender react-day-picker disesuaikan dengan tema aplikasi */
+.rdp-root {
+  --rdp-accent-color: var(--color-brand);
+  --rdp-accent-background-color: color-mix(in oklab, var(--color-brand) 16%, transparent);
+  --rdp-today-color: var(--color-brand);
+  --rdp-day-height: 38px;
+  --rdp-day-width: 38px;
+  --rdp-day_button-height: 34px;
+  --rdp-day_button-width: 34px;
+  --rdp-day_button-border-radius: 8px;
+  --rdp-selected-border: 2px solid transparent;
+  --rdp-outside-opacity: 0.4;
+  --rdp-weekday-opacity: 1;
+  --rdp-nav-height: 2.25rem;
+  color: var(--color-body);
+  font-size: 0.875rem;
+}
+
+.dark .rdp-root {
+  --rdp-accent-background-color: color-mix(in oklab, var(--color-brand) 45%, transparent);
+}
+
+.rdp-month_caption {
+  font-weight: 600;
+}
+
+.rdp-weekday {
+  color: var(--color-muted);
+  font-weight: 500;
+}
+
+.rdp-day_button:hover:not([disabled]) {
+  background-color: var(--color-surface-muted);
+}
+
+.rdp-selected .rdp-day_button {
+  background-color: var(--rdp-accent-color);
+  color: #ffffff;
+}
+
+.date-input {
+  position: relative;
+}
+
+.date-input::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* Rapikan tampilan tanggal bawaan di Firefox */
+.date-input::-moz-focus-inner {
+  border: 0;
+}

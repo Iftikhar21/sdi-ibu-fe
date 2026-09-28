@@ -17,7 +17,21 @@ export interface RegistrationFormData {
 
 export interface Registration {
     id: number;
+    /** Nomor pendaftaran unik, mis. REG-2026-0001. */
+    registration_number?: string | null;
     user_id: number;
+    academic_year_id?: number | null;
+    academic_year?: { id: number; name: string } | null;
+    /** Kelas yang sedang ditempati (null bila belum ditempatkan). */
+    classroom_id?: number | null;
+    classroom_label?: string | null;
+    /** Data siswa yang terbentuk dari pendaftaran ini (bila sudah Diterima). */
+    student?: {
+        id: number;
+        nis: string | null;
+        status: string;
+        status_label?: string;
+    } | null;
     full_name: string;
     nickname: string;
     gender: string;

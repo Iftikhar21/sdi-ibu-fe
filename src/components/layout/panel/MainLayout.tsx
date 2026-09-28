@@ -19,7 +19,7 @@ const Layout = ({ children, title = 'Dashboard' }: AdminLayoutProps) => {
     }, [location]);
 
     return (
-        <div className="min-h-screen bg-gray-100 flex flex-col">
+        <div className={`min-h-screen bg-surface-muted flex flex-col ${location.pathname.startsWith('/admin') ? 'admin-panel' : ''}`}>
             <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
             {/* Overlay */}
@@ -31,14 +31,14 @@ const Layout = ({ children, title = 'Dashboard' }: AdminLayoutProps) => {
             )}
 
             {/* Main Content Area */}
-            <div className="lg:ml-80 flex-1 flex flex-col">
+            <div className="lg:ml-64 flex-1 flex flex-col min-w-0">
                 <AdminHeader
                     title={title}
                     onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
                 />
 
-                <main className="flex-1 p-4 lg:p-6 bg-gray-100">
-                    <div className="max-w-full pt-16">
+                <main className="flex-1 min-w-0 p-4 bg-surface-muted">
+                    <div className="max-w-full pt-16 lg:pt-14">
                         {children}
                     </div>
                 </main>

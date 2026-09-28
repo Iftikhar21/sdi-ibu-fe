@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { Program } from '../../../types/program';
 import { programService } from '../../../services/programServices';
 import {
@@ -8,8 +8,6 @@ import {
     Trash2,
     Loader2,
     AlertCircle,
-    CheckCircle,
-    X,
     Eye,
     EyeOff,
     Calendar,
@@ -22,37 +20,22 @@ import {
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
+import SearchableSelect from '../../../components/common/SearchableSelect';
 
 export default function ProgramList() {
+    const toast = useToast();
     const [data, setData] = useState<Program[]>([]);
     const [filteredData, setFilteredData] = useState<Program[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<Program | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState<'all' | 'draft' | 'published'>('all');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
-
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    // Cek URL parameters untuk success message
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const message = params.get('message');
-        const success = params.get('success') === 'true';
-
-        if (success && message) {
-            setSuccessMessage(message);
-            navigate('/admin/program', { replace: true });
-
-            const timer = setTimeout(() => setSuccessMessage(''), 5000);
-            return () => clearTimeout(timer);
-        }
-    }, [location, navigate]);
 
     const fetchData = async () => {
         try {
@@ -99,11 +82,11 @@ export default function ProgramList() {
         setDeletingId(selectedItem.id);
         try {
             await programService.delete(selectedItem.id);
-            setSuccessMessage('Program berhasil dihapus');
+            toast.success('Program berhasil dihapus');
             fetchData();
         } catch (error) {
             console.error('Error deleting:', error);
-            alert('Gagal menghapus program');
+            toast.error('Gagal menghapus program', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setDeletingId(null);
             setSelectedItem(null);
@@ -152,49 +135,33 @@ export default function ProgramList() {
             </Helmet>
             <Layout title="Kelola Program">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Kelola Program SDI Ibu
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Kelola program-program organisasi Anda
                         </p>
                     </div>
                     <div className="text-left md:text-right">
                         <p className="font-medium text-2xl sm:text-3xl text-blue-600">{data.length}</p>
-                        <p className="text-xs sm:text-sm text-gray-700">Total Program</p>
+                        <p className="text-xs sm:text-sm text-body">Total Program</p>
                     </div>
                 </div>
 
-                {/* Success Message Banner */}
-                {successMessage && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                        <div className="flex items-center">
-                            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                            <span className="text-green-800">{successMessage}</span>
-                        </div>
-                        <button
-                            onClick={() => setSuccessMessage('')}
-                            className="text-green-600 hover:text-green-800"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                )}
-
                 <div className="mx-auto">
                     {/* Search and Filter Bar */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-4 mb-6">
                         <div className="flex flex-col md:flex-row gap-4">
                             {/* Search Input */}
                             <div className="flex-1">
                                 <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                     <input
                                         type="text"
                                         placeholder="Cari program..."
-                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                        className="w-full pl-10 pr-4 py-2 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                     />
@@ -203,16 +170,22 @@ export default function ProgramList() {
 
                             {/* Status Filter */}
                             <div className="flex items-center space-x-2">
-                                <Filter className="w-5 h-5 text-gray-500" />
-                                <select
-                                    className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200"
+                                <Filter className="w-5 h-5 text-muted" />
+                                <SearchableSelect
+                                    className="w-44"
+                                    compact
+                                    options={[
+                                        { value: 'all', label: 'Semua Status' },
+                                        { value: 'published', label: 'Published' },
+                                        { value: 'draft', label: 'Draft' },
+                                    ]}
                                     value={statusFilter}
-                                    onChange={(e) => setStatusFilter(e.target.value as any)}
-                                >
-                                    <option value="all">Semua Status</option>
-                                    <option value="published">Published</option>
-                                    <option value="draft">Draft</option>
-                                </select>
+                                    onChange={(value) =>
+                                        setStatusFilter(value as 'all' | 'draft' | 'published')
+                                    }
+                                    searchPlaceholder="Cari status..."
+                                    ariaLabel="Filter status program"
+                                />
                             </div>
 
                             {/* Add Button */}
@@ -229,19 +202,19 @@ export default function ProgramList() {
                     </div>
 
                     {/* Table */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                         {loading ? (
                             <div className="py-12 text-center">
                                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                                <p className="text-gray-600">Memuat data program...</p>
+                                <p className="text-muted">Memuat data program...</p>
                             </div>
                         ) : filteredData.length === 0 ? (
                             <div className="py-12 text-center">
-                                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                                <AlertCircle className="w-12 h-12 text-muted mx-auto mb-4" />
+                                <h3 className="text-lg font-medium text-body mb-2">
                                     {searchTerm || statusFilter !== 'all' ? 'Program tidak ditemukan' : 'Belum ada Program'}
                                 </h3>
-                                <p className="text-gray-600 max-w-md mx-auto mb-6">
+                                <p className="text-muted max-w-md mx-auto mb-6">
                                     {searchTerm || statusFilter !== 'all'
                                         ? 'Coba ubah kata kunci pencarian atau filter status'
                                         : 'Mulai dengan menambahkan program organisasi Anda.'}
@@ -260,25 +233,25 @@ export default function ProgramList() {
                             <>
                                 <div className="overflow-x-auto">
                                     <table className="w-full">
-                                        <thead className="bg-gray-50">
+                                        <thead className="bg-surface-muted">
                                             <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                     Program
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                     Status
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                     Tanggal Dibuat
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                     Aksi
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
+                                        <tbody className="bg-surface divide-y divide-line">
                                             {currentItems.map((item) => (
-                                                <tr key={item.id} className="hover:bg-gray-50 transition-colors duration-150">
+                                                <tr key={item.id} className="hover:bg-surface-muted transition-colors duration-150">
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <div className="flex items-center">
                                                             <div className="flex-shrink-0 h-16 w-16">
@@ -289,13 +262,13 @@ export default function ProgramList() {
                                                                         alt={item.title}
                                                                     />
                                                                 ) : (
-                                                                    <div className="h-10 w-16 rounded bg-gray-200 flex items-center justify-center">
-                                                                        <ImageIcon className="w-5 h-5 text-gray-400" />
+                                                                    <div className="h-10 w-16 rounded bg-line flex items-center justify-center">
+                                                                        <ImageIcon className="w-5 h-5 text-muted" />
                                                                     </div>
                                                                 )}
                                                             </div>
                                                             <div className="ml-4">
-                                                                <div className="text-sm text-gray-800 font-medium line-clamp-1">
+                                                                <div className="text-sm text-body font-medium line-clamp-1">
                                                                     {item.title}
                                                                 </div>
                                                             </div>
@@ -304,9 +277,9 @@ export default function ProgramList() {
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         {getStatusBadge(item.status)}
                                                     </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                                                         <div className="flex items-center">
-                                                            <Calendar className="w-4 h-4 mr-2 text-gray-400" />
+                                                            <Calendar className="w-4 h-4 mr-2 text-muted" />
                                                             {formatDate(item.created_at)}
                                                         </div>
                                                     </td>
@@ -345,9 +318,9 @@ export default function ProgramList() {
 
                                 {/* Pagination */}
                                 {totalPages > 1 && (
-                                    <div className="px-6 py-4 border-t border-gray-200">
+                                    <div className="px-6 py-4 border-t border-line">
                                         <div className="flex items-center justify-between">
-                                            <div className="text-sm text-gray-700">
+                                            <div className="text-sm text-body">
                                                 Halaman <span className="font-medium">{currentPage}</span> dari{' '}
                                                 <span className="font-medium">{totalPages}</span>
                                             </div>
@@ -355,7 +328,7 @@ export default function ProgramList() {
                                                 <button
                                                     onClick={() => paginate(currentPage - 1)}
                                                     disabled={currentPage === 1}
-                                                    className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                    className="inline-flex items-center px-3 py-1.5 border border-line rounded-lg text-sm font-medium text-body bg-surface hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                                 >
                                                     <ChevronLeft className="w-4 h-4 mr-1" />
                                                     Sebelumnya
@@ -375,14 +348,14 @@ export default function ProgramList() {
                                                                     onClick={() => paginate(page)}
                                                                     className={`px-3 py-1.5 text-sm font-medium rounded-lg transition-colors duration-200 ${currentPage === page
                                                                         ? 'bg-blue-600 text-white'
-                                                                        : 'text-gray-700 hover:bg-gray-100'
+                                                                        : 'text-body hover:bg-surface-muted'
                                                                         }`}
                                                                 >
                                                                     {page}
                                                                 </button>
                                                             );
                                                         } else if (page === currentPage - 2 || page === currentPage + 2) {
-                                                            return <span key={page} className="px-2 text-gray-500">...</span>;
+                                                            return <span key={page} className="px-2 text-muted">...</span>;
                                                         }
                                                         return null;
                                                     })}
@@ -391,7 +364,7 @@ export default function ProgramList() {
                                                 <button
                                                     onClick={() => paginate(currentPage + 1)}
                                                     disabled={currentPage === totalPages}
-                                                    className="inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                    className="inline-flex items-center px-3 py-1.5 border border-line rounded-lg text-sm font-medium text-body bg-surface hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                                 >
                                                     Selanjutnya
                                                     <ChevronRight className="w-4 h-4 ml-1" />
@@ -418,10 +391,10 @@ export default function ProgramList() {
                 isLoading={deletingId !== null}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">
+                    <p className="text-body">
                         Apakah Anda yakin ingin menghapus program "{selectedItem?.title}"?
                     </p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-sm text-muted mt-2">
                         Tindakan ini tidak dapat dibatalkan. Gambar thumbnail juga akan dihapus.
                     </p>
                 </div>

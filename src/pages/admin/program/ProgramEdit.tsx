@@ -6,10 +6,13 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function ProgramEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
     const [initialData, setInitialData] = useState<{
         title: string;
         description: string;
@@ -42,13 +45,13 @@ export default function ProgramEdit() {
                 });
             } catch (error) {
                 console.error('Error fetching program:', error);
-                alert('Gagal memuat data program');
+                toast.error('Gagal memuat data program', getApiErrorMessage(error, 'silakan coba lagi'));
             } finally {
                 setLoading(false);
             }
         };
         fetchData();
-    }, [id]);
+    }, [id, toast]);
 
     const handleSubmit = async (data: {
         title?: string;
@@ -65,10 +68,11 @@ export default function ProgramEdit() {
         try {
             await programService.update(Number(id), formData);
             // Redirect ke list dengan parameter success
-            navigate('/admin/program?success=true&message=Program berhasil diperbarui');
+            toast.success('Program berhasil diperbarui');
+            navigate('/admin/program');
         } catch (error) {
             console.error('Error updating program:', error);
-            alert('Gagal memperbarui program');
+            toast.error('Gagal memperbarui program', getApiErrorMessage(error, 'silakan coba lagi'));
             setShowConfirmModal(false);
         } finally {
             setIsSubmitting(false);
@@ -82,19 +86,19 @@ export default function ProgramEdit() {
             </Helmet>
             <Layout title="Edit Program">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Edit Program
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Perbarui detail program organisasi Anda
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate('/admin/program')}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted transition-colors duration-200"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Kembali
@@ -106,10 +110,10 @@ export default function ProgramEdit() {
                     {loading ? (
                         <div className="text-center py-12">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                            <p className="text-gray-600">Memuat data program...</p>
+                            <p className="text-muted">Memuat data program...</p>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                             <div className="p-6">
                                 <ProgramForm
                                     title="Edit Program"
@@ -135,8 +139,8 @@ export default function ProgramEdit() {
                 isLoading={isSubmitting}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">Apakah Anda yakin ingin menyimpan perubahan pada program ini?</p>
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-body">Apakah Anda yakin ingin menyimpan perubahan pada program ini?</p>
+                    <p className="text-sm text-muted mt-2">
                         Perubahan yang sudah disimpan tidak dapat dikembalikan.
                     </p>
                 </div>

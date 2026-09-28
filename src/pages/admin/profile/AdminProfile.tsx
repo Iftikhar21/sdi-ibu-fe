@@ -1,15 +1,11 @@
 // pages/admin/profile/AdminProfile.tsx
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import {
     User as UserIcon,
     Mail,
     Phone,
     Save,
     Loader2,
-    AlertCircle,
-    CheckCircle,
-    X,
     Edit2,
     Calendar,
     Shield,
@@ -21,6 +17,8 @@ import Layout from '../../../components/layout/panel/MainLayout';
 import { useAuth } from '../../../auth/AuthContext';
 import { adminService } from '../../../services/adminServices';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 interface ProfileData {
     name: string;
@@ -31,14 +29,10 @@ interface ProfileData {
 
 export default function AdminProfile() {
     const { user: authUser, login } = useAuth();
+    const toast = useToast();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [successMessage, setSuccessMessage] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-
-    const location = useLocation();
-    const navigate = useNavigate();
 
     // Form state sesuai dengan controller
     const [formData, setFormData] = useState<ProfileData>({
@@ -47,25 +41,6 @@ export default function AdminProfile() {
         password: '',
         phone: ''
     });
-
-    // Cek URL parameters untuk success message
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const message = params.get('message');
-        const success = params.get('success') === 'true';
-
-        if (success && message) {
-            setSuccessMessage(message);
-            navigate('/admin/profil', { replace: true });
-
-            // Auto-hide success message setelah 5 detik
-            const timer = setTimeout(() => {
-                setSuccessMessage('');
-            }, 5000);
-
-            return () => clearTimeout(timer);
-        }
-    }, [location, navigate]);
 
     // Fetch profile data
     const fetchProfile = async () => {
@@ -84,11 +59,11 @@ export default function AdminProfile() {
                     phone: admin?.phone || ''
                 });
             } else {
-                setErrorMessage(response.message || 'Gagal memuat data profil');
+                toast.error('Gagal memuat data profil', response.message);
             }
         } catch (error: any) {
             console.error('Error fetching profile:', error);
-            setErrorMessage(error.response?.data?.message || 'Gagal memuat data profil');
+            toast.error('Gagal memuat data profil', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setLoading(false);
         }
@@ -107,22 +82,21 @@ export default function AdminProfile() {
 
         // Validation
         if (!formData.name.trim()) {
-            setErrorMessage('Nama tidak boleh kosong');
+            toast.warning('Nama tidak boleh kosong');
             return;
         }
 
         if (!formData.email.trim()) {
-            setErrorMessage('Email tidak boleh kosong');
+            toast.warning('Email tidak boleh kosong');
             return;
         }
 
         if (formData.password && formData.password.length < 6) {
-            setErrorMessage('Password minimal 6 karakter');
+            toast.warning('Password minimal 6 karakter');
             return;
         }
 
         setSaving(true);
-        setErrorMessage('');
 
         try {
             // Prepare data sesuai controller
@@ -144,7 +118,7 @@ export default function AdminProfile() {
             const response = await adminService.updateProfile(updateData);
 
             if (response.success) {
-                setSuccessMessage(response.message || 'Profil berhasil diperbarui');
+                toast.success(response.message || 'Profil berhasil diperbarui');
 
                 // Jika password diubah, re-login untuk refresh token
                 if (formData.password) {
@@ -161,18 +135,12 @@ export default function AdminProfile() {
 
                 // Refresh data
                 fetchProfile();
-
-                // Auto hide success message
-                setTimeout(() => setSuccessMessage(''), 5000);
             } else {
-                setErrorMessage(response.message || 'Gagal memperbarui profil');
+                toast.error('Gagal memperbarui profil', response.message);
             }
         } catch (error: any) {
             console.error('Update error:', error);
-            setErrorMessage(
-                error.response?.data?.message ||
-                'Gagal memperbarui profil. Silakan coba lagi.'
-            );
+            toast.error('Gagal memperbarui profil', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setSaving(false);
         }
@@ -203,47 +171,23 @@ export default function AdminProfile() {
             </Helmet>
             <Layout title="Profil Admin">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Profil Administrator
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Kelola informasi akun Anda
                         </p>
                     </div>
                 </div>
-
-                {/* Success Message Banner */}
-                {successMessage && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                        <div className="flex items-center">
-                            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                            <span className="text-green-800">{successMessage}</span>
-                        </div>
-                        <button
-                            onClick={() => setSuccessMessage('')}
-                            className="text-green-600 hover:text-green-800"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                )}
-
-                {/* Error Message Banner */}
-                {errorMessage && (
-                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
-                        <AlertCircle className="w-5 h-5 text-red-600 mr-3" />
-                        <span className="text-red-800">{errorMessage}</span>
-                    </div>
-                )}
 
                 {/* Content */}
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Left Column - Profile Card */}
                     <div className="lg:col-span-1 space-y-6">
                         {/* Profile Info Card */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                             <div className="p-6">
                                 <div className="flex flex-col items-center text-center">
                                     {/* Avatar */}
@@ -254,7 +198,7 @@ export default function AdminProfile() {
                                     </div>
 
                                     {/* Name & Role */}
-                                    <h2 className="text-xl font-bold text-gray-800 mb-1">
+                                    <h2 className="text-xl font-bold text-body mb-1">
                                         {authUser?.name || 'Administrator'}
                                     </h2>
                                     <div className="inline-flex items-center px-3 py-1 mb-4 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">
@@ -265,22 +209,22 @@ export default function AdminProfile() {
                             </div>
 
                             {/* Account Info */}
-                            <div className="border-t border-gray-200 p-6 bg-gray-50">
-                                <h3 className="font-semibold text-gray-800 mb-4">Informasi Akun</h3>
+                            <div className="border-t border-line p-6 bg-surface-muted">
+                                <h3 className="font-semibold text-body mb-4">Informasi Akun</h3>
                                 <div className="space-y-3">
                                     <div className="flex items-center text-sm">
-                                        <Mail className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
-                                        <span className="text-gray-700 truncate">{authUser?.email}</span>
+                                        <Mail className="w-4 h-4 text-muted mr-3 flex-shrink-0" />
+                                        <span className="text-body truncate">{authUser?.email}</span>
                                     </div>
                                     <div className="flex items-center text-sm">
-                                        <Calendar className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
-                                        <span className="text-gray-700">
+                                        <Calendar className="w-4 h-4 text-muted mr-3 flex-shrink-0" />
+                                        <span className="text-body">
                                             ID: {authUser?.id || '-'}
                                         </span>
                                     </div>
                                     <div className="flex items-center text-sm">
-                                        <Phone className="w-4 h-4 text-gray-400 mr-3 flex-shrink-0" />
-                                        <span className="text-gray-700">
+                                        <Phone className="w-4 h-4 text-muted mr-3 flex-shrink-0" />
+                                        <span className="text-body">
                                             {formData.phone || 'Belum diisi'}
                                         </span>
                                     </div>
@@ -289,20 +233,20 @@ export default function AdminProfile() {
                         </div>
 
                         {/* Quick Info */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                            <h3 className="font-semibold text-gray-800 mb-4">Informasi Penting</h3>
+                        <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
+                            <h3 className="font-semibold text-body mb-4">Informasi Penting</h3>
                             <div className="space-y-3">
                                 <div className="p-3 bg-blue-50 rounded-lg">
                                     <p className="text-xs font-medium text-blue-800 mb-1">Nama</p>
-                                    <p className="text-sm text-gray-700">{formData.name}</p>
+                                    <p className="text-sm text-body">{formData.name}</p>
                                 </div>
-                                <div className="p-3 bg-gray-50 rounded-lg">
-                                    <p className="text-xs font-medium text-gray-800 mb-1">Email</p>
-                                    <p className="text-sm text-gray-700">{formData.email}</p>
+                                <div className="p-3 bg-surface-muted rounded-lg">
+                                    <p className="text-xs font-medium text-body mb-1">Email</p>
+                                    <p className="text-sm text-body">{formData.email}</p>
                                 </div>
-                                <div className="p-3 bg-gray-50 rounded-lg">
-                                    <p className="text-xs font-medium text-gray-800 mb-1">Telepon</p>
-                                    <p className="text-sm text-gray-700">{formData.phone || 'Belum diisi'}</p>
+                                <div className="p-3 bg-surface-muted rounded-lg">
+                                    <p className="text-xs font-medium text-body mb-1">Telepon</p>
+                                    <p className="text-sm text-body">{formData.phone || 'Belum diisi'}</p>
                                 </div>
                             </div>
                         </div>
@@ -311,13 +255,13 @@ export default function AdminProfile() {
                     {/* Right Column - Edit Form */}
                     <div className="lg:col-span-2">
                         {/* Profile Form */}
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                            <div className="p-6 border-b border-gray-200">
-                                <h3 className="text-lg font-semibold text-gray-800">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
+                            <div className="p-6 border-b border-line">
+                                <h3 className="text-lg font-semibold text-body">
                                     <Edit2 className="w-5 h-5 inline mr-2 text-blue-600" />
                                     Edit Informasi Profil
                                 </h3>
-                                <p className="text-sm text-gray-600 mt-1">
+                                <p className="text-sm text-muted mt-1">
                                     Perbarui informasi akun Anda
                                 </p>
                             </div>
@@ -325,7 +269,7 @@ export default function AdminProfile() {
                             {loading ? (
                                 <div className="text-center py-8">
                                     <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                                    <p className="text-gray-600">Memuat data profil...</p>
+                                    <p className="text-muted">Memuat data profil...</p>
                                 </div>
                             ) : (
                                 <form onSubmit={handleSubmit} className="p-6">
@@ -333,18 +277,18 @@ export default function AdminProfile() {
                                         {/* Nama & Email */}
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <label className="block text-sm font-medium text-body mb-2">
                                                     Nama Lengkap
                                                     <span className="text-red-500 ml-1">*</span>
                                                 </label>
                                                 <div className="relative">
-                                                    <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                    <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                                     <input
                                                         type="text"
                                                         name="name"
                                                         value={formData.name}
                                                         onChange={handleInputChange}
-                                                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        className="w-full pl-10 pr-4 py-2.5 border border-line rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                         placeholder="Nama lengkap"
                                                         required
                                                     />
@@ -352,18 +296,18 @@ export default function AdminProfile() {
                                             </div>
 
                                             <div>
-                                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                <label className="block text-sm font-medium text-body mb-2">
                                                     Email
                                                     <span className="text-red-500 ml-1">*</span>
                                                 </label>
                                                 <div className="relative">
-                                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                                     <input
                                                         type="email"
                                                         name="email"
                                                         value={formData.email}
                                                         onChange={handleInputChange}
-                                                        className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                        className="w-full pl-10 pr-4 py-2.5 border border-line rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                         placeholder="email@example.com"
                                                         required
                                                     />
@@ -373,27 +317,27 @@ export default function AdminProfile() {
 
                                         {/* Password */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Password Baru
-                                                <span className="text-gray-500 ml-2 text-xs font-normal">
+                                                <span className="text-muted ml-2 text-xs font-normal">
                                                     (Kosongkan jika tidak ingin mengubah)
                                                 </span>
                                             </label>
                                             <div className="relative">
-                                                <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                                 <input
                                                     type={showPassword ? "text" : "password"}
                                                     name="password"
                                                     value={formData.password}
                                                     onChange={handleInputChange}
-                                                    className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                    className="w-full pl-10 pr-10 py-2.5 border border-line rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     placeholder="Masukkan password baru"
                                                     minLength={6}
                                                 />
                                                 <button
                                                     type="button"
                                                     onClick={() => setShowPassword(!showPassword)}
-                                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
                                                 >
                                                     {showPassword ? (
                                                         <EyeOff className="w-4 h-4" />
@@ -402,34 +346,34 @@ export default function AdminProfile() {
                                                     )}
                                                 </button>
                                             </div>
-                                            <p className="mt-1 text-xs text-gray-500">
+                                            <p className="mt-1 text-xs text-muted">
                                                 Minimal 6 karakter
                                             </p>
                                         </div>
 
                                         {/* Telepon */}
                                         <div className="max-w-md">
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Nomor Telepon
                                             </label>
                                             <div className="relative">
-                                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                                                <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted w-5 h-5" />
                                                 <input
                                                     type="tel"
                                                     name="phone"
                                                     value={formData.phone}
                                                     onChange={handleInputChange}
-                                                    className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                                    className="w-full pl-10 pr-4 py-2.5 border border-line rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                                     placeholder="08xxxxxxxxxx"
                                                 />
                                             </div>
-                                            <p className="mt-1 text-xs text-gray-500">
+                                            <p className="mt-1 text-xs text-muted">
                                                 Opsional
                                             </p>
                                         </div>
 
                                         {/* Submit Button */}
-                                        <div className="flex justify-end pt-6 border-t border-gray-200">
+                                        <div className="flex justify-end pt-6 border-t border-line">
                                             <button
                                                 type="submit"
                                                 disabled={saving}

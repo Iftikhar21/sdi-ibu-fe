@@ -97,7 +97,7 @@ const ProgramPage = () => {
                     <h2 className="text-3xl md:text-4xl font-bold leading-tight">
                         Dasar Islam <span className="text-yellow-400">Ikhlas Bakti Umat</span>
                     </h2>
-                    <p className="mt-6 text-lg text-gray-200 max-w-3xl">
+                    <p className="mt-6 text-lg text-muted max-w-3xl">
                         Program pilihan untuk membentuk generasi berprestasi dan berakhlak.
                     </p>
                 </div>
@@ -112,10 +112,10 @@ const ProgramPage = () => {
                 />
 
                 {/* White Gradient Top */}
-                <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-white via-white/90 to-transparent" />
+                <div className="absolute top-0 left-0 w-full h-48 bg-gradient-to-b from-surface via-surface/90 to-transparent" />
 
                 {/* White Gradient Bottom */}
-                <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-white via-white/90 to-transparent" />
+                <div className="absolute bottom-0 left-0 w-full h-48 bg-gradient-to-t from-surface via-surface/90 to-transparent" />
 
                 {/* Soft overlay biar bg ga terlalu rame */}
                 <div className="absolute inset-0" />
@@ -124,13 +124,13 @@ const ProgramPage = () => {
                 <div className="relative container mx-auto px-4">
                     {/* Section Header */}
                     <div className="text-center mb-12">
-                        <div className="inline-block bg-[#004AAD33] text-[#004AAD] px-5 py-2 rounded-full text-sm font-medium mb-4">
+                        <div className="inline-block bg-brand/20 text-brand px-5 py-2 rounded-full text-sm font-medium mb-4">
                             Program Kami
                         </div>
                         <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Program <span className="text-[#E13131]">Unggulan</span>
+                            Program <span className="text-accent">Unggulan</span>
                         </h2>
-                        <p className="text-gray-600 max-w-2xl mx-auto">
+                        <p className="text-muted max-w-2xl mx-auto">
                             Program pendidikan Al-Quran untuk berbagai usia dengan kurikulum terstruktur
                         </p>
                     </div>
@@ -141,7 +141,7 @@ const ProgramPage = () => {
                             programs.map((program) => (
                                 <div
                                     key={program.id}
-                                    className="bg-white rounded-4xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-b-12 border-[#004AAD]"
+                                    className="bg-surface rounded-4xl overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 border-b-12 border-brand"
                                 >
                                     {/* Image Container */}
                                     <div className="relative aspect-square overflow-hidden">
@@ -154,16 +154,16 @@ const ProgramPage = () => {
 
                                     {/* Content */}
                                     <div className="p-6">
-                                        <h3 className="text-xl font-bold text-gray-800 mb-3">
+                                        <h3 className="text-xl font-bold text-body mb-3">
                                             {program.title}
                                         </h3>
-                                        <p className="text-gray-600 text-sm leading-relaxed mb-6">
+                                        <p className="text-muted text-sm leading-relaxed mb-6">
                                             {truncateDescription(program.description)}
                                         </p>
 
                                         <Link
                                             to={`/profil/program/${program.slug}`}
-                                            className="w-12 h-12 bg-[#004AAD] hover:bg-blue-700 cursor-pointer text-white rounded-full flex items-center justify-center transition-colors duration-300 ml-auto"
+                                            className="w-12 h-12 bg-brand hover:bg-blue-700 cursor-pointer text-white rounded-full flex items-center justify-center transition-colors duration-300 ml-auto"
                                         >
                                             <ArrowRight className="w-5 h-5" />
                                         </Link>
@@ -172,7 +172,7 @@ const ProgramPage = () => {
                             ))
                         ) : (
                             <div className="col-span-full text-center py-12">
-                                <p className="text-gray-500">Belum ada program yang tersedia</p>
+                                <p className="text-muted">Belum ada program yang tersedia</p>
                             </div>
                         )}
                     </div>

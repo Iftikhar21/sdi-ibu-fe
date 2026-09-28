@@ -6,10 +6,13 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function VisiMisiEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const toast = useToast();
     const [initialData, setInitialData] = useState<{ vision: string; missions: string[] }>({
         vision: '',
         missions: ['']
@@ -32,13 +35,13 @@ export default function VisiMisiEdit() {
                 });
             } catch (error) {
                 console.error('Error fetching vision & mission:', error);
-                alert('Gagal memuat data visi & misi');
+                toast.error('Gagal memuat data visi & misi', getApiErrorMessage(error, 'silakan coba lagi'));
             } finally {
                 setLoading(false);
             }
         };
         fetchData();
-    }, [id]);
+    }, [id, toast]);
 
     const handleSubmit = async (data: { vision: string; missions: string[] }) => {
         setFormData(data);
@@ -55,10 +58,11 @@ export default function VisiMisiEdit() {
                 missions
             });
             // Redirect ke list dengan parameter success
-            navigate('/admin/visi-misi?success=true&message=Visi & Misi berhasil diperbarui');
+            toast.success('Visi & Misi berhasil diperbarui');
+            navigate('/admin/visi-misi');
         } catch (error) {
             console.error('Error updating vision & mission:', error);
-            alert('Gagal memperbarui Visi & Misi');
+            toast.error('Gagal memperbarui Visi & Misi', getApiErrorMessage(error, 'silakan coba lagi'));
             setShowConfirmModal(false);
         } finally {
             setIsSubmitting(false);
@@ -72,19 +76,19 @@ export default function VisiMisiEdit() {
             </Helmet>
             <Layout title="Edit Visi & Misi">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Edit Visi & Misi
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Perbarui visi dan misi organisasi Anda
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate('/admin/visi-misi')}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted transition-colors duration-200"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Kembali
@@ -96,10 +100,10 @@ export default function VisiMisiEdit() {
                     {loading ? (
                         <div className="text-center py-12">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                            <p className="text-gray-600">Memuat data visi & misi...</p>
+                            <p className="text-muted">Memuat data visi & misi...</p>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                             <div className="p-6">
                                 <VisiMisiForm
                                     title="Edit Visi & Misi"
@@ -125,7 +129,7 @@ export default function VisiMisiEdit() {
                 isLoading={isSubmitting}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">Apakah Anda yakin ingin menyimpan perubahan pada visi & misi ini?</p>
+                    <p className="text-body">Apakah Anda yakin ingin menyimpan perubahan pada visi & misi ini?</p>
                 </div>
             </Modal>
         </>

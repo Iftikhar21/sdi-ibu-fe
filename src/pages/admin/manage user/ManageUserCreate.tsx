@@ -6,9 +6,12 @@ import Modal from '../../../components/common/Modal';
 import { userService } from '../../../services/manageUserServices';
 import UserForm from './ManageUserForm';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function UserCreate() {
     const navigate = useNavigate();
+    const toast = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [formData, setFormData] = useState<any>(null);
@@ -22,11 +25,11 @@ export default function UserCreate() {
         setIsSubmitting(true);
         try {
             await userService.create(formData);
-            navigate('/admin/kelola-pengguna?success=true&message=User berhasil ditambahkan');
-        } catch (error: any) {
+            toast.success('User berhasil ditambahkan');
+            navigate('/admin/kelola-pengguna');
+        } catch (error) {
             console.error('Error creating user:', error);
-            const errorMessage = error.response?.data?.message || 'Gagal menambahkan user';
-            alert(errorMessage);
+            toast.error('Gagal menambahkan user', getApiErrorMessage(error, 'silakan coba lagi'));
             setShowConfirmModal(false);
         } finally {
             setIsSubmitting(false);
@@ -40,19 +43,19 @@ export default function UserCreate() {
             </Helmet>
             <Layout title="Tambah User Baru">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Tambah User Baru
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Tambahkan user baru ke dalam sistem
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate('/admin/kelola-pengguna')}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted transition-colors duration-200"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Kembali
@@ -61,7 +64,7 @@ export default function UserCreate() {
                 </div>
 
                 <div className="mx-auto">
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                         <div className="p-6">
                             <UserForm
                                 title="Tambah User"
@@ -85,8 +88,8 @@ export default function UserCreate() {
                 isLoading={isSubmitting}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">Apakah Anda yakin ingin menambahkan user baru?</p>
-                    <div className="mt-3 text-sm text-gray-600 space-y-1">
+                    <p className="text-body">Apakah Anda yakin ingin menambahkan user baru?</p>
+                    <div className="mt-3 text-sm text-muted space-y-1">
                         <p><strong>Nama:</strong> {formData?.name}</p>
                         <p><strong>Email:</strong> {formData?.email}</p>
                         <p><strong>Role:</strong> {formData?.role}</p>

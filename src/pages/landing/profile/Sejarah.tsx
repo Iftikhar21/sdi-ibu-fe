@@ -109,7 +109,7 @@ const SejarahPage = () => {
                     <h2 className="text-3xl md:text-4xl font-bold">
                         <span className="text-yellow-400">Ikhlas Bakti Umat</span>
                     </h2>
-                    <p className="mt-4 text-lg text-gray-200 max-w-2xl">
+                    <p className="mt-4 text-lg text-muted max-w-2xl">
                         Perjalanan SDI Ikhlas Bakti Umat dalam membangun pendidikan Islam
                     </p>
                 </div>
@@ -131,13 +131,13 @@ const SejarahPage = () => {
 
                     {/* Text Content */}
                     <div className="order-1 lg:order-2 lg:col-span-2">
-                        <div className="inline-block bg-[#004AAD33] text-[#004AAD] px-4 py-2 rounded-full text-sm font-medium mb-4">
+                        <div className="inline-block bg-brand/20 text-brand px-4 py-2 rounded-full text-sm font-medium mb-4">
                             Sejarah
                         </div>
                         <h2 className="text-3xl font-bold mb-6">
                             Sejarah SDI <span className="text-red-500">Ikhlas Bakti Umat</span>
                         </h2>
-                        <div className="space-y-4 text-gray-700 leading-relaxed">
+                        <div className="space-y-4 text-body leading-relaxed">
                             {sejarah ? formatContent(sejarah.content) : (
                                 <>
                                     <p>
@@ -158,7 +158,7 @@ const SejarahPage = () => {
                 </div>
 
                 {/* Stats Section */}
-                <div className="bg-[#004AAD] rounded-2xl py-12 px-6 mb-16">
+                <div className="bg-brand rounded-2xl py-12 px-6 mb-16">
                     <div className="grid grid-cols-1 md:grid-cols-1 gap-8 text-white text-center">
                         <div className="flex flex-col items-center">
                             <div className="bg-white/20 rounded-full p-4 mb-4">
@@ -174,7 +174,7 @@ const SejarahPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-center">
                     {/* Text Content */}
                     <div className="lg:col-span-2">
-                        <div className="space-y-4 text-gray-700 leading-relaxed lg:col-span-2">
+                        <div className="space-y-4 text-body leading-relaxed lg:col-span-2">
                             {sejarah ? formatContent(sejarah.content) : (
                                 <>
                                     <p>

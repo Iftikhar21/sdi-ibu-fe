@@ -2,8 +2,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../../auth/AuthContext';
 import { ChevronDown, LogOut, Menu, User, Home } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Modal from '../../common/Modal';
+import ThemeToggle from '../../common/ThemeToggle';
 
 interface AdminHeaderProps {
     title: string;
@@ -68,54 +69,58 @@ const Header = ({ title, onMenuToggle }: AdminHeaderProps) => {
 
     return (
         <>
-            <header className="fixed top-0 right-0 left-0 lg:left-80 bg-white border-b border-gray-200 z-30">
-                <div className="flex items-center justify-between px-4 lg:px-8 py-4">
+            <header className="fixed top-0 right-0 left-0 lg:left-64 bg-surface border-b border-line z-30">
+                <div className="flex items-center justify-between px-4 py-4 lg:px-6 lg:py-3">
                     {/* Kiri */}
                     <div className="flex items-center gap-3">
                         <button
                             id="mobileMenuBtn"
-                            className="lg:hidden text-slate-900"
+                            className="lg:hidden text-slate-900 dark:text-white"
                             onClick={onMenuToggle}
+                            aria-label="Buka menu"
                         >
                             <Menu className="w-6 h-6" />
                         </button>
-                        <h1 className="text-lg font-semibold text-gray-800 truncate max-w-[150px] lg:max-w-none">
+                        <h1 className="text-lg lg:text-base font-semibold text-body truncate max-w-[150px] lg:max-w-none">
                             {title}
                         </h1>
                     </div>
 
                     {/* Kanan */}
-                    <div className="relative" ref={profileRef}>
+                    <div className="flex items-center gap-2">
+                        <ThemeToggle className="text-muted hover:bg-surface-muted" />
+
+                        <div className="relative" ref={profileRef}>
                         <button
                             id="profileBtn"
                             className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
                             onClick={() => setProfileOpen(!profileOpen)}
                         >
-                            <div className="w-8 h-8 lg:w-10 lg:h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
+                            <div className="w-8 h-8 lg:w-9 lg:h-9 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                                 <span className="text-white text-xs lg:text-sm font-bold">
                                     {user?.name?.charAt(0).toUpperCase() || 'U'}
                                 </span>
                             </div>
                             <div className="hidden lg:block text-left">
-                                <span className="text-sm font-medium text-gray-700 truncate max-w-[120px] block">
+                                <span className="text-xs font-medium text-body truncate max-w-[120px] block">
                                     {user?.name || 'Unknown'}
                                 </span>
-                                <span className="text-xs text-gray-500 block">
+                                <span className="text-xs text-muted block">
                                     {user?.role?.role_name === 'admin' ? 'Administrator' : 'Pengguna'}
                                 </span>
                             </div>
-                            <ChevronDown className={`w-4 h-4 text-gray-500 flex-shrink-0 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
+                            <ChevronDown className={`w-4 h-4 text-muted flex-shrink-0 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
                         </button>
 
                         {/* Dropdown Profile */}
                         {profileOpen && (
-                            <div id="profileDropdown" className="absolute right-0 top-full mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 z-50 overflow-hidden">
+                            <div id="profileDropdown" className="absolute right-0 top-full mt-2 w-56 bg-surface rounded-lg shadow-lg border border-line z-50 overflow-hidden">
                                 {/* Header Dropdown */}
                                 <div className="px-4 py-3 bg-gradient-to-r from-blue-50 to-blue-100 border-b border-blue-200">
-                                    <p className="text-sm font-semibold text-gray-800 truncate" title={user?.name}>
+                                    <p className="text-sm font-semibold text-body truncate" title={user?.name}>
                                         {user?.name || 'User'}
                                     </p>
-                                    <p className="text-xs text-gray-600 truncate" title={user?.email}>
+                                    <p className="text-xs text-muted truncate" title={user?.email}>
                                         {user?.email || 'user@example.com'}
                                     </p>
                                 </div>
@@ -124,22 +129,23 @@ const Header = ({ title, onMenuToggle }: AdminHeaderProps) => {
                                 <div className="py-1">
                                     <button
                                         onClick={handleProfileClick}
-                                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-body hover:bg-surface-muted transition-colors"
                                     >
-                                        <User className="w-4 h-4 text-gray-500" />
+                                        <User className="w-4 h-4 text-muted" />
                                         <span>{getProfileText()}</span>
                                     </button>
 
                                     <button
                                         onClick={handleLogoutClick}
-                                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                                        className="flex items-center gap-3 w-full px-4 py-3 text-sm text-body hover:bg-surface-muted transition-colors"
                                     >
-                                        <LogOut className="w-4 h-4 text-gray-500" />
+                                        <LogOut className="w-4 h-4 text-muted" />
                                         <span>Keluar</span>
                                     </button>
                                 </div>
                             </div>
                         )}
+                        </div>
                     </div>
                 </div>
             </header>
@@ -158,7 +164,7 @@ const Header = ({ title, onMenuToggle }: AdminHeaderProps) => {
                 size="sm"
             >
                 <div className="py-4">
-                    <p className="text-gray-700 mb-4 text-center">
+                    <p className="text-body mb-4 text-center">
                         Apa yang ingin Anda lakukan?
                     </p>
                     <div className="space-y-3">
@@ -187,14 +193,14 @@ const Header = ({ title, onMenuToggle }: AdminHeaderProps) => {
                         {/* Opsi Ke Beranda */}
                         <button
                             onClick={goToHome}
-                            className="flex items-start gap-3 w-full p-3 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 hover:border-gray-300 transition-all"
+                            className="flex items-start gap-3 w-full p-3 bg-surface-muted border border-line rounded-lg hover:bg-surface-muted hover:border-line transition-all"
                         >
-                            <div className="p-2 rounded-full bg-gray-100">
-                                <Home className="w-4 h-4 text-gray-600" />
+                            <div className="p-2 rounded-full bg-surface-muted">
+                                <Home className="w-4 h-4 text-muted" />
                             </div>
                             <div className="text-left flex-1">
-                                <p className="font-medium text-gray-800">Ke Beranda</p>
-                                <p className="text-sm text-gray-600 mt-1">
+                                <p className="font-medium text-body">Ke Beranda</p>
+                                <p className="text-sm text-muted mt-1">
                                     Kembali ke halaman utama tanpa logout
                                 </p>
                             </div>

@@ -1,0 +1,36 @@
+# Konfigurasi Apache untuk aplikasi React (SPA).
+#
+# Semua permintaan diarahkan ke index.html supaya React Router yang
+# menentukan halaman (termasuk halaman 404 dan rute seperti /admin/faq).
+# Tanpa ini, URL dalam akan ditolak server dengan 404 milik hosting.
+#
+# Catatan: kalau aplikasi diletakkan di subfolder (mis. /sdi_ibu),
+# ubah RewriteBase menjadi /sdi_ibu/ dan tambahkan base di vite.config.ts.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Biarkan file dan folder yang benar-benar ada (aset, gambar, dsb.)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Sisanya diproses oleh aplikasi React
+    RewriteRule ^ index.html [L]
+</IfModule>
+
+# Kompresi untuk mempercepat pengiriman aset
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/css text/plain text/xml
+    AddOutputFilterByType DEFLATE application/javascript application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# Cache aset yang sudah punya hash di nama filenya
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+</IfModule>

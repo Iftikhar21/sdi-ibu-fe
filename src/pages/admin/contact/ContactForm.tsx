@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Save, Loader2, Upload, Image as ImageIcon, X, Plus, Trash2, Building, MapPin, Phone, Mail, Globe, FileText } from 'lucide-react';
+import NumericInput from '../../../components/common/NumericInput';
 
 interface Props {
     title: string;
@@ -143,16 +144,16 @@ export default function ContactForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
             {/* Form Header */}
-            <div className="border-b border-gray-200 pb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
-                <p className="text-gray-600 mt-2">
+            <div className="border-b border-line pb-4">
+                <h2 className="text-2xl font-bold text-body">{title}</h2>
+                <p className="text-muted mt-2">
                     Isi informasi kontak dengan lengkap dan akurat
                 </p>
             </div>
 
             {/* Logo Upload */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center">
                         <ImageIcon className="w-5 h-5 mr-2 text-blue-600" />
                         Logo Organisasi
@@ -161,7 +162,7 @@ export default function ContactForm({
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
                     {logoPreview ? (
                         <div className="relative">
-                            <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                            <div className="w-32 h-32 rounded-lg overflow-hidden bg-surface-muted border border-line">
                                 <img
                                     src={logoPreview}
                                     alt="Logo preview"
@@ -177,9 +178,9 @@ export default function ContactForm({
                             </button>
                         </div>
                     ) : (
-                        <div className="w-32 h-32 rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50">
-                            <ImageIcon className="w-8 h-8 text-gray-400 mb-2" />
-                            <span className="text-xs text-gray-500">No Logo</span>
+                        <div className="w-32 h-32 rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center bg-surface-muted">
+                            <ImageIcon className="w-8 h-8 text-muted mb-2" />
+                            <span className="text-xs text-muted">No Logo</span>
                         </div>
                     )}
                     <div>
@@ -196,7 +197,7 @@ export default function ContactForm({
                                 onChange={handleLogoChange}
                             />
                         </label>
-                        <p className="text-xs text-gray-500 mt-2">
+                        <p className="text-xs text-muted mt-2">
                             Ukuran maksimal 2MB. Format: JPG, PNG, WebP
                         </p>
                     </div>
@@ -205,7 +206,7 @@ export default function ContactForm({
 
             {/* Deskripsi */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center">
                         <FileText className="w-5 h-5 mr-2 text-blue-600" />
                         Deskripsi Singkat
@@ -215,7 +216,7 @@ export default function ContactForm({
                     value={deskripsi}
                     onChange={(e) => setDeskripsi(e.target.value)}
                     rows={3}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
                     placeholder="Deskripsi singkat tentang organisasi..."
                 />
             </div>
@@ -224,7 +225,7 @@ export default function ContactForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Alamat */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-body mb-2">
                         <div className="flex items-center">
                             <MapPin className="w-5 h-5 mr-2 text-blue-600" />
                             Alamat
@@ -234,7 +235,7 @@ export default function ContactForm({
                         value={alamat}
                         onChange={(e) => setAlamat(e.target.value)}
                         rows={3}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
+                        className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
                         placeholder="Alamat lengkap..."
                     />
                 </div>
@@ -242,23 +243,25 @@ export default function ContactForm({
                 {/* Telepon & Email */}
                 <div className="space-y-6">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-body mb-2">
                             <div className="flex items-center">
                                 <Phone className="w-5 h-5 mr-2 text-blue-600" />
                                 Telepon
                             </div>
                         </label>
-                        <input
-                            type="text"
+                        <NumericInput
+                            mode="phone"
+                            maxLength={20}
                             value={telepon}
-                            onChange={(e) => setTelepon(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
+                            onChange={(value) => setTelepon(value)}
+                            className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
                             placeholder="Nomor telepon..."
+                            ariaLabel="Telepon"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-body mb-2">
                             <div className="flex items-center">
                                 <Mail className="w-5 h-5 mr-2 text-blue-600" />
                                 Email
@@ -268,7 +271,7 @@ export default function ContactForm({
                             type="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
+                            className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
                             placeholder="Alamat email..."
                         />
                     </div>
@@ -277,7 +280,7 @@ export default function ContactForm({
 
             {/* Map Embed */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center">
                         <MapPin className="w-5 h-5 mr-2 text-blue-600" />
                         Embed Peta (Google Maps)
@@ -287,21 +290,21 @@ export default function ContactForm({
                     value={mapEmbed}
                     onChange={(e) => setMapEmbed(e.target.value)}
                     rows={4}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400 font-mono text-sm"
+                    className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400 font-mono text-sm"
                     placeholder='<iframe src="https://www.google.com/maps/embed?..."></iframe>'
                 />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-muted mt-2">
                     Tempel kode embed dari Google Maps
                 </p>
             </div>
 
             {/* Social Media */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
+                <label className="block text-sm font-medium text-body mb-3">
                     <div className="flex items-center">
                         <Globe className="w-5 h-5 mr-2 text-blue-600" />
                         Media Sosial (Opsional)
-                        <span className="ml-2 text-xs font-normal text-gray-500">
+                        <span className="ml-2 text-xs font-normal text-muted">
                             {socials.length} media sosial ditambahkan
                         </span>
                     </div>
@@ -311,14 +314,14 @@ export default function ContactForm({
                 {socials.length > 0 ? (
                     <div className="space-y-3 mb-4">
                         {socials.map((social, index) => (
-                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200">
+                            <div key={index} className="flex items-center justify-between p-3 bg-surface-muted rounded-lg border border-line">
                                 <div className="flex items-center space-x-3">
                                     <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
                                         <Globe className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <div className="text-sm font-medium text-gray-800">{social.platform}</div>
-                                        <div className="text-xs text-gray-600 truncate max-w-xs">{social.url}</div>
+                                        <div className="text-sm font-medium text-body">{social.platform}</div>
+                                        <div className="text-xs text-muted truncate max-w-xs">{social.url}</div>
                                     </div>
                                 </div>
                                 <button
@@ -332,8 +335,8 @@ export default function ContactForm({
                         ))}
                     </div>
                 ) : (
-                    <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200 text-center">
-                        <p className="text-sm text-gray-500">Belum ada media sosial ditambahkan</p>
+                    <div className="mb-4 p-4 bg-surface-muted rounded-lg border border-line text-center">
+                        <p className="text-sm text-muted">Belum ada media sosial ditambahkan</p>
                     </div>
                 )}
 
@@ -344,7 +347,7 @@ export default function ContactForm({
                             type="text"
                             value={newSocialPlatform}
                             onChange={(e) => setNewSocialPlatform(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
+                            className="w-full px-4 py-2 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
                             placeholder="Platform (e.g., Instagram)"
                             onKeyPress={(e) => e.key === 'Enter' && addSocial()}
                         />
@@ -354,7 +357,7 @@ export default function ContactForm({
                             type="url"
                             value={newSocialUrl}
                             onChange={(e) => setNewSocialUrl(e.target.value)}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
+                            className="w-full px-4 py-2 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
                             placeholder="URL (e.g., https://instagram.com/...)"
                             onKeyPress={(e) => e.key === 'Enter' && addSocial()}
                         />
@@ -371,17 +374,17 @@ export default function ContactForm({
                         </button>
                     </div>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted">
                     Contoh: Instagram, Facebook, Twitter, YouTube, LinkedIn, dll.
                 </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-line">
                 <button
                     type="button"
                     onClick={() => window.history.back()}
-                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 shadow-sm"
+                    className="px-6 py-3 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 shadow-sm"
                 >
                     Batal
                 </button>

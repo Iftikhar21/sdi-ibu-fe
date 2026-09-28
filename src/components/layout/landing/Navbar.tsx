@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
-import { Menu, X, ChevronDown, ChevronRight, Home, BookOpen, Newspaper, UserPlus, Phone, LogIn } from 'lucide-react';
+import { Menu, X, ChevronDown, ChevronRight, Home, BookOpen, Newspaper, UserPlus, Phone, Images } from 'lucide-react';
 import logo_sdi from '@/assets/img/logo-sdi-ibu.svg';
 import { useAuth } from '../../../auth/AuthContext';
+import ThemeToggle from '../../common/ThemeToggle';
 
 const Navbar = () => {
     const { user } = useAuth();
@@ -22,15 +23,27 @@ const Navbar = () => {
             name: 'Profil',
             icon: <BookOpen className="w-4 h-4" />,
             children: [
+                { name: 'Tentang Sekolah IBU', path: '/profil/tentang-sekolah' },
                 { name: 'Sejarah', path: '/profil/sejarah' },
                 { name: 'Visi Misi', path: '/profil/visi-misi' },
+                { name: 'Struktur Organisasi', path: '/profil/struktur-organisasi' },
+                { name: 'Nilai Pendidikan', path: '/profil/nilai-pendidikan' },
                 { name: 'Program Unggulan', path: '/profil/program' },
+                { name: 'Kepala Sekolah', path: '/profil/kepala-sekolah' },
+                { name: 'Guru & Tenaga Kependidikan', path: '/profil/guru' },
+                { name: 'Legalitas & NPSN', path: '/profil/legalitas' },
+                { name: 'Lulusan', path: '/profil/lulusan' },
             ],
         },
         {
             name: 'Berita',
             path: '/berita',
             icon: <Newspaper className="w-4 h-4" />
+        },
+        {
+            name: 'Galeri',
+            path: '/galeri',
+            icon: <Images className="w-4 h-4" />
         },
         {
             name: 'Pendaftaran',
@@ -76,6 +89,8 @@ const Navbar = () => {
 
         if (userRole === 'admin') {
             return '/admin/dashboard';
+        } else if (userRole === 'guru') {
+            return '/guru/dashboard';
         } else if (userRole === 'user') {
             return '/user/dashboard';
         }
@@ -92,6 +107,8 @@ const Navbar = () => {
 
         if (userRole === 'admin') {
             return 'Dashboard Admin';
+        } else if (userRole === 'guru') {
+            return 'Dashboard Guru';
         } else if (userRole === 'user') {
             return 'Dashboard User';
         }
@@ -100,7 +117,7 @@ const Navbar = () => {
     };
 
     return (
-        <nav className="bg-white shadow-sm">
+        <nav className="bg-surface shadow-sm">
             <div className="container mx-auto px-4">
                 <div className="flex justify-between items-center h-20">
                     {/* LOGO */}
@@ -117,7 +134,7 @@ const Navbar = () => {
                                         onClick={() => setIsProfilOpen(!isProfilOpen)}
                                         className={`flex items-center text-sm font-medium transition-colors ${isProfilActive
                                             ? activeClass
-                                            : `text-gray-600 hover:text-blue-600 ${hoverClass}`
+                                            : `text-muted hover:text-blue-600 ${hoverClass}`
                                             }`}
                                     >
                                         {item.name}
@@ -133,7 +150,7 @@ const Navbar = () => {
                                                 className="fixed inset-0 z-10"
                                                 onClick={() => setIsProfilOpen(false)}
                                             />
-                                            <div className="absolute z-20 mt-2 w-48 bg-white border rounded-lg shadow-lg">
+                                            <div className="scroll-slim absolute z-20 mt-2 max-h-[70vh] w-64 overflow-y-auto rounded-lg border bg-surface py-1 shadow-lg">
                                                 {item.children.map((child) => (
                                                     <NavLink
                                                         key={child.path}
@@ -142,7 +159,7 @@ const Navbar = () => {
                                                         className={({ isActive }) =>
                                                             `block px-4 py-2 text-sm ${isActive
                                                                 ? 'text-blue-600 bg-blue-50'
-                                                                : 'text-gray-700 hover:bg-gray-100'
+                                                                : 'text-body hover:bg-surface-muted'
                                                             }`
                                                         }
                                                     >
@@ -161,7 +178,7 @@ const Navbar = () => {
                                     className={({ isActive }) =>
                                         `text-sm font-medium transition-colors ${isActive
                                             ? activeClass
-                                            : `text-gray-600 hover:text-blue-600 ${hoverClass}`
+                                            : `text-muted hover:text-blue-600 ${hoverClass}`
                                         }`
                                     }
                                 >
@@ -171,6 +188,8 @@ const Navbar = () => {
                         )}
 
                         {/* DASHBOARD/LOGIN BUTTON */}
+                        <ThemeToggle className="text-muted hover:bg-surface-muted" />
+
                         <Link
                             to={getDashboardUrl()}
                             className="px-8 py-2 text-white bg-gradient-to-b from-[#E9D21F] to-[#DF972B] rounded-full font-medium hover:shadow-md transition-shadow"
@@ -181,7 +200,7 @@ const Navbar = () => {
 
                     {/* MOBILE MENU BUTTON */}
                     <button
-                        className="md:hidden p-2 bg-gray-200 rounded-lg transition-colors z-50"
+                        className="md:hidden p-2 bg-line rounded-lg transition-colors z-50"
                         onClick={handleMenuToggle}
                     >
                         {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -194,15 +213,15 @@ const Navbar = () => {
                 )}
 
                 {/* MOBILE MENU SIDEBAR */}
-                <div className={`fixed top-0 left-0 h-full w-72 bg-white z-50 shadow-xl transform transition-transform duration-300 ease-in-out md:hidden ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+                <div className={`fixed top-0 left-0 h-full w-72 bg-surface z-50 shadow-xl transform transition-transform duration-300 ease-in-out md:hidden ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
                     {/* Mobile Menu Header */}
-                    <div className="relative flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-white h-50">
+                    <div className="relative flex items-center justify-between p-4 border-b bg-gradient-to-r from-blue-50 to-surface h-50">
                         {/* Close Button */}
                         <button
                             onClick={handleMenuToggle}
-                            className="p-2 hover:bg-white rounded-full shadow-sm ml-auto"
+                            className="p-2 hover:bg-surface rounded-full shadow-sm ml-auto"
                         >
-                            <X className="w-5 h-5 text-gray-700" />
+                            <X className="w-5 h-5 text-body" />
                         </button>
 
                         {/* Logo */}
@@ -227,7 +246,7 @@ const Navbar = () => {
                                                 onClick={handleProfilMobileToggle}
                                                 className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${isProfilActive || isProfilMobileOpen
                                                     ? 'text-blue-700 bg-blue-50 border-l-4 border-blue-600'
-                                                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                                    : 'text-body hover:bg-surface-muted hover:text-body'
                                                     }`}
                                             >
                                                 <div className="flex items-center">
@@ -248,7 +267,7 @@ const Navbar = () => {
                                                             className={({ isActive }) =>
                                                                 `flex items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200 ${isActive
                                                                     ? 'text-blue-600 bg-blue-100 border-l-4 border-blue-500'
-                                                                    : 'text-gray-600 hover:bg-gray-50 hover:text-gray-800'
+                                                                    : 'text-muted hover:bg-surface-muted hover:text-body'
                                                                 }`
                                                             }
                                                         >
@@ -271,7 +290,7 @@ const Navbar = () => {
                                         className={({ isActive }) =>
                                             `flex items-center px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${isActive
                                                 ? 'text-blue-700 bg-blue-50 border-l-4 border-blue-600'
-                                                : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                                                : 'text-body hover:bg-surface-muted hover:text-body'
                                             }`
                                         }
                                     >
@@ -292,6 +311,14 @@ const Navbar = () => {
                                 </Link>
                             </div>
 
+                            {/* Pengalih tema */}
+                            <div className="mt-4 px-4">
+                                <ThemeToggle
+                                    variant="text"
+                                    className="rounded-lg px-4 py-3 text-body hover:bg-surface-muted"
+                                />
+                            </div>
+
                             {/* User Info jika sudah login */}
                             {user && (
                                 <div className="mt-4 px-4 p-3 bg-blue-50 rounded-lg border border-blue-100">
@@ -302,11 +329,15 @@ const Navbar = () => {
                                             </span>
                                         </div>
                                         <div>
-                                            <p className="text-sm font-medium text-gray-800 truncate">
+                                            <p className="text-sm font-medium text-body truncate">
                                                 {user.name}
                                             </p>
-                                            <p className="text-xs text-gray-600">
-                                                {user.role?.role_name === 'admin' ? 'Administrator' : 'Orang Tua'}
+                                            <p className="text-xs text-muted">
+                                                {user.role?.role_name === 'admin'
+                                                    ? 'Administrator'
+                                                    : user.role?.role_name === 'guru'
+                                                      ? 'Guru'
+                                                      : 'Orang Tua'}
                                             </p>
                                         </div>
                                     </div>

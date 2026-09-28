@@ -122,7 +122,7 @@ const Footer = () => {
 
     if (loading) {
         return (
-            <footer className="bg-[#004AAD] text-white">
+            <footer className="bg-brand text-white">
                 <div className="container mx-auto px-6 py-12 text-center">
                     <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
                     <p className="mt-2">Memuat data footer...</p>
@@ -132,7 +132,7 @@ const Footer = () => {
     }
 
     return (
-        <footer className="bg-[#004AAD] text-white">
+        <footer className="bg-brand text-white">
             <div className="container mx-auto px-6 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                     {/* Logo & Tentang Kami */}
@@ -228,7 +228,7 @@ const Footer = () => {
                                             loading="lazy"
                                             referrerPolicy="no-referrer-when-downgrade"
                                             title="Lokasi SDI Ikhlas Bakti Umat"
-                                            className="bg-gray-100"
+                                            className="bg-surface-muted"
                                         ></iframe>
                                     </div>
                                 </div>

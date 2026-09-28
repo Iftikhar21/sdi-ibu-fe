@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { Save, Loader2, Upload, Eye, EyeOff, X, Image as ImageIcon } from 'lucide-react';
+import { useToast } from '../../../context/toast';
 
 interface Props {
     title: string;
@@ -28,6 +29,7 @@ export default function ProgramForm({
     onSubmit,
     loading,
 }: Props) {
+    const toast = useToast();
     const [titleInput, setTitleInput] = useState(initialData.title);
     const [description, setDescription] = useState(initialData.description);
     const [status, setStatus] = useState<'draft' | 'published'>(initialData.status);
@@ -49,7 +51,7 @@ export default function ProgramForm({
         const MAX_SIZE = 2 * 1024 * 1024; // 2MB
 
         if (file.size > MAX_SIZE) {
-            alert('Ukuran thumbnail maksimal 2MB');
+            toast.warning('Ukuran thumbnail maksimal 2MB');
             e.target.value = ''; // reset input file
             return;
         }
@@ -71,12 +73,12 @@ export default function ProgramForm({
         e.preventDefault();
 
         if (!titleInput.trim()) {
-            alert('Judul program wajib diisi');
+            toast.warning('Judul program wajib diisi');
             return;
         }
 
         if (!description.trim()) {
-            alert('Deskripsi program wajib diisi');
+            toast.warning('Deskripsi program wajib diisi');
             return;
         }
 
@@ -106,12 +108,12 @@ export default function ProgramForm({
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Title */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     Judul Program <span className="text-red-500">*</span>
                 </label>
                 <input
                     type="text"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
                     value={titleInput}
                     onChange={(e) => setTitleInput(e.target.value)}
                     placeholder="Masukkan judul program"
@@ -121,13 +123,13 @@ export default function ProgramForm({
 
             {/* Thumbnail */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     Thumbnail
                 </label>
                 <div className="space-y-4">
                     {thumbnailPreview ? (
                         <div className="relative">
-                            <div className="aspect-video max-w-md rounded-lg overflow-hidden bg-gray-100">
+                            <div className="aspect-video max-w-md rounded-lg overflow-hidden bg-surface-muted">
                                 <img
                                     src={thumbnailPreview}
                                     alt="Thumbnail preview"
@@ -143,10 +145,10 @@ export default function ProgramForm({
                             </button>
                         </div>
                     ) : (
-                        <div className="aspect-video max-w-md rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors">
-                            <ImageIcon className="w-12 h-12 text-gray-400 mb-3" />
-                            <p className="text-sm text-gray-500 mb-2">Upload thumbnail program</p>
-                            <p className="text-xs text-gray-400 mb-3">Ukuran maksimal 2MB</p>
+                        <div className="aspect-video max-w-md rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center bg-surface-muted hover:bg-surface-muted transition-colors">
+                            <ImageIcon className="w-12 h-12 text-muted mb-3" />
+                            <p className="text-sm text-muted mb-2">Upload thumbnail program</p>
+                            <p className="text-xs text-muted mb-3">Ukuran maksimal 2MB</p>
                             <label className="cursor-pointer">
                                 <div className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center">
                                     <Upload className="w-4 h-4 mr-2" />
@@ -167,25 +169,25 @@ export default function ProgramForm({
 
             {/* Description */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     Deskripsi Program <span className="text-red-500">*</span>
                 </label>
                 <textarea
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
                     rows={6}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder="Masukkan deskripsi lengkap program"
                     required
                 />
-                <div className="mt-2 text-xs text-gray-500">
+                <div className="mt-2 text-xs text-muted">
                     Karakter: {description.length}
                 </div>
             </div>
 
             {/* Status */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     Status
                 </label>
                 <div className="flex space-x-4">
@@ -196,9 +198,9 @@ export default function ProgramForm({
                             value="draft"
                             checked={status === 'draft'}
                             onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
-                            className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            className="h-4 w-4 text-blue-600 border-line focus:ring-blue-500"
                         />
-                        <span className="ml-2 flex items-center text-gray-700">
+                        <span className="ml-2 flex items-center text-body">
                             <EyeOff className="w-4 h-4 mr-1" />
                             Draft
                         </span>
@@ -210,9 +212,9 @@ export default function ProgramForm({
                             value="published"
                             checked={status === 'published'}
                             onChange={(e) => setStatus(e.target.value as 'draft' | 'published')}
-                            className="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                            className="h-4 w-4 text-blue-600 border-line focus:ring-blue-500"
                         />
-                        <span className="ml-2 flex items-center text-gray-700">
+                        <span className="ml-2 flex items-center text-body">
                             <Eye className="w-4 h-4 mr-1" />
                             Published
                         </span>
@@ -221,11 +223,11 @@ export default function ProgramForm({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-3 pt-6 border-t border-line">
                 <button
                     type="button"
                     onClick={() => window.history.back()}
-                    className="px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+                    className="px-5 py-2.5 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
                 >
                     Batal
                 </button>

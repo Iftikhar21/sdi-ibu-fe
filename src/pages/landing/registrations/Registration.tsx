@@ -5,12 +5,19 @@ import MainLayout from "../../../components/layout/landing/MainLayout";
 import { registrationService } from '../../../services/registrationServices';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
+import NumericInput from '../../../components/common/NumericInput';
+import DateInput from '../../../components/common/DateInput';
 
 const PendaftaranPage = () => {
     const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [successMessage, setSuccessMessage] = useState('');
+    const [successRegistration, setSuccessRegistration] = useState<{
+        number: string;
+        name: string;
+        status: string;
+    } | null>(null);
 
     // State untuk modal error
     const [showErrorModal, setShowErrorModal] = useState(false);
@@ -162,11 +169,21 @@ const PendaftaranPage = () => {
 
             const response = await registrationService.create(formDataToSend);
 
+            const nomorPendaftaran = response?.registration_number ?? '';
+            const namaPendaftar = formData.full_name;
+
             // Reset form
             handleReset();
 
             // Show success message
-            setSuccessMessage(`Pendaftaran untuk ${formData.full_name} berhasil dikirim! Status dapat dilihat di dashboard.`);
+            setSuccessRegistration({
+                number: nomorPendaftaran,
+                name: namaPendaftar,
+                status: response?.status ?? 'submitted'
+            });
+            setSuccessMessage(
+                `Pendaftaran untuk ${namaPendaftar} berhasil dikirim! Simpan nomor pendaftaran di bawah untuk memantau status.`
+            );
 
         } catch (error: any) {
             console.error('Error submitting registration:', error);
@@ -261,7 +278,7 @@ const PendaftaranPage = () => {
                 </Helmet>
 
                 {/* Hero Section */}
-                <div className="relative bg-gradient-to-r from-blue-700 via-blue-600 to-blue-800 py-16 overflow-hidden">
+                <div className="relative bg-gradient-to-r from-blue-700 via-blue-600 to-blue-800 py-16 overflow-hidden dark:from-brand-strong dark:via-brand dark:to-brand-strong">
                     {/* Decorative Elements */}
                     <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                     <div className="absolute bottom-0 left-0 w-64 h-64 bg-blue-900/20 rounded-full translate-y-1/2 -translate-x-1/2"></div>
@@ -285,10 +302,29 @@ const PendaftaranPage = () => {
                             <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
                                 <div className="flex items-center">
                                     <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                                    <span className="text-green-800">{successMessage}</span>
+                                    <div>
+                                        <span className="text-green-800">{successMessage}</span>
+                                        {successRegistration?.number && (
+                                            <div className="mt-2">
+                                                <span className="block text-xs uppercase tracking-wide text-green-700">
+                                                    Nomor Pendaftaran
+                                                </span>
+                                                <span className="block text-lg font-bold tracking-wide text-green-900">
+                                                    {successRegistration.number}
+                                                </span>
+                                                <span className="block text-xs text-green-700">
+                                                    Status: Dikirim — pantau di menu Pendaftaran
+                                                    Saya pada dashboard.
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
                                 <button
-                                    onClick={() => setSuccessMessage('')}
+                                    onClick={() => {
+                                        setSuccessMessage('');
+                                        setSuccessRegistration(null);
+                                    }}
                                     className="text-green-600 hover:text-green-800"
                                 >
                                     <X className="w-4 h-4" />
@@ -318,7 +354,7 @@ const PendaftaranPage = () => {
                             </div>
                         </div>
 
-                        <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+                        <div className="bg-surface rounded-2xl shadow-lg p-8 md:p-12">
                             {/* Badge */}
                             <div className="inline-block bg-blue-100 text-blue-600 px-5 py-2 rounded-full text-sm font-medium mb-8">
                                 Form Pendaftaran
@@ -327,14 +363,14 @@ const PendaftaranPage = () => {
                             <form onSubmit={handleSubmit}>
                                 {/* Data Calon Murid */}
                                 <div className="mb-10">
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-gray-200">
+                                    <h2 className="text-2xl font-bold text-body mb-6 pb-3 border-b-2 border-line">
                                         Data Calon Murid
                                     </h2>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Nama Lengkap */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Nama Lengkap <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -343,7 +379,7 @@ const PendaftaranPage = () => {
                                                 value={formData.full_name}
                                                 onChange={handleChange}
                                                 placeholder="Masukkan nama lengkap sesuai akte"
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.full_name ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.full_name ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
                                                 required
                                             />
                                             {errors.full_name && <p className="mt-1 text-sm text-red-600">{errors.full_name}</p>}
@@ -351,7 +387,7 @@ const PendaftaranPage = () => {
 
                                         {/* Nama Panggilan */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Nama Panggilan <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -360,7 +396,7 @@ const PendaftaranPage = () => {
                                                 value={formData.nickname}
                                                 onChange={handleChange}
                                                 placeholder="Nama yang biasa dipanggil"
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.nickname ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.nickname ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
                                                 required
                                             />
                                             {errors.nickname && <p className="mt-1 text-sm text-red-600">{errors.nickname}</p>}
@@ -368,14 +404,14 @@ const PendaftaranPage = () => {
 
                                         {/* Jenis Kelamin */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Jenis Kelamin <span className="text-red-500">*</span>
                                             </label>
                                             <select
                                                 name="gender"
                                                 value={formData.gender}
                                                 onChange={handleChange}
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.gender ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all appearance-none cursor-pointer`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.gender ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all appearance-none cursor-pointer`}
                                                 required
                                             >
                                                 <option value="">Pilih Jenis Kelamin</option>
@@ -387,7 +423,7 @@ const PendaftaranPage = () => {
 
                                         {/* Tempat Lahir */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Tempat Lahir <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -396,7 +432,7 @@ const PendaftaranPage = () => {
                                                 value={formData.birth_place}
                                                 onChange={handleChange}
                                                 placeholder="Kota kelahiran"
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.birth_place ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.birth_place ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
                                                 required
                                             />
                                             {errors.birth_place && <p className="mt-1 text-sm text-red-600">{errors.birth_place}</p>}
@@ -404,25 +440,28 @@ const PendaftaranPage = () => {
 
                                         {/* Tanggal Lahir */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Tanggal Lahir <span className="text-red-500">*</span>
                                             </label>
-                                            <input
-                                                type="date"
-                                                name="birth_date"
+                                            <DateInput
                                                 value={formData.birth_date}
-                                                onChange={handleChange}
-                                                placeholder="dd/mm/yyyy"
+                                                onChange={(value) =>
+                                                    setFormData((previous) => ({
+                                                        ...previous,
+                                                        birth_date: value,
+                                                    }))
+                                                }
                                                 max={new Date().toISOString().split('T')[0]}
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.birth_date ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
-                                                required
+                                                hasError={Boolean(errors.birth_date)}
+                                                ariaLabel="Tanggal lahir"
+                                                placeholder="Pilih tanggal lahir"
                                             />
                                             {errors.birth_date && <p className="mt-1 text-sm text-red-600">{errors.birth_date}</p>}
                                         </div>
 
                                         {/* Alamat */}
                                         <div className="md:col-span-2">
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Alamat <span className="text-red-500">*</span>
                                             </label>
                                             <textarea
@@ -431,7 +470,7 @@ const PendaftaranPage = () => {
                                                 onChange={handleChange}
                                                 placeholder="Alamat lengkap tempat tinggal"
                                                 rows={4}
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.address ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all resize-none`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.address ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all resize-none`}
                                                 required
                                             />
                                             {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
@@ -441,14 +480,14 @@ const PendaftaranPage = () => {
 
                                 {/* Data Orang Tua */}
                                 <div className="mb-10">
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-gray-200">
+                                    <h2 className="text-2xl font-bold text-body mb-6 pb-3 border-b-2 border-line">
                                         Data Orang Tua
                                     </h2>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         {/* Nama Ayah */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Nama Ayah <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -457,7 +496,7 @@ const PendaftaranPage = () => {
                                                 value={formData.father_name}
                                                 onChange={handleChange}
                                                 placeholder="Nama lengkap ayah"
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.father_name ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.father_name ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
                                                 required
                                             />
                                             {errors.father_name && <p className="mt-1 text-sm text-red-600">{errors.father_name}</p>}
@@ -465,7 +504,7 @@ const PendaftaranPage = () => {
 
                                         {/* Nama Ibu */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Nama Ibu <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -474,7 +513,7 @@ const PendaftaranPage = () => {
                                                 value={formData.mother_name}
                                                 onChange={handleChange}
                                                 placeholder="Nama lengkap ibu"
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.mother_name ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.mother_name ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
                                                 required
                                             />
                                             {errors.mother_name && <p className="mt-1 text-sm text-red-600">{errors.mother_name}</p>}
@@ -482,24 +521,30 @@ const PendaftaranPage = () => {
 
                                         {/* Nomor Telepon */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Nomor Telepon <span className="text-red-500">*</span>
                                             </label>
-                                            <input
-                                                type="tel"
-                                                name="phone"
-                                                value={formData.phone}
-                                                onChange={handleChange}
-                                                placeholder="Nomor telepon yang dapat dihubungi"
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.phone ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
-                                                required
-                                            />
+                                        <NumericInput
+                                            name="phone"
+                                            mode="phone"
+                                            maxLength={20}
+                                            value={formData.phone}
+                                            onChange={(value) =>
+                                                setFormData((previous) => ({
+                                                    ...previous,
+                                                    phone: value,
+                                                }))
+                                            }
+                                            placeholder="Nomor telepon yang dapat dihubungi"
+                                            className={`w-full px-4 py-3 bg-surface-muted border ${errors.phone ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
+                                            ariaLabel="Nomor telepon"
+                                        />
                                             {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
                                         </div>
 
                                         {/* Email */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            <label className="block text-sm font-medium text-body mb-2">
                                                 Email <span className="text-red-500">*</span>
                                             </label>
                                             <input
@@ -508,7 +553,7 @@ const PendaftaranPage = () => {
                                                 value={formData.contact_email}
                                                 onChange={handleChange}
                                                 placeholder="Email yang aktif"
-                                                className={`w-full px-4 py-3 bg-gray-50 border ${errors.contact_email ? 'border-red-300' : 'border-gray-200'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all`}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.contact_email ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
                                                 required
                                             />
                                             {errors.contact_email && <p className="mt-1 text-sm text-red-600">{errors.contact_email}</p>}
@@ -518,18 +563,18 @@ const PendaftaranPage = () => {
 
                                 {/* Dokumen Pendukung */}
                                 <div className="mb-10">
-                                    <h2 className="text-2xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-gray-200">
+                                    <h2 className="text-2xl font-bold text-body mb-6 pb-3 border-b-2 border-line">
                                         Dokumen Pendukung
                                     </h2>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                                         {/* Foto */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-4">
+                                            <label className="block text-sm font-medium text-body mb-4">
                                                 <Camera className="w-5 h-5 inline mr-2" />
                                                 Foto Calon Murid <span className="text-red-500">*</span>
                                             </label>
-                                            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
+                                            <div className="border-2 border-dashed border-line rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-surface-muted hover:bg-blue-50">
                                                 <input
                                                     type="file"
                                                     name="photo"
@@ -557,8 +602,8 @@ const PendaftaranPage = () => {
                                                                 <Camera className="w-8 h-8 text-blue-600" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-gray-600">Klik untuk mengunggah foto</p>
-                                                                <p className="text-xs text-gray-500 mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-muted">Klik untuk mengunggah foto</p>
+                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -569,11 +614,11 @@ const PendaftaranPage = () => {
 
                                         {/* Akte Kelahiran */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-4">
+                                            <label className="block text-sm font-medium text-body mb-4">
                                                 <FileText className="w-5 h-5 inline mr-2" />
                                                 Akte Kelahiran <span className="text-red-500">*</span>
                                             </label>
-                                            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
+                                            <div className="border-2 border-dashed border-line rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-surface-muted hover:bg-blue-50">
                                                 <input
                                                     type="file"
                                                     name="birth_certificate"
@@ -601,8 +646,8 @@ const PendaftaranPage = () => {
                                                                 <FileText className="w-8 h-8 text-blue-600" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-gray-600">Klik untuk mengunggah akte</p>
-                                                                <p className="text-xs text-gray-500 mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-muted">Klik untuk mengunggah akte</p>
+                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -613,11 +658,11 @@ const PendaftaranPage = () => {
 
                                         {/* Kartu Keluarga */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-4">
+                                            <label className="block text-sm font-medium text-body mb-4">
                                                 <FileText className="w-5 h-5 inline mr-2" />
                                                 Kartu Keluarga <span className="text-red-500">*</span>
                                             </label>
-                                            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
+                                            <div className="border-2 border-dashed border-line rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-surface-muted hover:bg-blue-50">
                                                 <input
                                                     type="file"
                                                     name="family_card"
@@ -645,8 +690,8 @@ const PendaftaranPage = () => {
                                                                 <FileText className="w-8 h-8 text-blue-600" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-gray-600">Klik untuk mengunggah KK</p>
-                                                                <p className="text-xs text-gray-500 mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-muted">Klik untuk mengunggah KK</p>
+                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -657,11 +702,11 @@ const PendaftaranPage = () => {
 
                                         {/* Bukti Pembayaran */}
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-4">
+                                            <label className="block text-sm font-medium text-body mb-4">
                                                 <FileText className="w-5 h-5 inline mr-2" />
                                                 Bukti Pembayaran <span className="text-red-500">*</span>
                                             </label>
-                                            <div className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-gray-50 hover:bg-blue-50">
+                                            <div className="border-2 border-dashed border-line rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-surface-muted hover:bg-blue-50">
                                                 <input
                                                     type="file"
                                                     name="payment_proof"
@@ -689,8 +734,8 @@ const PendaftaranPage = () => {
                                                                 <FileText className="w-8 h-8 text-blue-600" />
                                                             </div>
                                                             <div>
-                                                                <p className="text-gray-600">Klik untuk mengunggah bukti</p>
-                                                                <p className="text-xs text-gray-500 mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-muted">Klik untuk mengunggah bukti</p>
+                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -707,9 +752,9 @@ const PendaftaranPage = () => {
                                         <input
                                             type="checkbox"
                                             required
-                                            className="mt-1 w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                                            className="mt-1 w-5 h-5 text-blue-600 border-line rounded focus:ring-2 focus:ring-blue-500 cursor-pointer"
                                         />
-                                        <span className="text-sm text-gray-600 leading-relaxed">
+                                        <span className="text-sm text-muted leading-relaxed">
                                             Saya menyatakan bahwa data yang diisi adalah benar dan siap mengikuti aturan yang berlaku di SDI Ibu
                                         </span>
                                     </label>
@@ -762,9 +807,9 @@ const PendaftaranPage = () => {
                 confirmText="Mengerti"
                 onConfirm={() => setShowErrorModal(false)}
             >
-                <div className="text-gray-700">
+                <div className="text-body">
                     <p className="mb-4">{errorModalMessage}</p>
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-muted">
                         Silakan periksa kembali data yang Anda masukkan dan coba lagi.
                     </p>
                 </div>

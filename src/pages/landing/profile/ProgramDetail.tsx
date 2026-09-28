@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import api from '../../../api/api';
 import bg_1 from "@/assets/img/bg_1.svg";
 import { Helmet } from "react-helmet-async";
+import { useToast } from '../../../context/toast';
+import ErrorPage from '../../../components/common/ErrorPage';
 
 interface ProgramDetail {
     id: number;
@@ -35,6 +37,7 @@ interface ApiResponse {
 
 const ProgramDetailPage = () => {
     const { slug } = useParams<{ slug: string }>();
+    const toast = useToast();
     const [program, setProgram] = useState<ProgramDetail | null>(null);
     const [latestNews, setLatestNews] = useState<NewsItem[]>([]);
     const [loading, setLoading] = useState(true);
@@ -93,12 +96,11 @@ const ProgramDetailPage = () => {
     if (!program) {
         return (
             <MainLayout>
-                <div className="container mx-auto px-4 py-16 text-center">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-4">Program tidak ditemukan</h1>
-                    <Link to="profil/program" className="text-blue-600 hover:text-blue-700 underline">
-                        Kembali ke halaman program
-                    </Link>
-                </div>
+                <ErrorPage
+                    code={404}
+                    variant="embedded"
+                    description="Program yang kamu cari tidak tersedia atau sudah dihapus. Silakan lihat daftar program lainnya."
+                />
             </MainLayout>
         );
     }
@@ -152,8 +154,8 @@ const ProgramDetailPage = () => {
                 />
                 <div className="absolute inset-0 bg-black/60" />
                 <div className="relative container mx-auto px-4 h-full flex flex-col justify-center items-center text-center text-white">
-                    <Link to="/profil/program" className="inline-flex items-center gap-2 text-lg mb-3 text-gray-300 hover:text-white transition-colors duration-300">
-                        <p className="text-lg mb-3 text-gray-300">
+                    <Link to="/profil/program" className="inline-flex items-center gap-2 text-lg mb-3 text-muted hover:text-white transition-colors duration-300">
+                        <p className="text-lg mb-3 text-muted">
                             Program Unggulan &gt; <span className="text-yellow-400 capitalize">{program.title}</span>
                         </p>
                     </Link>
@@ -168,15 +170,15 @@ const ProgramDetailPage = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content */}
                     <div className="lg:col-span-2">
-                        <div className="bg-white rounded-lg p-8">
-                            <h2 className="text-4xl font-bold text-gray-800 mb-6 capitalize border-b pb-4">
+                        <div className="bg-surface rounded-lg p-8">
+                            <h2 className="text-4xl font-bold text-body mb-6 capitalize border-b pb-4">
                                 {program.title}
                             </h2>
 
                             {/* Program Image */}
                             {program.thumbnail_url && (
                                 <div className="mb-6 flex justify-center"> {/* Tambahkan flex & justify-center agar posisi kotak di tengah jika diinginkan */}
-                                    <div className="w-96 aspect-square overflow-hidden rounded-lg shadow-sm border border-gray-100">
+                                    <div className="w-96 aspect-square overflow-hidden rounded-lg shadow-sm border border-line">
                                         <img
                                             src={program.thumbnail_url}
                                             alt={program.title}
@@ -186,12 +188,12 @@ const ProgramDetailPage = () => {
                                 </div>
                             )}
 
-                            <div className="prose prose-lg max-w-none text-gray-700 space-y-4">
+                            <div className="prose prose-lg max-w-none text-body space-y-4">
                                 <div dangerouslySetInnerHTML={{ __html: program.description.replace(/\n/g, '<br/>') }} />
                             </div>
 
                             {/* Meta Info */}
-                            <div className="mt-8 pt-6 text-sm text-gray-500">
+                            <div className="mt-8 pt-6 text-sm text-muted">
                                 <a href="https://sdi-ibu.id" className="text-blue-600 hover:text-blue-700 underline">
                                     https://sdi-ibu.id
                                 </a>
@@ -203,7 +205,7 @@ const ProgramDetailPage = () => {
 
                             {/* Share Section */}
                             <div className="mt-8 pt-6 border-t">
-                                <h3 className="text-lg font-semibold text-gray-500 mb-4">Bagikan</h3>
+                                <h3 className="text-lg font-semibold text-muted mb-4">Bagikan</h3>
                                 <div className="flex gap-3">
                                     <button
                                         onClick={() => {
@@ -216,12 +218,12 @@ const ProgramDetailPage = () => {
                                             } else {
                                                 // Fallback: copy to clipboard
                                                 navigator.clipboard.writeText(window.location.href);
-                                                alert('Link berhasil disalin!');
+                                                toast.success('Link berhasil disalin');
                                             }
                                         }}
-                                        className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center transition-colors"
+                                        className="w-10 h-10 bg-surface-muted hover:bg-line rounded-full flex items-center justify-center transition-colors"
                                     >
-                                        <Share2 className="w-5 h-5 text-gray-600" />
+                                        <Share2 className="w-5 h-5 text-muted" />
                                     </button>
                                 </div>
                             </div>
@@ -230,12 +232,12 @@ const ProgramDetailPage = () => {
 
                     {/* Sidebar */}
                     <div className="lg:col-span-1">
-                        <div className="bg-white rounded-lg p-6 sticky top-4">
+                        <div className="bg-surface rounded-lg p-6 sticky top-4">
                             <div className="flex items-center justify-between mb-6">
-                                <h3 className="text-xl font-bold text-gray-800">Berita Terbaru</h3>
+                                <h3 className="text-xl font-bold text-body">Berita Terbaru</h3>
                                 <Link
                                     to="/berita"
-                                    className="text-sm text-gray-500 hover:text-blue-700 font-medium"
+                                    className="text-sm text-muted hover:text-blue-700 font-medium"
                                 >
                                     Lihat Semua
                                 </Link>
@@ -257,17 +259,17 @@ const ProgramDetailPage = () => {
                                                 />
                                             </div>
                                             <div className="flex-1">
-                                                <p className="text-xs text-[#004AAD] mb-1">
+                                                <p className="text-xs text-brand mb-1">
                                                     {formatDate(news.created_at)}
                                                 </p>
-                                                <h4 className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                                <h4 className="text-sm font-semibold text-body line-clamp-2 group-hover:text-blue-600 transition-colors">
                                                     {news.title}
                                                 </h4>
                                             </div>
                                         </Link>
                                     ))
                                 ) : (
-                                    <p className="text-gray-500 text-sm">Belum ada berita</p>
+                                    <p className="text-muted text-sm">Belum ada berita</p>
                                 )}
                             </div>
                         </div>

@@ -148,16 +148,16 @@ export default function NewsForm({
     return (
         <form onSubmit={handleSubmit} className="space-y-8">
             {/* Form Header */}
-            <div className="border-b border-gray-200 pb-4">
-                <h2 className="text-2xl font-bold text-gray-800">{title}</h2>
-                <p className="text-gray-600 mt-2">
+            <div className="border-b border-line pb-4">
+                <h2 className="text-2xl font-bold text-body">{title}</h2>
+                <p className="text-muted mt-2">
                     Isi informasi berita dengan lengkap dan akurat
                 </p>
             </div>
 
             {/* Title Input */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center">
                         <Type className="w-4 h-4 mr-2 text-blue-600" />
                         Judul Berita <span className="text-red-500 ml-1">*</span>
@@ -167,18 +167,18 @@ export default function NewsForm({
                     type="text"
                     value={titleInput}
                     onChange={e => setTitleInput(e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 shadow-sm hover:border-gray-400"
                     placeholder="Masukkan judul berita"
                     required
                 />
-                <div className="mt-1 text-xs text-gray-500">
+                <div className="mt-1 text-xs text-muted">
                     Karakter: {titleInput.length}
                 </div>
             </div>
 
             {/* Thumbnail Upload */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center">
                         <ImageIcon className="w-4 h-4 mr-2 text-blue-600" />
                         Thumbnail Berita
@@ -187,7 +187,7 @@ export default function NewsForm({
 
                 {thumbnailPreview ? (
                     <div className="relative max-w-md">
-                        <div className="aspect-video rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                        <div className="aspect-video rounded-lg overflow-hidden bg-surface-muted border border-line">
                             <img
                                 src={thumbnailPreview}
                                 alt="Thumbnail preview"
@@ -204,12 +204,12 @@ export default function NewsForm({
                     </div>
                 ) : (
                     <label className="cursor-pointer">
-                        <div className="aspect-video max-w-md rounded-lg border-2 border-dashed border-gray-300 flex flex-col items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors hover:border-blue-400">
-                            <ImageIcon className="w-12 h-12 text-gray-400 mb-3" />
-                            <p className="text-sm font-medium text-gray-600 mb-1">
+                        <div className="aspect-video max-w-md rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center bg-surface-muted hover:bg-surface-muted transition-colors hover:border-blue-400">
+                            <ImageIcon className="w-12 h-12 text-muted mb-3" />
+                            <p className="text-sm font-medium text-muted mb-1">
                                 Upload Thumbnail
                             </p>
-                            <p className="text-xs text-gray-500 mb-3">
+                            <p className="text-xs text-muted mb-3">
                                 Ukuran maksimal 2MB
                             </p>
                             <div className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors inline-flex items-center">
@@ -230,13 +230,13 @@ export default function NewsForm({
 
             {/* Photos Section */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
                             <ImageIcon className="w-4 h-4 mr-2 text-green-600" />
                             Foto Lainnya (Opsional)
                         </div>
-                        <span className="text-xs text-gray-500">
+                        <span className="text-xs text-muted">
                             {existingPhotos.length + newPhotos.length} foto
                         </span>
                     </div>
@@ -245,11 +245,11 @@ export default function NewsForm({
                 {/* Existing Photos */}
                 {existingPhotos.length > 0 && (
                     <div className="mb-6">
-                        <h3 className="text-sm font-medium text-gray-700 mb-3">Foto yang Sudah Ada</h3>
+                        <h3 className="text-sm font-medium text-body mb-3">Foto yang Sudah Ada</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {existingPhotos.map(photo => (
                                 <div key={photo.id} className="relative group">
-                                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                                    <div className="aspect-square rounded-lg overflow-hidden bg-surface-muted border border-line">
                                         <img
                                             src={photo.url}
                                             alt={`Existing photo ${photo.id}`}
@@ -278,11 +278,11 @@ export default function NewsForm({
                 {/* New Photos Preview */}
                 {photoPreviews.length > 0 && (
                     <div className="mb-6">
-                        <h3 className="text-sm font-medium text-gray-700 mb-3">Foto Baru</h3>
+                        <h3 className="text-sm font-medium text-body mb-3">Foto Baru</h3>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                             {photoPreviews.map((src, i) => (
                                 <div key={i} className="relative">
-                                    <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 border border-gray-200">
+                                    <div className="aspect-square rounded-lg overflow-hidden bg-surface-muted border border-line">
                                         <img
                                             src={src}
                                             alt={`New photo preview ${i + 1}`}
@@ -309,15 +309,15 @@ export default function NewsForm({
 
                 {/* Add More Photos Button */}
                 <label className="cursor-pointer block">
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                    <div className="border-2 border-dashed border-line rounded-lg p-6 text-center hover:border-blue-400 hover:bg-blue-50 transition-colors">
                         <div className="flex flex-col items-center">
                             <div className="p-3 bg-blue-100 rounded-full mb-3">
                                 <Plus className="w-6 h-6 text-blue-600" />
                             </div>
-                            <p className="text-sm font-medium text-gray-700 mb-1">
+                            <p className="text-sm font-medium text-body mb-1">
                                 Tambah Foto Lainnya
                             </p>
-                            <p className="text-xs text-gray-500 mb-3">
+                            <p className="text-xs text-muted mb-3">
                                 Upload beberapa foto sekaligus
                             </p>
                             <div className="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors inline-flex items-center">
@@ -339,7 +339,7 @@ export default function NewsForm({
 
             {/* Content Input */}
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center">
                         <FileText className="w-4 h-4 mr-2 text-blue-600" />
                         Konten Berita <span className="text-red-500 ml-1">*</span>
@@ -349,26 +349,26 @@ export default function NewsForm({
                     value={content}
                     onChange={e => setContent(e.target.value)}
                     rows={12}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
+                    className="w-full px-4 py-3 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 resize-none shadow-sm hover:border-gray-400"
                     placeholder="Tulis konten berita lengkap di sini..."
                     required
                 />
                 <div className="flex justify-between items-center mt-1">
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted">
                         Karakter: {content.length}
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-muted">
                         Paragraf: {content.split('\n').filter(p => p.trim()).length}
                     </div>
                 </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+            <div className="flex justify-end space-x-4 pt-6 border-t border-line">
                 <button
                     type="button"
                     onClick={() => window.history.back()}
-                    className="px-6 py-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 shadow-sm"
+                    className="px-6 py-3 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 shadow-sm"
                 >
                     Batal
                 </button>

@@ -6,11 +6,14 @@ import { ArrowLeft, Loader2 } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
 
 export default function SejarahEdit() {
     const { id } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const toast = useToast();
     const [content, setContent] = useState('');
     const [loading, setLoading] = useState(true);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,13 +31,13 @@ export default function SejarahEdit() {
                 setContent(res.content);
             } catch (error) {
                 console.error('Error fetching history:', error);
-                alert('Gagal memuat data sejarah');
+                toast.error('Gagal memuat data sejarah', getApiErrorMessage(error, 'silakan coba lagi'));
             } finally {
                 setLoading(false);
             }
         };
         fetchData();
-    }, [id]);
+    }, [id, toast]);
 
     const handleSubmit = async (value: string) => {
         setFormContent(value);
@@ -52,10 +55,11 @@ export default function SejarahEdit() {
                 content: formContent,
             });
 
-            navigate('/admin/sejarah?success=true&message=Sejarah berhasil diperbarui');
+            toast.success('Sejarah berhasil diperbarui');
+            navigate('/admin/sejarah');
         } catch (error) {
             console.error('Error updating history:', error);
-            alert('Gagal memperbarui sejarah');
+            toast.error('Gagal memperbarui sejarah', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setIsSubmitting(false);
         }
@@ -68,19 +72,19 @@ export default function SejarahEdit() {
             </Helmet>
             <Layout title="Edit Sejarah">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Edit Sejarah
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Perbarui konten sejarah dengan informasi terbaru
                         </p>
                     </div>
                     <div className="flex items-center gap-3">
                         <button
                             onClick={() => navigate('/admin/sejarah')}
-                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors duration-200"
+                            className="inline-flex items-center px-4 py-2 text-sm font-medium text-body bg-surface border border-line rounded-lg hover:bg-surface-muted transition-colors duration-200"
                         >
                             <ArrowLeft className="w-4 h-4 mr-2" />
                             Kembali
@@ -92,10 +96,10 @@ export default function SejarahEdit() {
                     {loading ? (
                         <div className="text-center py-12">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                            <p className="text-gray-600">Memuat data sejarah...</p>
+                            <p className="text-muted">Memuat data sejarah...</p>
                         </div>
                     ) : (
-                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                        <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                             <div className="p-6">
                                 <SejarahForm
                                     title="Edit Sejarah"
@@ -121,7 +125,7 @@ export default function SejarahEdit() {
                 isLoading={isSubmitting}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">Apakah Anda yakin ingin menyimpan perubahan pada sejarah ini?</p>
+                    <p className="text-body">Apakah Anda yakin ingin menyimpan perubahan pada sejarah ini?</p>
                 </div>
             </Modal>
         </>

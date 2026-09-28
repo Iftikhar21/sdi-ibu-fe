@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import type { Role, User } from '../../../types/user';
 import {
     PlusCircle,
@@ -7,7 +7,6 @@ import {
     Trash2,
     Loader2,
     AlertCircle,
-    CheckCircle,
     X,
     User as UserIcon,
     Shield,
@@ -29,6 +28,9 @@ import Layout from '../../../components/layout/panel/MainLayout';
 import Modal from '../../../components/common/Modal';
 import { userService } from '../../../services/manageUserServices';
 import { Helmet } from 'react-helmet-async';
+import { useToast } from '../../../context/toast';
+import { getApiErrorMessage } from '../../../utils/apiError';
+import SearchableSelect from '../../../components/common/SearchableSelect';
 
 // Interface untuk filter state
 interface FilterState {
@@ -48,13 +50,13 @@ interface UserStats {
 }
 
 export default function UserList() {
+    const toast = useToast();
     const [data, setData] = useState<User[]>([]);
     const [filteredData, setFilteredData] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
     const [deletingId, setDeletingId] = useState<number | null>(null);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<User | null>(null);
-    const [successMessage, setSuccessMessage] = useState('');
     const [roles, setRoles] = useState<Role[]>([]);
 
     // Statistik state
@@ -79,22 +81,6 @@ export default function UserList() {
     const [itemsPerPage] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
 
-    const location = useLocation();
-    const navigate = useNavigate();
-
-    // Cek URL parameters untuk success message
-    useEffect(() => {
-        const params = new URLSearchParams(location.search);
-        const message = params.get('message');
-        const success = params.get('success') === 'true';
-
-        if (success && message) {
-            setSuccessMessage(message);
-            navigate('/admin/kelola-pengguna', { replace: true });
-
-            setTimeout(() => setSuccessMessage(''), 5000);
-        }
-    }, [location, navigate]);
 
     // Fungsi untuk menghitung statistik
     const calculateStats = useCallback((users: User[]) => {
@@ -213,11 +199,11 @@ export default function UserList() {
         setDeletingId(selectedItem.id);
         try {
             await userService.delete(selectedItem.id);
-            setSuccessMessage('User berhasil dihapus');
+            toast.success('User berhasil dihapus');
             fetchData();
         } catch (error) {
             console.error('Error deleting:', error);
-            alert('Gagal menghapus user');
+            toast.error('Gagal menghapus user', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setDeletingId(null);
             setSelectedItem(null);
@@ -252,7 +238,7 @@ export default function UserList() {
             case 'user':
                 return 'bg-blue-100 text-blue-800 border-blue-200';
             default:
-                return 'bg-gray-100 text-gray-800 border-gray-200';
+                return 'bg-surface-muted text-body border-line';
         }
     };
 
@@ -263,12 +249,12 @@ export default function UserList() {
             </Helmet>
             <Layout title="Kelola Semua Pengguna">
                 {/* Header Dashboard Style */}
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-white rounded-xl shadow-sm p-6 mb-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6">
                     <div className="mb-4 md:mb-0">
-                        <h1 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+                        <h1 className="text-xl sm:text-2xl font-bold text-body mb-2">
                             Kelola Semua Pengguna
                         </h1>
-                        <p className="text-gray-600 text-sm sm:text-base">
+                        <p className="text-muted text-sm sm:text-base">
                             Kelola semua pengguna sistem
                         </p>
                     </div>
@@ -283,37 +269,21 @@ export default function UserList() {
                     </div>
                 </div>
 
-                {/* Success Message Banner */}
-                {successMessage && (
-                    <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg flex items-center justify-between">
-                        <div className="flex items-center">
-                            <CheckCircle className="w-5 h-5 text-green-600 mr-3" />
-                            <span className="text-green-800">{successMessage}</span>
-                        </div>
-                        <button
-                            onClick={() => setSuccessMessage('')}
-                            className="text-green-600 hover:text-green-800"
-                        >
-                            <X className="w-4 h-4" />
-                        </button>
-                    </div>
-                )}
-
                 {/* STATISTICS CARDS */}
                 <div className="grid grid-cols-1  lg:grid-cols-3 gap-6 mb-6">
                     {/* Total Users */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-blue-100 rounded-lg">
                                 <Users className="w-6 h-6 text-blue-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Total Semua Pengguna</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
+                                <p className="text-sm text-muted">Total Semua Pengguna</p>
+                                <p className="text-2xl font-bold text-body">{stats.total}</p>
                             </div>
                         </div>
                         <div className="mt-4 flex items-center justify-between text-xs">
-                            <span className="text-gray-500">Diperbarui: {stats.lastUpdated}</span>
+                            <span className="text-muted">Diperbarui: {stats.lastUpdated}</span>
                             <span className="text-blue-600 font-medium">
                                 {stats.newToday > 0 ? `+${stats.newToday} hari ini` : 'Tidak ada yang baru'}
                             </span>
@@ -321,36 +291,36 @@ export default function UserList() {
                     </div>
 
                     {/* Admin Users */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-purple-100 rounded-lg">
                                 <Shield className="w-6 h-6 text-purple-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Admin</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.admin}</p>
+                                <p className="text-sm text-muted">Admin</p>
+                                <p className="text-2xl font-bold text-body">{stats.admin}</p>
                             </div>
                         </div>
                         <div className="mt-4">
-                            <div className="flex items-center text-xs text-gray-500">
+                            <div className="flex items-center text-xs text-muted">
                                 <span className="mr-2">{stats.admin > 0 ? Math.round((stats.admin / stats.total) * 100) : 0}% dari total</span>
                             </div>
                         </div>
                     </div>
 
                     {/* Regular Users */}
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                    <div className="bg-surface rounded-xl shadow-sm border border-line p-6">
                         <div className="flex items-center">
                             <div className="p-3 bg-green-100 rounded-lg">
                                 <UserCog className="w-6 h-6 text-green-600" />
                             </div>
                             <div className="ml-4">
-                                <p className="text-sm text-gray-600">Pengguna Biasa</p>
-                                <p className="text-2xl font-bold text-gray-900">{stats.user}</p>
+                                <p className="text-sm text-muted">Pengguna Biasa</p>
+                                <p className="text-2xl font-bold text-body">{stats.user}</p>
                             </div>
                         </div>
                         <div className="mt-4">
-                            <div className="flex items-center text-xs text-gray-500">
+                            <div className="flex items-center text-xs text-muted">
                                 <span className="mr-2">{stats.user > 0 ? Math.round((stats.user / stats.total) * 100) : 0}% dari total</span>
                             </div>
                         </div>
@@ -358,28 +328,28 @@ export default function UserList() {
                 </div>
 
                 {/* Filter Section */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="bg-surface rounded-xl shadow-sm border border-line p-6 mb-6">
                     <div className="flex items-center mb-4">
-                        <Filter className="w-5 h-5 text-gray-500 mr-2" />
-                        <h3 className="text-lg font-medium text-gray-800">Filter Pengguna</h3>
+                        <Filter className="w-5 h-5 text-muted mr-2" />
+                        <h3 className="text-lg font-medium text-body">Filter Pengguna</h3>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                         {/* Search Input */}
                         <div>
-                            <label htmlFor="search" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="search" className="block text-sm font-medium text-body mb-1">
                                 Cari User
                             </label>
                             <div className="relative">
                                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <Search className="h-5 w-5 text-gray-400" />
+                                    <Search className="h-5 w-5 text-muted" />
                                 </div>
                                 <input
                                     type="text"
                                     id="search"
                                     value={filters.search}
                                     onChange={(e) => handleFilterChange('search', e.target.value)}
-                                    className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                    className="block w-full pl-10 pr-3 py-2 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                                     placeholder="Cari berdasarkan nama, email, atau ID..."
                                 />
                             </div>
@@ -387,34 +357,37 @@ export default function UserList() {
 
                         {/* Role Filter */}
                         <div>
-                            <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="role" className="block text-sm font-medium text-body mb-1">
                                 Role
                             </label>
-                            <select
-                                id="role"
+                            <SearchableSelect
+                                compact
+                                options={[
+                                    { value: 'all', label: 'Semua Role' },
+                                    ...roles.map((role) => ({
+                                        value: role.role_name,
+                                        label:
+                                            role.role_name.charAt(0).toUpperCase() +
+                                            role.role_name.slice(1),
+                                    })),
+                                ]}
                                 value={filters.role}
-                                onChange={(e) => handleFilterChange('role', e.target.value)}
-                                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                            >
-                                <option value="all">Semua Role</option>
-                                {roles.map((role) => (
-                                    <option key={role.id} value={role.role_name}>
-                                        {role.role_name.charAt(0).toUpperCase() + role.role_name.slice(1)}
-                                    </option>
-                                ))}
-                            </select>
+                                onChange={(value) => handleFilterChange('role', String(value))}
+                                searchPlaceholder="Cari role..."
+                                ariaLabel="Filter role pengguna"
+                            />
                         </div>
 
                         {/* Status Filter */}
                         {/* <div>
-                            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
+                            <label htmlFor="status" className="block text-sm font-medium text-body mb-1">
                                 Status
                             </label>
                             <select
                                 id="status"
                                 value={filters.status}
                                 onChange={(e) => handleFilterChange('status', e.target.value)}
-                                className="block w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                                className="block w-full px-3 py-2 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                             >
                                 <option value="all">Semua Status</option>
                                 <option value="active">Aktif</option>
@@ -424,15 +397,15 @@ export default function UserList() {
 
                         {/* Results Count */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-body mb-1">
                                 Hasil Filter
                             </label>
-                            <div className="px-3 py-2 bg-gray-50 border border-gray-300 rounded-lg">
-                                <p className="text-sm text-gray-700">
+                            <div className="px-3 py-2 bg-surface-muted border border-line rounded-lg">
+                                <p className="text-sm text-body">
                                     <span className="font-semibold">{filteredData.length}</span> dari{' '}
                                     <span className="font-semibold">{data.length}</span> user
                                 </p>
-                                <p className="text-xs text-gray-500 mt-1">
+                                <p className="text-xs text-muted mt-1">
                                     Halaman {currentPage} dari {totalPages}
                                 </p>
                             </div>
@@ -444,7 +417,7 @@ export default function UserList() {
                         <div className="flex justify-end">
                             <button
                                 onClick={handleResetFilters}
-                                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
+                                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-body bg-surface-muted border border-line rounded-lg hover:bg-line focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200"
                             >
                                 <X className="w-4 h-4 mr-1" />
                                 Reset Filter
@@ -454,19 +427,19 @@ export default function UserList() {
                 </div>
 
                 {/* Content */}
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
                     {loading ? (
                         <div className="py-12 text-center">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
-                            <p className="text-gray-600">Memuat data user...</p>
+                            <p className="text-muted">Memuat data user...</p>
                         </div>
                     ) : filteredData.length === 0 ? (
                         <div className="py-12 text-center">
-                            <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">
+                            <AlertCircle className="w-12 h-12 text-muted mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-body mb-2">
                                 Tidak ada user yang ditemukan
                             </h3>
-                            <p className="text-gray-600 max-w-md mx-auto mb-6">
+                            <p className="text-muted max-w-md mx-auto mb-6">
                                 {filters.search || filters.role !== 'all' || filters.status !== 'all'
                                     ? 'Coba ubah filter pencarian Anda.'
                                     : 'Mulai dengan menambahkan user baru.'}
@@ -491,39 +464,39 @@ export default function UserList() {
                     ) : (
                         <>
                             <div className="overflow-x-auto">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
+                                <table className="min-w-full divide-y divide-line">
+                                    <thead className="bg-surface-muted">
                                         <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                 User
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                 Role
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                 Email
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                 Tanggal Dibuat
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                            <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                                                 Aksi
                                             </th>
                                         </tr>
                                     </thead>
-                                    <tbody className="bg-white divide-y divide-gray-200">
+                                    <tbody className="bg-surface divide-y divide-line">
                                         {currentItems.map((user) => (
-                                            <tr key={user.id} className="hover:bg-gray-50 transition-colors duration-150">
+                                            <tr key={user.id} className="hover:bg-surface-muted transition-colors duration-150">
                                                 <td className="px-6 py-4 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
                                                             <UserIcon className="h-5 w-5 text-blue-600" />
                                                         </div>
                                                         <div className="ml-4">
-                                                            <div className="text-sm font-medium text-gray-900">
+                                                            <div className="text-sm font-medium text-body">
                                                                 {user.name}
                                                             </div>
-                                                            <div className="text-sm text-gray-500">
+                                                            <div className="text-sm text-muted">
                                                                 ID: {user.id}
                                                             </div>
                                                         </div>
@@ -535,10 +508,10 @@ export default function UserList() {
                                                         <span className="ml-1 capitalize">{user.role?.role_name || 'No Role'}</span>
                                                     </span>
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-body">
                                                     {user.email}
                                                 </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-muted">
                                                     {new Date(user.created_at).toLocaleDateString('id-ID', {
                                                         day: 'numeric',
                                                         month: 'short',
@@ -576,10 +549,10 @@ export default function UserList() {
 
                             {/* Pagination */}
                             {totalPages > 1 && (
-                                <div className="px-6 py-4 border-t border-gray-200">
+                                <div className="px-6 py-4 border-t border-line">
                                     <div className="flex flex-col sm:flex-row items-center justify-between">
                                         <div className="mb-4 sm:mb-0">
-                                            <p className="text-sm text-gray-700">
+                                            <p className="text-sm text-body">
                                                 Menampilkan <span className="font-medium">{indexOfFirstItem + 1}</span> -{' '}
                                                 <span className="font-medium">
                                                     {Math.min(indexOfLastItem, filteredData.length)}
@@ -591,7 +564,7 @@ export default function UserList() {
                                             <button
                                                 onClick={() => handlePageChange(1)}
                                                 disabled={currentPage === 1}
-                                                className="p-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                className="p-2 rounded-lg border border-line bg-surface text-body hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                                 title="Halaman pertama"
                                             >
                                                 <ChevronsLeft className="w-4 h-4" />
@@ -599,7 +572,7 @@ export default function UserList() {
                                             <button
                                                 onClick={() => handlePageChange(currentPage - 1)}
                                                 disabled={currentPage === 1}
-                                                className="p-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                className="p-2 rounded-lg border border-line bg-surface text-body hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                                 title="Halaman sebelumnya"
                                             >
                                                 <ChevronLeft className="w-4 h-4" />
@@ -624,7 +597,7 @@ export default function UserList() {
                                                         onClick={() => handlePageChange(pageNumber)}
                                                         className={`px-3 py-2 text-sm font-medium rounded-lg border transition-colors duration-200 ${currentPage === pageNumber
                                                             ? 'bg-blue-600 text-white border-blue-600'
-                                                            : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                                                            : 'border-line bg-surface text-body hover:bg-surface-muted'
                                                             }`}
                                                     >
                                                         {pageNumber}
@@ -635,7 +608,7 @@ export default function UserList() {
                                             <button
                                                 onClick={() => handlePageChange(currentPage + 1)}
                                                 disabled={currentPage === totalPages}
-                                                className="p-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                className="p-2 rounded-lg border border-line bg-surface text-body hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                                 title="Halaman berikutnya"
                                             >
                                                 <ChevronRight className="w-4 h-4" />
@@ -643,7 +616,7 @@ export default function UserList() {
                                             <button
                                                 onClick={() => handlePageChange(totalPages)}
                                                 disabled={currentPage === totalPages}
-                                                className="p-2 rounded-lg border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                                                className="p-2 rounded-lg border border-line bg-surface text-body hover:bg-surface-muted disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
                                                 title="Halaman terakhir"
                                             >
                                                 <ChevronsRight className="w-4 h-4" />
@@ -669,10 +642,10 @@ export default function UserList() {
                 isLoading={deletingId !== null}
             >
                 <div className="py-2">
-                    <p className="text-gray-700">
+                    <p className="text-body">
                         Apakah Anda yakin ingin menghapus user <strong>{selectedItem?.name}</strong>?
                     </p>
-                    <div className="mt-3 text-sm text-gray-600 space-y-1">
+                    <div className="mt-3 text-sm text-muted space-y-1">
                         <p><strong>Email:</strong> {selectedItem?.email}</p>
                         <p><strong>Role:</strong> {selectedItem?.role?.role_name}</p>
                     </div>

@@ -62,14 +62,14 @@ const Modal: React.FC<ModalProps> = ({
 
             {/* MODAL */}
             <div
-                className={`relative z-10 w-full ${sizeClasses[size]} mx-4 bg-white rounded-lg shadow-xl ${typeClasses[type]}`}
+                className={`relative z-10 w-full ${sizeClasses[size]} mx-4 bg-surface rounded-lg shadow-xl ${typeClasses[type]}`}
                 onClick={(e) => e.stopPropagation()} // 🔥 KUNCI
             >
                 {/* HEADER */}
                 <div className="flex items-center justify-between px-6 py-4">
                     <div className="flex items-center gap-3">
                         {typeIcons[type]}
-                        <h3 className="text-lg font-semibold text-gray-900">
+                        <h3 className="text-lg font-semibold text-body">
                             {title}
                         </h3>
                     </div>
@@ -77,7 +77,7 @@ const Modal: React.FC<ModalProps> = ({
                         type="button"
                         onClick={onClose}
                         disabled={isLoading}
-                        className="p-1 rounded-lg hover:bg-gray-100"
+                        className="p-1 rounded-lg hover:bg-surface-muted"
                     >
                         <X size={20} />
                     </button>
@@ -87,15 +87,17 @@ const Modal: React.FC<ModalProps> = ({
                 <div className="px-6 pb-4">{children}</div>
 
                 {/* FOOTER */}
-                <div className="flex justify-end gap-3 px-6 py-4 border-t bg-gray-50">
-                    <button
-                        type="button"
-                        onClick={onCancel ?? onClose}
-                        disabled={isLoading}
-                        className="px-4 py-2 text-gray-700 bg-white border rounded-lg hover:bg-gray-50"
-                    >
-                        {cancelText}
-                    </button>
+                <div className="flex justify-end gap-3 px-6 py-4 border-t bg-surface-muted">
+                    {cancelText && (
+                        <button
+                            type="button"
+                            onClick={onCancel ?? onClose}
+                            disabled={isLoading}
+                            className="px-4 py-2 text-body bg-surface border rounded-lg hover:bg-surface-muted"
+                        >
+                            {cancelText}
+                        </button>
+                    )}
 
                     <button
                         type="button"
