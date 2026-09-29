@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { CalendarClock, CircleDollarSign, ClipboardCheck, Loader2, Plus, Save, Trash2, Users } from 'lucide-react';
+import { CalendarClock, CircleDollarSign, ClipboardCheck, Landmark, Loader2, Plus, Save, Trash2, Users } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import NumericInput from '../../../components/common/NumericInput';
 import { useToast } from '../../../context/toast';
@@ -22,6 +22,9 @@ export default function RegistrationInformation() {
     const [phaseMessage, setPhaseMessage] = useState('');
     const [quota, setQuota] = useState(0);
     const [quotaDescription, setQuotaDescription] = useState('');
+    const [paymentBank, setPaymentBank] = useState('');
+    const [paymentAccountNumber, setPaymentAccountNumber] = useState('');
+    const [paymentAccountName, setPaymentAccountName] = useState('');
     const [registered, setRegistered] = useState(0);
     const [academicYear, setAcademicYear] = useState<string | null>(null);
     const [requirements, setRequirements] = useState<RegistrationRequirementInput[]>([]);
@@ -35,6 +38,9 @@ export default function RegistrationInformation() {
                 setPhaseMessage(data.phase_message ?? '');
                 setQuota(data.quota);
                 setQuotaDescription(data.quota_description ?? '');
+                setPaymentBank(data.payment_bank ?? '');
+                setPaymentAccountNumber(data.payment_account_number ?? '');
+                setPaymentAccountName(data.payment_account_name ?? '');
                 setRegistered(data.registered);
                 setAcademicYear(data.academic_year?.name ?? null);
                 setRequirements(data.requirements);
@@ -61,6 +67,13 @@ export default function RegistrationInformation() {
             return;
         }
 
+        const paymentFields = [paymentBank, paymentAccountNumber, paymentAccountName]
+            .map((value) => value.trim());
+        if (paymentFields.some(Boolean) && !paymentFields.every(Boolean)) {
+            toast.warning('Lengkapi nama bank, nomor rekening, dan nama pemilik rekening');
+            return;
+        }
+
         setSaving(true);
         try {
             const data = await registrationInformationService.update({
@@ -68,6 +81,9 @@ export default function RegistrationInformation() {
                 phase_message: phaseMessage.trim() || null,
                 quota,
                 quota_description: quotaDescription.trim() || null,
+                payment_bank: paymentBank.trim() || null,
+                payment_account_number: paymentAccountNumber.trim() || null,
+                payment_account_name: paymentAccountName.trim() || null,
                 requirements: requirements.map((item) => ({
                     content: item.content.trim(),
                     is_active: item.is_active,
@@ -325,6 +341,51 @@ export default function RegistrationInformation() {
                                 </div>
                             ))}
                         </div>
+                    </section>
+
+                    <section className="rounded-xl border border-line bg-surface p-6 shadow-sm">
+                        <div className="mb-5 flex items-center gap-3">
+                            <div className="rounded-lg bg-cyan-50 p-2.5 text-cyan-600"><Landmark className="h-5 w-5" /></div>
+                            <div>
+                                <h2 className="font-semibold text-body">Tujuan Pembayaran</h2>
+                                <p className="text-sm text-muted">Informasi rekening yang ditampilkan pada bagian biaya di landing page.</p>
+                            </div>
+                        </div>
+                        <div className="grid gap-4 md:grid-cols-3">
+                            <div>
+                                <label className="mb-1.5 block text-sm font-medium text-body">Nama Bank</label>
+                                <input
+                                    value={paymentBank}
+                                    onChange={(event) => setPaymentBank(event.target.value)}
+                                    maxLength={100}
+                                    placeholder="Contoh: Bank Syariah Indonesia"
+                                    className={inputClass}
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-sm font-medium text-body">Nomor Rekening</label>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={paymentAccountNumber}
+                                    onChange={(event) => setPaymentAccountNumber(event.target.value.replace(/\D/g, ''))}
+                                    maxLength={100}
+                                    placeholder="Contoh: 1234567890"
+                                    className={inputClass}
+                                />
+                            </div>
+                            <div>
+                                <label className="mb-1.5 block text-sm font-medium text-body">Atas Nama</label>
+                                <input
+                                    value={paymentAccountName}
+                                    onChange={(event) => setPaymentAccountName(event.target.value)}
+                                    maxLength={150}
+                                    placeholder="Contoh: SDI Ikhlas Bakti Umat"
+                                    className={inputClass}
+                                />
+                            </div>
+                        </div>
+                        <p className="mt-3 text-xs text-muted">Kosongkan seluruh kolom jika pembayaran tidak menggunakan transfer bank.</p>
                     </section>
                 </div>
             </Layout>

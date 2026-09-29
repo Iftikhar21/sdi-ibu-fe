@@ -8,8 +8,8 @@ import ThemeToggle from '../../common/ThemeToggle';
 const Navbar = () => {
     const { user } = useAuth();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [isProfilOpen, setIsProfilOpen] = useState(false);
-    const [isProfilMobileOpen, setIsProfilMobileOpen] = useState(false);
+    const [openDesktopMenu, setOpenDesktopMenu] = useState<string | null>(null);
+    const [openMobileMenu, setOpenMobileMenu] = useState<string | null>(null);
     const location = useLocation();
 
     const navLinks = [
@@ -46,9 +46,15 @@ const Navbar = () => {
             icon: <Images className="w-4 h-4" />
         },
         {
-            name: 'Pendaftaran',
-            path: '/pendaftaran',
-            icon: <UserPlus className="w-4 h-4" />
+            name: 'SPMB',
+            icon: <UserPlus className="w-4 h-4" />,
+            children: [
+                { name: 'Status & Kuota Kelas', path: '/pendaftaran#kuota-kelas' },
+                { name: 'Persyaratan', path: '/pendaftaran#persyaratan' },
+                { name: 'Biaya', path: '/pendaftaran#biaya' },
+                { name: 'Alur Pendaftaran', path: '/pendaftaran#alur' },
+                { name: 'Formulir Pendaftaran', path: '/pendaftaran#formulir' },
+            ],
         },
         {
             name: 'Kontak',
@@ -57,7 +63,16 @@ const Navbar = () => {
         },
     ];
 
-    const isProfilActive = location.pathname.startsWith('/profil');
+    const isSectionActive = (name: string) => (
+        name === 'Profil'
+            ? location.pathname.startsWith('/profil')
+            : name === 'SPMB' && location.pathname === '/pendaftaran'
+    );
+
+    const isChildActive = (path: string) => {
+        const [pathname, hash] = path.split('#');
+        return location.pathname === pathname && (!hash || location.hash === `#${hash}`);
+    };
 
     const activeClass =
         'text-blue-600 relative after:absolute after:left-0 after:-bottom-2 after:h-[2px] after:w-full after:bg-blue-600 after:scale-x-100 after:origin-left after:transition-transform';
@@ -68,17 +83,17 @@ const Navbar = () => {
     const handleMenuToggle = () => {
         setIsMenuOpen(!isMenuOpen);
         if (isMenuOpen) {
-            setIsProfilMobileOpen(false);
+            setOpenMobileMenu(null);
         }
     };
 
-    const handleProfilMobileToggle = () => {
-        setIsProfilMobileOpen(!isProfilMobileOpen);
+    const handleMobileSubmenuToggle = (name: string) => {
+        setOpenMobileMenu((current) => current === name ? null : name);
     };
 
     const closeMobileMenu = () => {
         setIsMenuOpen(false);
-        setIsProfilMobileOpen(false);
+        setOpenMobileMenu(null);
     };
 
     // Fungsi untuk mendapatkan URL dashboard berdasarkan role
@@ -131,33 +146,33 @@ const Navbar = () => {
                             item.children ? (
                                 <div key={item.name} className="relative">
                                     <button
-                                        onClick={() => setIsProfilOpen(!isProfilOpen)}
-                                        className={`flex items-center text-sm font-medium transition-colors ${isProfilActive
+                                        onClick={() => setOpenDesktopMenu((current) => current === item.name ? null : item.name)}
+                                        className={`flex cursor-pointer items-center text-sm font-medium transition-colors ${isSectionActive(item.name)
                                             ? activeClass
                                             : `text-muted hover:text-blue-600 ${hoverClass}`
                                             }`}
                                     >
                                         {item.name}
                                         <ChevronDown
-                                            className={`w-4 h-4 ml-1 transition-transform ${isProfilOpen ? 'rotate-180' : ''
+                                            className={`w-4 h-4 ml-1 transition-transform ${openDesktopMenu === item.name ? 'rotate-180' : ''
                                                 }`}
                                         />
                                     </button>
 
-                                    {isProfilOpen && (
+                                    {openDesktopMenu === item.name && (
                                         <>
                                             <div
                                                 className="fixed inset-0 z-10"
-                                                onClick={() => setIsProfilOpen(false)}
+                                                onClick={() => setOpenDesktopMenu(null)}
                                             />
                                             <div className="scroll-slim absolute z-20 mt-2 max-h-[70vh] w-64 overflow-y-auto rounded-lg border bg-surface py-1 shadow-lg">
                                                 {item.children.map((child) => (
                                                     <NavLink
                                                         key={child.path}
                                                         to={child.path}
-                                                        onClick={() => setIsProfilOpen(false)}
-                                                        className={({ isActive }) =>
-                                                            `block px-4 py-2 text-sm ${isActive
+                                                        onClick={() => setOpenDesktopMenu(null)}
+                                                        className={() =>
+                                                            `block cursor-pointer px-4 py-2 text-sm ${isChildActive(child.path)
                                                                 ? 'text-blue-600 bg-blue-50'
                                                                 : 'text-body hover:bg-surface-muted'
                                                             }`
@@ -200,7 +215,7 @@ const Navbar = () => {
 
                     {/* MOBILE MENU BUTTON */}
                     <button
-                        className="md:hidden p-2 bg-line rounded-lg transition-colors z-50"
+                        className="md:hidden cursor-pointer p-2 bg-line rounded-lg transition-colors z-50"
                         onClick={handleMenuToggle}
                     >
                         {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -219,7 +234,7 @@ const Navbar = () => {
                         {/* Close Button */}
                         <button
                             onClick={handleMenuToggle}
-                            className="p-2 hover:bg-surface rounded-full shadow-sm ml-auto"
+                            className="cursor-pointer p-2 hover:bg-surface rounded-full shadow-sm ml-auto"
                         >
                             <X className="w-5 h-5 text-body" />
                         </button>
@@ -243,8 +258,8 @@ const Navbar = () => {
                                     return (
                                         <div key={item.name}>
                                             <button
-                                                onClick={handleProfilMobileToggle}
-                                                className={`w-full flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${isProfilActive || isProfilMobileOpen
+                                                onClick={() => handleMobileSubmenuToggle(item.name)}
+                                                className={`w-full cursor-pointer flex items-center justify-between px-4 py-3 text-sm font-medium rounded-lg transition-all duration-200 ${isSectionActive(item.name) || openMobileMenu === item.name
                                                     ? 'text-blue-700 bg-blue-50 border-l-4 border-blue-600'
                                                     : 'text-body hover:bg-surface-muted hover:text-body'
                                                     }`}
@@ -253,19 +268,18 @@ const Navbar = () => {
                                                     <span className="text-blue-500 mr-3">{item.icon}</span>
                                                     {item.name}
                                                 </div>
-                                                <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${isProfilMobileOpen ? 'rotate-90' : ''}`} />
+                                                <ChevronRight className={`w-4 h-4 transition-transform duration-200 ${openMobileMenu === item.name ? 'rotate-90' : ''}`} />
                                             </button>
 
-                                            {/* Profil Submenu */}
-                                            <div className={`overflow-hidden transition-all duration-300 ${isProfilMobileOpen ? 'max-h-96 mt-1' : 'max-h-0'}`}>
+                                            <div className={`overflow-hidden transition-all duration-300 ${openMobileMenu === item.name ? 'max-h-96 mt-1' : 'max-h-0'}`}>
                                                 <div className="pl-6 space-y-1">
                                                     {item.children.map((child) => (
                                                         <NavLink
                                                             key={child.path}
                                                             to={child.path}
                                                             onClick={closeMobileMenu}
-                                                            className={({ isActive }) =>
-                                                                `flex items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200 ${isActive
+                                                            className={() =>
+                                                                `flex cursor-pointer items-center px-4 py-2.5 text-sm rounded-lg transition-all duration-200 ${isChildActive(child.path)
                                                                     ? 'text-blue-600 bg-blue-100 border-l-4 border-blue-500'
                                                                     : 'text-muted hover:bg-surface-muted hover:text-body'
                                                                 }`

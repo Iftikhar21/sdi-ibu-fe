@@ -1,6 +1,6 @@
 import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
-import { Upload, Camera, FileText, CheckCircle, Users, X, CircleDollarSign, ClipboardCheck, ListChecks, UserPlus, Send, ShieldCheck, CalendarClock, Loader2 } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { Upload, Camera, FileText, CheckCircle, Users, X, CircleDollarSign, ClipboardCheck, ListChecks, UserPlus, Send, ShieldCheck, CalendarClock, Landmark, Loader2, School } from 'lucide-react';
 import MainLayout from "../../../components/layout/landing/MainLayout";
 import { registrationService } from '../../../services/registrationServices';
 import Modal from '../../../components/common/Modal';
@@ -14,6 +14,7 @@ const formatRupiah = (value: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
 
 const PendaftaranPage = () => {
+    const location = useLocation();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [successMessage, setSuccessMessage] = useState('');
@@ -66,6 +67,19 @@ const PendaftaranPage = () => {
             .catch((error) => console.error('Error fetching registration information:', error))
             .finally(() => setInformationLoading(false));
     }, []);
+
+    useEffect(() => {
+        if (informationLoading || !location.hash) return;
+
+        const timer = window.setTimeout(() => {
+            document.getElementById(location.hash.slice(1))?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start',
+            });
+        }, 0);
+
+        return () => window.clearTimeout(timer);
+    }, [informationLoading, location.hash]);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -260,7 +274,7 @@ const PendaftaranPage = () => {
             <MainLayout>
                 <Helmet>
                     {/* TITLE */}
-                    <title>Pendaftaran Peserta Didik Baru | SDI Ikhlas Bakti Umat</title>
+                    <title>SPMB | SDI Ikhlas Bakti Umat</title>
 
                     {/* META DESCRIPTION */}
                     <meta
@@ -305,10 +319,10 @@ const PendaftaranPage = () => {
                     <div className="container mx-auto px-4 relative z-10">
                         <div className="text-center text-white">
                             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                                Pendaftaran Peserta Didik Baru
+                                SPMB SDI Ikhlas Bakti Umat
                             </h1>
                             <p className="text-blue-100 text-lg">
-                                Silakan lengkapi formulir di bawah ini dengan data yang benar dan valid.
+                                Informasi Sistem Penerimaan Murid Baru dan formulir pendaftaran daring.
                             </p>
                         </div>
                     </div>
@@ -360,8 +374,10 @@ const PendaftaranPage = () => {
                             <p className="text-sm text-muted">Memuat status pendaftaran...</p>
                         </div>
                     </section>
-                ) : information?.phase !== 'open' ? (
-                    <section className="bg-surface-muted py-16 md:py-24">
+                ) : (
+                    <>
+                    {information?.phase !== 'open' && (
+                    <section id="formulir" className="scroll-mt-24 bg-surface-muted py-16 md:py-24">
                         <div className="container mx-auto px-4">
                             <div className="mx-auto max-w-2xl rounded-3xl border border-line bg-surface p-8 text-center shadow-lg md:p-12">
                                 <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${information?.phase === 'account' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'}`}>
@@ -405,15 +421,14 @@ const PendaftaranPage = () => {
                             </div>
                         </div>
                     </section>
-                ) : (
-                    <>
+                    )}
                 {/* Informasi PPDB */}
-                <section className="bg-surface-muted py-12">
+                <section id="kuota-kelas" className="scroll-mt-24 bg-surface-muted py-12">
                     <div className="container mx-auto px-4">
                         <div className="mx-auto max-w-6xl">
                             <div className="mb-8 text-center">
                                 <span className="inline-flex rounded-full bg-blue-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-blue-700">
-                                    Informasi PPDB
+                                    Informasi SPMB
                                 </span>
                                 <h2 className="mt-3 text-2xl font-bold text-body md:text-3xl">
                                     Informasi Sebelum Mendaftar
@@ -455,7 +470,7 @@ const PendaftaranPage = () => {
                                     )}
                                 </article>
 
-                                <article className="rounded-2xl border border-emerald-200 bg-surface p-6 shadow-sm lg:col-span-2">
+                                <article id="persyaratan" className="scroll-mt-24 rounded-2xl border border-emerald-200 bg-surface p-6 shadow-sm lg:col-span-2">
                                     <div className="mb-4 flex items-center gap-3">
                                         <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600"><ClipboardCheck className="h-6 w-6" /></div>
                                         <div>
@@ -478,7 +493,54 @@ const PendaftaranPage = () => {
                                 </article>
                             </div>
 
-                            <div className="mt-6 rounded-2xl border border-amber-200 bg-surface p-6 shadow-sm">
+                            <div className="mt-6 rounded-2xl border border-indigo-200 bg-surface p-6 shadow-sm">
+                                <div className="mb-5 flex items-center gap-3">
+                                    <div className="rounded-xl bg-indigo-50 p-3 text-indigo-600"><School className="h-6 w-6" /></div>
+                                    <div>
+                                        <h3 className="font-semibold text-body">Kuota Masing-masing Kelas</h3>
+                                        <p className="text-xs text-muted">
+                                            Kapasitas dan ketersediaan berdasarkan penempatan siswa tahun ajaran {information?.academic_year?.name ?? 'aktif'}
+                                        </p>
+                                    </div>
+                                </div>
+                                {information?.class_quotas?.length ? (
+                                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                        {information.class_quotas.map((classroom) => {
+                                            const filledPercentage = classroom.quota > 0
+                                                ? Math.min(100, (classroom.filled / classroom.quota) * 100)
+                                                : 0;
+
+                                            return (
+                                                <article key={classroom.id} className="rounded-xl border border-indigo-100 bg-indigo-50/40 p-5">
+                                                    <div className="flex items-start justify-between gap-4">
+                                                        <div>
+                                                            <p className="text-xs font-medium uppercase tracking-wide text-indigo-600">Kelas</p>
+                                                            <h4 className="mt-1 text-xl font-bold text-body">{classroom.name}</h4>
+                                                        </div>
+                                                        <span className="rounded-full bg-surface px-3 py-1 text-xs font-semibold text-indigo-700 shadow-sm">
+                                                            {classroom.available} tersedia
+                                                        </span>
+                                                    </div>
+                                                    <div className="mt-4 h-2 overflow-hidden rounded-full bg-indigo-100">
+                                                        <div
+                                                            className="h-full rounded-full bg-indigo-600"
+                                                            style={{ width: `${filledPercentage}%` }}
+                                                        />
+                                                    </div>
+                                                    <div className="mt-3 flex items-center justify-between text-sm text-muted">
+                                                        <span>{classroom.filled} siswa terisi</span>
+                                                        <span>Kuota {classroom.quota}</span>
+                                                    </div>
+                                                </article>
+                                            );
+                                        })}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-muted">Kuota kelas belum tersedia untuk tahun ajaran aktif.</p>
+                                )}
+                            </div>
+
+                            <div id="biaya" className="scroll-mt-24 mt-6 rounded-2xl border border-amber-200 bg-surface p-6 shadow-sm">
                                 <div className="mb-5 flex items-center gap-3">
                                     <div className="rounded-xl bg-amber-50 p-3 text-amber-600"><CircleDollarSign className="h-6 w-6" /></div>
                                     <div>
@@ -499,9 +561,37 @@ const PendaftaranPage = () => {
                                 ) : (
                                     <p className="text-sm text-muted">Rincian biaya akan diinformasikan oleh admin sekolah.</p>
                                 )}
+                                {information?.payment_bank && information.payment_account_number && information.payment_account_name && (
+                                    <div className="mt-6 rounded-xl border border-cyan-200 bg-cyan-50/60 p-5">
+                                        <div className="flex items-start gap-3">
+                                            <div className="rounded-lg bg-cyan-100 p-2.5 text-cyan-700">
+                                                <Landmark className="h-5 w-5" />
+                                            </div>
+                                            <div className="min-w-0 flex-1">
+                                                <h4 className="font-semibold text-body">Tujuan Pembayaran</h4>
+                                                <p className="mt-1 text-xs text-muted">Transfer biaya pendaftaran ke rekening resmi berikut.</p>
+                                                <dl className="mt-4 grid gap-4 sm:grid-cols-3">
+                                                    <div>
+                                                        <dt className="text-xs font-medium uppercase tracking-wide text-muted">Bank</dt>
+                                                        <dd className="mt-1 font-semibold text-body">{information.payment_bank}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt className="text-xs font-medium uppercase tracking-wide text-muted">Nomor Rekening</dt>
+                                                        <dd className="mt-1 break-all font-mono text-lg font-bold text-cyan-800">{information.payment_account_number}</dd>
+                                                    </div>
+                                                    <div>
+                                                        <dt className="text-xs font-medium uppercase tracking-wide text-muted">Atas Nama</dt>
+                                                        <dd className="mt-1 font-semibold text-body">{information.payment_account_name}</dd>
+                                                    </div>
+                                                </dl>
+                                                <p className="mt-4 text-xs text-cyan-800">Pastikan nama penerima sesuai sebelum melakukan transfer.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
                             </div>
 
-                            <div className="mt-10">
+                            <div id="alur" className="scroll-mt-24 mt-10">
                                 <div className="mb-6 text-center">
                                     <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600"><ListChecks className="h-6 w-6" /></div>
                                     <h3 className="text-xl font-bold text-body">Alur Pendaftaran</h3>
@@ -528,7 +618,8 @@ const PendaftaranPage = () => {
                 </section>
 
                 {/* Form Section */}
-                <div className="container mx-auto px-4 py-12">
+                {information?.phase === 'open' && (
+                <div id="formulir" className="scroll-mt-24 container mx-auto px-4 py-12">
                     <div className="max-w-4xl mx-auto">
                         {/* Informasi Penting */}
                         <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-2xl">
@@ -1056,6 +1147,7 @@ const PendaftaranPage = () => {
                         </div>
                     </div>
                 </div>
+                )}
                     </>
                 )}
             </MainLayout>

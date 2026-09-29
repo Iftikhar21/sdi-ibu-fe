@@ -14,6 +14,15 @@ export interface RegistrationFeeInput {
     is_active: boolean;
 }
 
+export interface ClassroomQuota {
+    id: number;
+    name: string;
+    grade_level: number;
+    quota: number;
+    filled: number;
+    available: number;
+}
+
 export interface RegistrationInformation {
     phase: 'closed' | 'account' | 'open';
     phase_message: string | null;
@@ -22,6 +31,10 @@ export interface RegistrationInformation {
     registered: number;
     available: number | null;
     quota_description: string | null;
+    payment_bank: string | null;
+    payment_account_number: string | null;
+    payment_account_name: string | null;
+    class_quotas: ClassroomQuota[];
     requirements: RegistrationRequirementInput[];
     fees: RegistrationFeeInput[];
 }
@@ -31,6 +44,9 @@ export interface RegistrationInformationPayload {
     phase_message: string | null;
     quota: number;
     quota_description: string | null;
+    payment_bank: string | null;
+    payment_account_number: string | null;
+    payment_account_name: string | null;
     requirements: Array<Pick<RegistrationRequirementInput, 'content' | 'is_active'>>;
     fees: Array<Pick<RegistrationFeeInput, 'program' | 'amount' | 'description' | 'is_active'>>;
 }

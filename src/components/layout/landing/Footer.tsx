@@ -37,7 +37,7 @@ const Footer = () => {
     const navLinks = [
         { name: 'Beranda', path: '/' },
         { name: 'Berita', path: '/berita' },
-        { name: 'Pendaftaran', path: '/pendaftaran' },
+        { name: 'SPMB', path: '/pendaftaran#kuota-kelas' },
         { name: 'Kontak', path: '/kontak' },
     ];
 
