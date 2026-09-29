@@ -36,6 +36,7 @@ const PendaftaranPage = () => {
         gender: '',
         birth_place: '',
         birth_date: '',
+        previous_school: '',
         father_name: '',
         mother_name: '',
         address: '',
@@ -132,6 +133,7 @@ const PendaftaranPage = () => {
         if (!formData.gender) newErrors.gender = 'Jenis kelamin wajib dipilih';
         if (!formData.birth_place.trim()) newErrors.birth_place = 'Tempat lahir wajib diisi';
         if (!formData.birth_date) newErrors.birth_date = 'Tanggal lahir wajib diisi';
+        if (!formData.previous_school.trim()) newErrors.previous_school = 'Asal sekolah wajib diisi';
 
         // Validasi data orang tua
         if (!formData.father_name.trim()) newErrors.father_name = 'Nama ayah wajib diisi';
@@ -226,6 +228,7 @@ const PendaftaranPage = () => {
             gender: '',
             birth_place: '',
             birth_date: '',
+            previous_school: '',
             father_name: '',
             mother_name: '',
             address: '',
@@ -647,6 +650,24 @@ const PendaftaranPage = () => {
                                                 placeholder="Pilih tanggal lahir"
                                             />
                                             {errors.birth_date && <p className="mt-1 text-sm text-red-600">{errors.birth_date}</p>}
+                                        </div>
+
+                                        {/* Asal Sekolah */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-body mb-2">
+                                                Asal Sekolah <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                name="previous_school"
+                                                value={formData.previous_school}
+                                                onChange={handleChange}
+                                                placeholder="Contoh: TK/RA/KB asal"
+                                                maxLength={255}
+                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.previous_school ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all`}
+                                                required
+                                            />
+                                            {errors.previous_school && <p className="mt-1 text-sm text-red-600">{errors.previous_school}</p>}
                                         </div>
 
                                         {/* Alamat */}

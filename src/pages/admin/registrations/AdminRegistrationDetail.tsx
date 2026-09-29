@@ -19,7 +19,8 @@ import {
     X,
     FileDown,
     Loader2,
-    GraduationCap
+    GraduationCap,
+    School
 } from 'lucide-react';
 import { registrationService } from '../../../services/registrationServices';
 import { studentService } from '../../../services/studentServices';
@@ -710,6 +711,15 @@ export default function AdminRegistrationDetail() {
                                         <div className="flex items-start text-body">
                                             <MapPin className="w-5 h-5 text-muted mr-2 mt-0.5" />
                                             <span className="flex-1">{registration.address}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-muted mb-1">
+                                            Asal Sekolah
+                                        </label>
+                                        <div className="flex items-center text-body">
+                                            <School className="w-5 h-5 text-muted mr-2" />
+                                            {registration.previous_school || '-'}
                                         </div>
                                     </div>
                                 </div>

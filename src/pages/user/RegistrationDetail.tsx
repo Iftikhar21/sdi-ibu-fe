@@ -12,7 +12,8 @@ import {
     CheckCircle,
     XCircle,
     Clock,
-    Eye
+    Eye,
+    School
 } from 'lucide-react';
 import { registrationService } from '../../services/registrationServices';
 import type { Registration } from '../../types/registration';
@@ -276,6 +277,15 @@ export default function RegistrationDetail() {
                                         <div className="flex items-start text-body">
                                             <MapPin className="w-5 h-5 text-muted mr-2 mt-0.5" />
                                             <span className="flex-1">{registration.address}</span>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-muted mb-1">
+                                            Asal Sekolah
+                                        </label>
+                                        <div className="flex items-center text-body">
+                                            <School className="w-5 h-5 text-muted mr-2" />
+                                            {registration.previous_school || '-'}
                                         </div>
                                     </div>
                                 </div>

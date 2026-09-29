@@ -4,6 +4,7 @@ export interface RegistrationFormData {
     gender: string;
     birth_place: string;
     birth_date: string;
+    previous_school: string;
     father_name: string;
     mother_name: string;
     address: string;
@@ -38,6 +39,7 @@ export interface Registration {
     gender: string;
     birth_place: string;
     birth_date: string;
+    previous_school?: string | null;
     father_name: string;
     mother_name: string;
     address: string;
