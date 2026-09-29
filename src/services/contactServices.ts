@@ -79,6 +79,9 @@ export const contactService = {
         if (data.logo instanceof File) {
             formData.append('logo', data.logo);
         }
+        if (data.remove_logo) {
+            formData.append('remove_logo', '1');
+        }
 
         // Debug: Tampilkan semua entries
         console.log('=== FORM DATA CONTENTS ===');

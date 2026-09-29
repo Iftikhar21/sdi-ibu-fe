@@ -3,7 +3,7 @@ import { CalendarClock, Eye, EyeOff, Mail, Lock, User, Loader2 } from "lucide-re
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 
-import logo_sdi from "@/assets/img/logo-sdi-ibu.svg";
+import WebsiteLogo from '../../components/common/WebsiteLogo';
 import ring_home from "@/assets/img/ring_home.svg";
 import image_sejarah_2 from '@/assets/img/image_sejarah_2.svg';
 import bg_6 from "@/assets/img/bg_6.svg";
@@ -147,7 +147,7 @@ export default function Register() {
                 <Helmet><title>Pendaftaran Belum Dibuka | SDI IBU</title></Helmet>
                 <div className="flex min-h-screen items-center justify-center bg-surface-muted p-4">
                     <div className="w-full max-w-xl rounded-3xl border border-line bg-surface p-8 text-center shadow-lg md:p-12">
-                        <img src={logo_sdi} alt="Logo SDI" className="mx-auto mb-6 h-20 w-auto" />
+                        <WebsiteLogo className="mx-auto mb-6 h-20 w-auto object-contain" />
                         <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-600">
                             <CalendarClock className="h-8 w-8" />
                         </div>
@@ -203,7 +203,7 @@ export default function Register() {
                     {/* --- SEKARANG DI KIRI: Register Form --- */}
                     <div className="p-8 md:p-12 flex flex-col justify-center order-2 lg:order-1">
                         <div className="flex justify-center mb-8">
-                            <img src={logo_sdi} alt="Logo SDI" className="h-16 w-auto" />
+                            <WebsiteLogo className="h-16 w-auto object-contain" />
                         </div>
 
                         <div className="mb-6 text-center">

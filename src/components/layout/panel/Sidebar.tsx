@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Award, BarChart3, BookOpen, CalendarCheck, CalendarClock, CalendarDays, CalendarRange, ChevronDown, ClipboardList, Database, FileText, GraduationCap, Layers, LayoutDashboard, Network, TrendingUp, User, UserCheck, ChevronRight, School, Newspaper, Phone, BookText, LogOut, Shield, Users as UsersIcon, Home, HelpCircle, Images, Tags } from 'lucide-react';
-import logo_sdi from "@/assets/img/logo-sdi-ibu.svg";
+import WebsiteLogo from '../../common/WebsiteLogo';
 import { useAuth } from '../../../auth/AuthContext';
 import Modal from '../../common/Modal';
 
@@ -315,7 +315,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 {/* Logo */}
                 <div className="p-6 lg:p-4 border-b border-white/10 flex-shrink-0 bg-white/5 backdrop-blur-md">
                     <div className="w-40 h-40 lg:w-28 lg:h-28 mx-auto flex flex-col items-center justify-center">
-                        <img src={logo_sdi} className="w-24 h-24 lg:w-16 lg:h-16 opacity-90" />
+                        <WebsiteLogo className="h-24 w-24 object-contain opacity-90 lg:h-16 lg:w-16" />
                         <div className="mt-4 lg:mt-2 text-center">
                             <h2 className="text-lg lg:text-base font-bold">{getSidebarTitle()}</h2>
                             <p className="text-xs text-white/70">{getSidebarSubtitle()}</p>

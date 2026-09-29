@@ -35,6 +35,7 @@ export default function ContactEdit() {
     const [showConfirmModal, setShowConfirmModal] = useState(false);
     const [formData, setFormData] = useState<{
         logo?: File | null;
+        remove_logo?: boolean;
         deskripsi?: string;
         alamat?: string;
         telepon?: string;
@@ -74,6 +75,7 @@ export default function ContactEdit() {
     // Perbaiki handleSubmit di ContactEdit
     const handleSubmit = async (data: {
         logo?: File | null;
+        remove_logo?: boolean;
         deskripsi?: string;
         alamat?: string;
         telepon?: string;

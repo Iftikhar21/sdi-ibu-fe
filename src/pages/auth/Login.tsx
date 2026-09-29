@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
-import logo_sdi from "@/assets/img/logo-sdi-ibu.svg";
+import WebsiteLogo from '../../components/common/WebsiteLogo';
 import ring_home from "@/assets/img/ring_home.svg";
 import bg_6 from "@/assets/img/bg_6.svg";
 import bg_1 from "@/assets/img/bg_1.svg";
@@ -144,7 +144,7 @@ export default function Login() {
                     <div className="p-8 md:p-12 flex flex-col justify-center">
                         {/* Logo */}
                         <div className="flex justify-center mb-8">
-                            <img src={logo_sdi} alt="Logo SDI" className="h-16 w-auto" />
+                            <WebsiteLogo className="h-16 w-auto object-contain" />
                         </div>
 
                         <div className="mb-8 text-center">

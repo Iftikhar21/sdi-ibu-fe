@@ -32,6 +32,7 @@ export interface CreateContactDto {
 
 export interface UpdateContactDto {
     logo?: File | null;
+    remove_logo?: boolean;
     deskripsi?: string;
     alamat?: string;
     telepon?: string;

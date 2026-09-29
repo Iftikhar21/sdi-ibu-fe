@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { MapPin, MessageCircle, Globe, Facebook, Instagram, Twitter, Youtube, Phone, Mail, MessageSquare } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import logo_sdi from "@/assets/img/logo-sdi-ibu.svg";
 import api from '../../../api/api';
+import WebsiteLogo from '../../common/WebsiteLogo';
 
 interface SocialMedia {
     id: number;
@@ -139,13 +139,9 @@ const Footer = () => {
                     <div>
                         <div className="flex items-center mb-4">
                             <div className="mr-3">
-                                <img
-                                    src={contactData?.logo_url || logo_sdi}
+                                <WebsiteLogo
+                                    sourceUrl={contactData?.logo_url ?? null}
                                     className="h-32 w-32 object-contain"
-                                    alt="Logo SDI"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = logo_sdi;
-                                    }}
                                 />
                             </div>
                             <div>

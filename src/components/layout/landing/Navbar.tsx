@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { Menu, X, ChevronDown, ChevronRight, Home, BookOpen, Newspaper, UserPlus, Phone, Images } from 'lucide-react';
-import logo_sdi from '@/assets/img/logo-sdi-ibu.svg';
 import { useAuth } from '../../../auth/AuthContext';
 import ThemeToggle from '../../common/ThemeToggle';
+import WebsiteLogo from '../../common/WebsiteLogo';
 
 const Navbar = () => {
     const { user } = useAuth();
@@ -137,7 +137,7 @@ const Navbar = () => {
                 <div className="flex justify-between items-center h-20">
                     {/* LOGO */}
                     <Link to="/" className="flex items-center">
-                        <img src={logo_sdi} className="h-14 w-auto" alt="Logo SDI" />
+                        <WebsiteLogo className="h-14 w-auto object-contain" />
                     </Link>
 
                     {/* DESKTOP NAVIGATION */}
@@ -245,7 +245,7 @@ const Navbar = () => {
                             onClick={closeMobileMenu}
                             className="absolute left-1/2 -translate-x-1/2"
                         >
-                            <img src={logo_sdi} className="h-32 w-auto" alt="Logo SDI" />
+                            <WebsiteLogo className="h-32 w-auto object-contain" />
                         </Link>
                     </div>
 

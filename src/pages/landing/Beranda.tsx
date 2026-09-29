@@ -6,7 +6,7 @@ import api from '../../api/api';
 import bg_5 from "@/assets/img/bg_5.png";
 import ring_home from "@/assets/img/ring_home.svg";
 import image_home_1 from "@/assets/img/image_home_1.svg";
-import logo_sdi from '@/assets/img/logo-sdi-ibu.svg';
+import WebsiteLogo from '../../components/common/WebsiteLogo';
 import image_visi_misi_2 from "@/assets/img/image_visi_misi_2.svg";
 import bg_2 from "@/assets/img/bg_2.svg";
 import { Helmet } from 'react-helmet-async';
@@ -510,7 +510,7 @@ const HomePage = () => {
                     {/* HEADER: Logo dan Judul di Tengah Atas */}
                     <div className="text-center mb-16">
                         <div className="inline-flex items-center justify-center w-24 h-24 mb-6">
-                            <img src={logo_sdi} alt="Logo SDI" className="w-full h-full object-contain" />
+                            <WebsiteLogo className="h-full w-full object-contain" />
                         </div>
                         <p className="text-body font-semibold text-lg mb-2">
                             Selamat Datang di Sekolah IBU

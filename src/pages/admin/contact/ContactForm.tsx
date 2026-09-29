@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Save, Loader2, Upload, Image as ImageIcon, X, Plus, Trash2, Building, MapPin, Phone, Mail, Globe, FileText } from 'lucide-react';
 import NumericInput from '../../../components/common/NumericInput';
+import WebsiteLogo from '../../../components/common/WebsiteLogo';
 
 interface Props {
     title: string;
@@ -16,6 +17,7 @@ interface Props {
     };
     onSubmit: (data: {
         logo?: File | null;
+        remove_logo?: boolean;
         deskripsi?: string;
         alamat?: string;
         telepon?: string;
@@ -41,6 +43,7 @@ export default function ContactForm({
 }: Props) {
     const [logoFile, setLogoFile] = useState<File | null>(null);
     const [logoPreview, setLogoPreview] = useState<string | null>(initialData.logo_url || null);
+    const [removeExistingLogo, setRemoveExistingLogo] = useState(false);
     const [deskripsi, setDeskripsi] = useState(initialData.deskripsi || '');
     const [alamat, setAlamat] = useState(initialData.alamat || '');
     const [telepon, setTelepon] = useState(initialData.telepon || '');
@@ -60,12 +63,14 @@ export default function ContactForm({
         if (file) {
             setLogoFile(file);
             setLogoPreview(URL.createObjectURL(file));
+            setRemoveExistingLogo(false);
         }
     };
 
     const removeLogo = () => {
         setLogoFile(null);
         setLogoPreview(null);
+        setRemoveExistingLogo(Boolean(initialData.logo_url));
         if (logoRef.current) {
             logoRef.current.value = '';
         }
@@ -101,7 +106,8 @@ export default function ContactForm({
             email: email || '',
             map_embed: mapEmbed || '',
             socials: socials, // Socials array (bisa kosong)
-            logo: logoFile || undefined // undefined jika tidak ada file baru
+            logo: logoFile || undefined, // undefined jika tidak ada file baru
+            remove_logo: removeExistingLogo,
         };
 
         console.log('Payload sebelum submit:', payload);
@@ -123,6 +129,7 @@ export default function ContactForm({
         // hanya set preview dari server JIKA belum upload file
         if (!logoFile) {
             setLogoPreview(initialData?.logo_url || null);
+            setRemoveExistingLogo(false);
         }
 
         setDeskripsi(initialData?.deskripsi || '');
@@ -156,7 +163,7 @@ export default function ContactForm({
                 <label className="block text-sm font-medium text-body mb-2">
                     <div className="flex items-center">
                         <ImageIcon className="w-5 h-5 mr-2 text-blue-600" />
-                        Logo Organisasi
+                        Logo Website
                     </div>
                 </label>
                 <div className="flex flex-col md:flex-row items-start md:items-center gap-6">
@@ -178,9 +185,9 @@ export default function ContactForm({
                             </button>
                         </div>
                     ) : (
-                        <div className="w-32 h-32 rounded-lg border-2 border-dashed border-line flex flex-col items-center justify-center bg-surface-muted">
-                            <ImageIcon className="w-8 h-8 text-muted mb-2" />
-                            <span className="text-xs text-muted">No Logo</span>
+                        <div className="flex h-32 w-32 flex-col items-center justify-center overflow-hidden rounded-lg border-2 border-dashed border-line bg-surface-muted p-2">
+                            <WebsiteLogo sourceUrl={null} className="min-h-0 flex-1 object-contain" />
+                            <span className="mt-1 text-xs text-muted">Logo bawaan</span>
                         </div>
                     )}
                     <div>
@@ -198,7 +205,7 @@ export default function ContactForm({
                             />
                         </label>
                         <p className="text-xs text-muted mt-2">
-                            Ukuran maksimal 2MB. Format: JPG, PNG, WebP
+                            Ukuran maksimal 2MB. Format: JPG, PNG, WebP. Jika tidak diisi, website memakai logo bawaan.
                         </p>
                     </div>
                 </div>
