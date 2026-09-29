@@ -109,6 +109,7 @@ const Sidebar = ({ isOpen, onClose }: AdminSidebarProps) => {
                 icon: Images,
                 roles: ['admin'],
                 children: [
+                    { route: '/admin/informasi-pendaftaran', label: 'Informasi Pendaftaran', icon: ClipboardList, roles: ['admin'] },
                     { route: '/admin/faq', label: 'FAQ', icon: HelpCircle, roles: ['admin'] },
                     { route: '/admin/gallery', label: 'Galeri', icon: Images, roles: ['admin'] },
                     { route: '/admin/gallery-categories', label: 'Kategori Galeri', icon: Tags, roles: ['admin'] },

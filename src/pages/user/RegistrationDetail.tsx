@@ -459,6 +459,24 @@ export default function RegistrationDetail() {
                                             <Eye className="w-4 h-4 text-muted group-hover:text-blue-600" />
                                         </div>
                                     )}
+
+                                    {registration.transfer_proof_url && (
+                                        <a
+                                            href={registration.transfer_proof_url}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="flex items-center justify-between p-3 border border-line rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group cursor-pointer"
+                                        >
+                                            <div className="flex items-center">
+                                                <FileText className="w-5 h-5 text-muted mr-3" />
+                                                <div>
+                                                    <span className="text-body block">Bukti Pindahan</span>
+                                                    <span className="text-xs text-muted">Klik untuk membuka dokumen</span>
+                                                </div>
+                                            </div>
+                                            <Eye className="w-4 h-4 text-muted group-hover:text-blue-600" />
+                                        </a>
+                                    )}
                                 </div>
                             </div>
                         </div>

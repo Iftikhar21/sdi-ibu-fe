@@ -119,6 +119,7 @@ import PendaftaranPage from "../pages/landing/registrations/Registration";
 import RegistrationDetail from "../pages/user/RegistrationDetail";
 import AdminRegistrationList from "../pages/admin/registrations/AdminRegistrationList";
 import AdminRegistrationDetail from "../pages/admin/registrations/AdminRegistrationDetail";
+import RegistrationInformation from "../pages/admin/registrations/RegistrationInformation";
 import UserProfile from "../pages/user/profile/UserProfile";
 
 export default function AppRouter() {
@@ -201,6 +202,12 @@ export default function AppRouter() {
                     <Route path="dashboard" element={
                         <ProtectedRoute role="admin">
                             <Dashboard />
+                        </ProtectedRoute>
+                    } />
+
+                    <Route path="informasi-pendaftaran" element={
+                        <ProtectedRoute role="admin">
+                            <RegistrationInformation />
                         </ProtectedRoute>
                     } />
 

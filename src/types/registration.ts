@@ -13,6 +13,7 @@ export interface RegistrationFormData {
     birth_certificate: File;
     family_card: File;
     payment_proof: File;
+    transfer_proof?: File | null;
 }
 
 export interface Registration {
@@ -46,6 +47,7 @@ export interface Registration {
     birth_certificate: string;
     family_card: string;
     payment_proof: string;
+    transfer_proof?: string | null;
     status: string;
     notes: string | null;
     created_at: string;
@@ -54,6 +56,7 @@ export interface Registration {
     birth_certificate_url: string;
     family_card_url: string;
     payment_proof_url: string;
+    transfer_proof_url?: string | null;
 }
 
 export interface RegistrationWithUser extends Registration {

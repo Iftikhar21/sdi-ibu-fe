@@ -1,18 +1,24 @@
-import { useState, type ChangeEvent, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Upload, Camera, FileText, CheckCircle, AlertCircle, Users, X } from 'lucide-react';
+import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { Link } from 'react-router-dom';
+import { Upload, Camera, FileText, CheckCircle, Users, X, CircleDollarSign, ClipboardCheck, ListChecks, UserPlus, Send, ShieldCheck, CalendarClock, Loader2 } from 'lucide-react';
 import MainLayout from "../../../components/layout/landing/MainLayout";
 import { registrationService } from '../../../services/registrationServices';
 import Modal from '../../../components/common/Modal';
 import { Helmet } from 'react-helmet-async';
 import NumericInput from '../../../components/common/NumericInput';
 import DateInput from '../../../components/common/DateInput';
+import { registrationInformationService, type RegistrationInformation } from '../../../services/registrationInformationServices';
+import { getApiErrorMessage } from '../../../utils/apiError';
+
+const formatRupiah = (value: number) =>
+    new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
 
 const PendaftaranPage = () => {
-    const navigate = useNavigate();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [successMessage, setSuccessMessage] = useState('');
+    const [information, setInformation] = useState<RegistrationInformation | null>(null);
+    const [informationLoading, setInformationLoading] = useState(true);
     const [successRegistration, setSuccessRegistration] = useState<{
         number: string;
         name: string;
@@ -42,6 +48,7 @@ const PendaftaranPage = () => {
         birth_certificate: null as File | null,
         family_card: null as File | null,
         payment_proof: null as File | null,
+        transfer_proof: null as File | null,
     });
 
     const [previews, setPreviews] = useState({
@@ -49,7 +56,15 @@ const PendaftaranPage = () => {
         birth_certificate: '',
         family_card: '',
         payment_proof: '',
+        transfer_proof: '',
     });
+
+    useEffect(() => {
+        registrationInformationService.getPublic()
+            .then(setInformation)
+            .catch((error) => console.error('Error fetching registration information:', error))
+            .finally(() => setInformationLoading(false));
+    }, []);
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -79,6 +94,14 @@ const PendaftaranPage = () => {
         if (name === 'photo' || name === 'birth_certificate' || name === 'family_card' || name === 'payment_proof') {
             if (!file.type.startsWith('image/')) {
                 setErrors(prev => ({ ...prev, [name]: 'File harus berupa gambar' }));
+                return;
+            }
+        }
+
+        if (name === 'transfer_proof') {
+            const extension = file.name.split('.').pop()?.toLowerCase();
+            if (!extension || !['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'].includes(extension)) {
+                setErrors(prev => ({ ...prev, [name]: 'Format harus JPG, PNG, PDF, DOC, atau DOCX' }));
                 return;
             }
         }
@@ -185,21 +208,12 @@ const PendaftaranPage = () => {
                 `Pendaftaran untuk ${namaPendaftar} berhasil dikirim! Simpan nomor pendaftaran di bawah untuk memantau status.`
             );
 
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error submitting registration:', error);
-
-            let errorMessage = 'Gagal mengirim pendaftaran. Silakan coba lagi.';
-            if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            } else if (error.response?.data?.errors) {
-                // Handle Laravel validation errors
-                const validationErrors = error.response.data.errors;
-                const firstError = Object.values(validationErrors)[0];
-                errorMessage = Array.isArray(firstError) ? firstError[0] : 'Terjadi kesalahan validasi';
-            }
-
-            // Ganti alert dengan modal
-            showError('Gagal Mengirim Pendaftaran', errorMessage);
+            showError(
+                'Gagal Mengirim Pendaftaran',
+                getApiErrorMessage(error, 'Gagal mengirim pendaftaran. Silakan coba lagi.')
+            );
         } finally {
             setIsSubmitting(false);
         }
@@ -224,6 +238,7 @@ const PendaftaranPage = () => {
             birth_certificate: null,
             family_card: null,
             payment_proof: null,
+            transfer_proof: null,
         });
 
         setPreviews({
@@ -231,6 +246,7 @@ const PendaftaranPage = () => {
             birth_certificate: '',
             family_card: '',
             payment_proof: '',
+            transfer_proof: '',
         });
 
         setErrors({});
@@ -333,6 +349,180 @@ const PendaftaranPage = () => {
                         </div>
                     </div>
                 )}
+
+                {informationLoading ? (
+                    <section className="bg-surface-muted py-24">
+                        <div className="text-center">
+                            <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-blue-600" />
+                            <p className="text-sm text-muted">Memuat status pendaftaran...</p>
+                        </div>
+                    </section>
+                ) : information?.phase !== 'open' ? (
+                    <section className="bg-surface-muted py-16 md:py-24">
+                        <div className="container mx-auto px-4">
+                            <div className="mx-auto max-w-2xl rounded-3xl border border-line bg-surface p-8 text-center shadow-lg md:p-12">
+                                <div className={`mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full ${information?.phase === 'account' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'}`}>
+                                    {information?.phase === 'account'
+                                        ? <UserPlus className="h-10 w-10" />
+                                        : <CalendarClock className="h-10 w-10" />}
+                                </div>
+                                <span className={`inline-flex rounded-full px-4 py-1.5 text-xs font-semibold uppercase tracking-wide ${information?.phase === 'account' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'}`}>
+                                    {information?.phase === 'account' ? 'Tahap Pembuatan Akun' : 'Belum Dibuka'}
+                                </span>
+                                <h2 className="mt-4 text-2xl font-bold text-body md:text-3xl">
+                                    {information?.phase === 'account'
+                                        ? 'Silakan Buat Akun Terlebih Dahulu'
+                                        : 'Pendaftaran Belum Dibuka'}
+                                </h2>
+                                <p className="mx-auto mt-4 max-w-xl leading-relaxed text-muted">
+                                    {information?.phase_message || (information?.phase === 'account'
+                                        ? 'Pembuatan akun calon orang tua murid sudah dibuka. Buat akun sekarang agar siap ketika formulir pendaftaran mulai tersedia.'
+                                        : 'Pendaftaran peserta didik baru SDI Ikhlas Bakti Umat belum dibuka. Silakan pantau kembali halaman ini untuk informasi berikutnya.')}
+                                </p>
+                                {information?.phase === 'account' ? (
+                                    <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+                                        <Link
+                                            to="/register"
+                                            className="inline-flex cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+                                        >
+                                            <UserPlus className="mr-2 h-5 w-5" /> Buat Akun
+                                        </Link>
+                                        <Link
+                                            to="/login"
+                                            className="inline-flex cursor-pointer items-center justify-center rounded-lg border border-blue-200 bg-blue-50 px-6 py-3 font-semibold text-blue-700 transition hover:bg-blue-100"
+                                        >
+                                            Sudah Punya Akun? Masuk
+                                        </Link>
+                                    </div>
+                                ) : (
+                                    <p className="mt-8 text-sm font-medium text-amber-700">
+                                        Pantau halaman ini secara berkala untuk jadwal pembukaan pendaftaran.
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+                ) : (
+                    <>
+                {/* Informasi PPDB */}
+                <section className="bg-surface-muted py-12">
+                    <div className="container mx-auto px-4">
+                        <div className="mx-auto max-w-6xl">
+                            <div className="mb-8 text-center">
+                                <span className="inline-flex rounded-full bg-blue-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-wide text-blue-700">
+                                    Informasi PPDB
+                                </span>
+                                <h2 className="mt-3 text-2xl font-bold text-body md:text-3xl">
+                                    Informasi Sebelum Mendaftar
+                                </h2>
+                                <p className="mx-auto mt-2 max-w-2xl text-sm text-muted md:text-base">
+                                    Periksa kuota, persyaratan, dan biaya sebelum melengkapi formulir.
+                                </p>
+                            </div>
+
+                            <div className="grid gap-6 lg:grid-cols-3">
+                                <article className="rounded-2xl border border-blue-200 bg-surface p-6 shadow-sm">
+                                    <div className="mb-4 flex items-center gap-3">
+                                        <div className="rounded-xl bg-blue-50 p-3 text-blue-600"><Users className="h-6 w-6" /></div>
+                                        <div>
+                                            <h3 className="font-semibold text-body">Kuota Tersedia</h3>
+                                            <p className="text-xs text-muted">Tahun ajaran {information?.academic_year?.name ?? 'aktif'}</p>
+                                        </div>
+                                    </div>
+                                    <p className="text-3xl font-bold text-blue-600">
+                                        {information?.available === null || information?.available === undefined
+                                            ? 'Belum ditentukan'
+                                            : `${information.available} kursi`}
+                                    </p>
+                                    {information && information.quota > 0 && (
+                                        <>
+                                            <p className="mt-1 text-sm text-muted">
+                                                {information.registered} pendaftar dari total {information.quota} kuota
+                                            </p>
+                                            <div className="mt-4 h-2 overflow-hidden rounded-full bg-blue-100">
+                                                <div
+                                                    className="h-full rounded-full bg-blue-600 transition-all"
+                                                    style={{ width: `${Math.min(100, (information.registered / information.quota) * 100)}%` }}
+                                                />
+                                            </div>
+                                        </>
+                                    )}
+                                    {information?.quota_description && (
+                                        <p className="mt-4 text-sm leading-relaxed text-muted">{information.quota_description}</p>
+                                    )}
+                                </article>
+
+                                <article className="rounded-2xl border border-emerald-200 bg-surface p-6 shadow-sm lg:col-span-2">
+                                    <div className="mb-4 flex items-center gap-3">
+                                        <div className="rounded-xl bg-emerald-50 p-3 text-emerald-600"><ClipboardCheck className="h-6 w-6" /></div>
+                                        <div>
+                                            <h3 className="font-semibold text-body">Persyaratan Pendaftaran</h3>
+                                            <p className="text-xs text-muted">Siapkan dokumen berikut sebelum mengisi formulir</p>
+                                        </div>
+                                    </div>
+                                    {information?.requirements.length ? (
+                                        <ul className="grid gap-3 sm:grid-cols-2">
+                                            {information.requirements.map((item, index) => (
+                                                <li key={item.id ?? index} className="flex items-start gap-3 rounded-lg bg-emerald-50/60 p-3 text-sm text-body">
+                                                    <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+                                                    <span>{item.content}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    ) : (
+                                        <p className="text-sm text-muted">Persyaratan akan diinformasikan oleh admin sekolah.</p>
+                                    )}
+                                </article>
+                            </div>
+
+                            <div className="mt-6 rounded-2xl border border-amber-200 bg-surface p-6 shadow-sm">
+                                <div className="mb-5 flex items-center gap-3">
+                                    <div className="rounded-xl bg-amber-50 p-3 text-amber-600"><CircleDollarSign className="h-6 w-6" /></div>
+                                    <div>
+                                        <h3 className="font-semibold text-body">Biaya Pendaftaran</h3>
+                                        <p className="text-xs text-muted">Rincian biaya berdasarkan program</p>
+                                    </div>
+                                </div>
+                                {information?.fees.length ? (
+                                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                                        {information.fees.map((fee, index) => (
+                                            <div key={fee.id ?? index} className="rounded-xl border border-amber-100 bg-amber-50/50 p-5">
+                                                <p className="text-sm font-semibold text-body">{fee.program}</p>
+                                                <p className="mt-2 text-xl font-bold text-amber-700">{formatRupiah(fee.amount)}</p>
+                                                {fee.description && <p className="mt-2 text-sm leading-relaxed text-muted">{fee.description}</p>}
+                                            </div>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-sm text-muted">Rincian biaya akan diinformasikan oleh admin sekolah.</p>
+                                )}
+                            </div>
+
+                            <div className="mt-10">
+                                <div className="mb-6 text-center">
+                                    <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600"><ListChecks className="h-6 w-6" /></div>
+                                    <h3 className="text-xl font-bold text-body">Alur Pendaftaran</h3>
+                                    <p className="mt-1 text-sm text-muted">Empat langkah untuk menyelesaikan pendaftaran siswa baru.</p>
+                                </div>
+                                <div className="grid gap-4 md:grid-cols-4">
+                                    {[
+                                        { icon: UserPlus, title: 'Buat Akun', text: 'Daftar atau masuk menggunakan akun orang tua.' },
+                                        { icon: FileText, title: 'Lengkapi Formulir', text: 'Isi data calon murid dan unggah dokumen.' },
+                                        { icon: Send, title: 'Kirim Pendaftaran', text: 'Periksa kembali data lalu kirim formulir.' },
+                                        { icon: ShieldCheck, title: 'Verifikasi Admin', text: 'Pantau status pendaftaran melalui dashboard.' },
+                                    ].map((step, index) => (
+                                        <div key={step.title} className="relative rounded-xl border border-line bg-surface p-5 text-center shadow-sm">
+                                            <span className="absolute left-3 top-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs font-bold text-white">{index + 1}</span>
+                                            <step.icon className="mx-auto mb-3 h-7 w-7 text-blue-600" />
+                                            <h4 className="font-semibold text-body">{step.title}</h4>
+                                            <p className="mt-1 text-sm leading-relaxed text-muted">{step.text}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 {/* Form Section */}
                 <div className="container mx-auto px-4 py-12">
@@ -743,6 +933,56 @@ const PendaftaranPage = () => {
                                             </div>
                                             {errors.payment_proof && <p className="mt-2 text-sm text-red-600">{errors.payment_proof}</p>}
                                         </div>
+
+                                        {/* Bukti Pindahan - opsional */}
+                                        <div>
+                                            <label className="block text-sm font-medium text-body mb-4">
+                                                <FileText className="w-5 h-5 inline mr-2" />
+                                                Bukti Pindahan <span className="font-normal text-muted">(opsional)</span>
+                                            </label>
+                                            <div className="border-2 border-dashed border-line rounded-2xl p-8 text-center hover:border-blue-400 transition-colors cursor-pointer bg-surface-muted hover:bg-blue-50">
+                                                <input
+                                                    type="file"
+                                                    name="transfer_proof"
+                                                    onChange={handleFileChange}
+                                                    accept=".jpg,.jpeg,.png,.pdf,.doc,.docx,image/jpeg,image/png,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                                    className="hidden"
+                                                    id="transfer-upload"
+                                                />
+                                                <label htmlFor="transfer-upload" className="cursor-pointer">
+                                                    {files.transfer_proof ? (
+                                                        <div className="space-y-3">
+                                                            {previews.transfer_proof ? (
+                                                                <img
+                                                                    src={previews.transfer_proof}
+                                                                    alt="Preview bukti pindahan"
+                                                                    className="w-32 h-32 object-contain mx-auto border-2 border-blue-200 rounded-lg"
+                                                                />
+                                                            ) : (
+                                                                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+                                                                    <FileText className="w-8 h-8 text-green-600" />
+                                                                </div>
+                                                            )}
+                                                            <p className="text-sm text-green-600 font-medium break-all">
+                                                                <CheckCircle className="w-4 h-4 inline mr-1" />
+                                                                {files.transfer_proof.name}
+                                                            </p>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="space-y-3">
+                                                            <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto">
+                                                                <Upload className="w-8 h-8 text-blue-600" />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-muted">Klik untuk mengunggah bukti pindahan</p>
+                                                                <p className="text-xs text-muted mt-1">JPG, PNG, PDF, DOC, DOCX (maks. 10MB)</p>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </label>
+                                            </div>
+                                            {errors.transfer_proof && <p className="mt-2 text-sm text-red-600">{errors.transfer_proof}</p>}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -766,14 +1006,14 @@ const PendaftaranPage = () => {
                                         type="button"
                                         onClick={handleReset}
                                         disabled={isSubmitting}
-                                        className="px-8 py-3 border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="px-8 py-3 cursor-pointer border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Reset Form
                                     </button>
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
-                                        className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                        className="px-8 py-3 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
                                         {isSubmitting ? (
                                             <>
@@ -795,6 +1035,8 @@ const PendaftaranPage = () => {
                         </div>
                     </div>
                 </div>
+                    </>
+                )}
             </MainLayout>
 
             {/* Error Modal */}

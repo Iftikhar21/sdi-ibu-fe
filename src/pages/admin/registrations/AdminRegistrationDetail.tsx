@@ -929,6 +929,24 @@ export default function AdminRegistrationDetail() {
                                             </div>
                                         </div>
                                     )}
+
+                                    {registration.transfer_proof_url && (
+                                        <div className="flex items-center justify-between p-3 border border-line rounded-lg hover:border-blue-400 hover:bg-blue-50 transition-colors group">
+                                            <div className="flex items-center">
+                                                <FileText className="w-5 h-5 text-muted mr-3" />
+                                                <span className="text-body">Bukti Pindahan</span>
+                                            </div>
+                                            <a
+                                                href={registration.transfer_proof_url}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="p-1.5 text-muted hover:text-blue-600 hover:bg-blue-100 rounded transition-colors cursor-pointer"
+                                                title="Buka dokumen"
+                                            >
+                                                <Eye className="w-4 h-4" />
+                                            </a>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Eye, EyeOff, Mail, Lock, User, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { CalendarClock, Eye, EyeOff, Mail, Lock, User, Loader2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/api";
 
@@ -8,6 +8,8 @@ import ring_home from "@/assets/img/ring_home.svg";
 import image_sejarah_2 from '@/assets/img/image_sejarah_2.svg';
 import bg_6 from "@/assets/img/bg_6.svg";
 import { Helmet } from "react-helmet-async";
+import { registrationInformationService, type RegistrationInformation } from "../../services/registrationInformationServices";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 interface RegisterData {
     name: string;
@@ -29,6 +31,19 @@ export default function Register() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
+    const [registrationPhase, setRegistrationPhase] = useState<RegistrationInformation['phase']>('closed');
+    const [phaseMessage, setPhaseMessage] = useState<string | null>(null);
+    const [phaseLoading, setPhaseLoading] = useState(true);
+
+    useEffect(() => {
+        registrationInformationService.getPublic()
+            .then((data) => {
+                setRegistrationPhase(data.phase);
+                setPhaseMessage(data.phase_message);
+            })
+            .catch((requestError) => console.error('Error fetching registration phase:', requestError))
+            .finally(() => setPhaseLoading(false));
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -107,30 +122,50 @@ export default function Register() {
                     navigate("/login");
                 }, 2000);
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             console.error("Register error:", err);
-
-            // Handle different error responses
-            if (err.response) {
-                if (err.response.status === 400) {
-                    setError(err.response.data.message || "Email sudah terdaftar atau terjadi kesalahan validasi.");
-                } else if (err.response.status === 422) {
-                    // Validation errors from Laravel
-                    const errors = err.response.data.errors;
-                    const firstError = Object.values(errors)[0] as string[];
-                    setError(firstError[0] || "Validasi gagal. Periksa data Anda.");
-                } else {
-                    setError("Terjadi kesalahan server. Silakan coba lagi nanti.");
-                }
-            } else if (err.request) {
-                setError("Tidak dapat terhubung ke server. Periksa koneksi internet Anda.");
-            } else {
-                setError("Terjadi kesalahan. Silakan coba lagi.");
-            }
+            setError(getApiErrorMessage(err, 'Terjadi kesalahan. Silakan coba lagi.'));
         } finally {
             setLoading(false);
         }
     };
+
+    if (phaseLoading) {
+        return (
+            <div className="flex min-h-screen items-center justify-center bg-surface">
+                <div className="text-center">
+                    <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-blue-600" />
+                    <p className="text-sm text-muted">Memuat status pendaftaran...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (registrationPhase === 'closed') {
+        return (
+            <>
+                <Helmet><title>Pendaftaran Belum Dibuka | SDI IBU</title></Helmet>
+                <div className="flex min-h-screen items-center justify-center bg-surface-muted p-4">
+                    <div className="w-full max-w-xl rounded-3xl border border-line bg-surface p-8 text-center shadow-lg md:p-12">
+                        <img src={logo_sdi} alt="Logo SDI" className="mx-auto mb-6 h-20 w-auto" />
+                        <div className="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                            <CalendarClock className="h-8 w-8" />
+                        </div>
+                        <h1 className="text-2xl font-bold text-body">Pembuatan Akun Belum Dibuka</h1>
+                        <p className="mt-4 leading-relaxed text-muted">
+                            {phaseMessage || 'Pembuatan akun untuk pendaftaran siswa baru belum dibuka. Silakan pantau halaman pendaftaran untuk informasi berikutnya.'}
+                        </p>
+                        <Link
+                            to="/pendaftaran"
+                            className="mt-8 inline-flex cursor-pointer items-center justify-center rounded-lg bg-blue-600 px-6 py-3 font-semibold text-white transition hover:bg-blue-700"
+                        >
+                            Kembali ke Informasi Pendaftaran
+                        </Link>
+                    </div>
+                </div>
+            </>
+        );
+    }
 
     return (
         <>
@@ -246,7 +281,7 @@ export default function Register() {
                                     <button
                                         type="button"
                                         onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-muted hover:text-body disabled:cursor-not-allowed"
                                         disabled={loading}
                                     >
                                         {showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
@@ -271,7 +306,7 @@ export default function Register() {
                                     <button
                                         type="button"
                                         onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted hover:text-muted"
+                                        className="absolute right-3 top-1/2 transform -translate-y-1/2 cursor-pointer text-muted hover:text-body disabled:cursor-not-allowed"
                                         disabled={loading}
                                     >
                                         {showConfirmPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
@@ -281,7 +316,7 @@ export default function Register() {
 
                             <button
                                 type="submit"
-                                className="w-full bg-brand hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 rounded-lg transition-all shadow-md mt-6 flex items-center justify-center"
+                                className="w-full cursor-pointer bg-brand hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-400 text-white font-semibold py-3 rounded-lg transition-all shadow-md mt-6 flex items-center justify-center"
                                 disabled={loading}
                             >
                                 {loading ? (
