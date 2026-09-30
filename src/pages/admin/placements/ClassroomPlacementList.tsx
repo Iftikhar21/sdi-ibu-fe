@@ -594,7 +594,7 @@ export default function ClassroomPlacementList() {
                                     value: classroom.id,
                                     label:
                                         classroom.display_name ??
-                                        `${classroom.grade_level}${classroom.name}`,
+                                        `${classroom.grade_level} ${classroom.name}`,
                                     description: isFull
                                         ? `Kuota ${classroom.quota} — penuh`
                                         : `Kuota ${classroom.quota} • terisi ${

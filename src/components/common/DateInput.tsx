@@ -49,6 +49,18 @@ export default function DateInput({
     const selectedDate = toDate(value);
     const minDate = toDate(min);
     const maxDate = toDate(max);
+    const currentYear = new Date().getFullYear();
+    const selectedYear = selectedDate?.getFullYear();
+    const calendarStart = minDate ?? new Date(
+        Math.min(currentYear - 100, selectedYear ?? currentYear - 100),
+        0,
+        1,
+    );
+    const calendarEnd = maxDate ?? new Date(
+        Math.max(currentYear + 20, selectedYear ?? currentYear + 20),
+        11,
+        31,
+    );
 
     const disabledDays: Matcher[] = [
         ...(minDate ? [{ before: minDate }] : []),
@@ -102,7 +114,7 @@ export default function DateInput({
                 } ${
                     disabled
                         ? 'cursor-not-allowed bg-surface-muted text-muted'
-                        : 'text-body hover:border-gray-400'
+                        : 'cursor-pointer text-body hover:border-gray-400'
                 } ${isOpen ? 'border-blue-500 ring-2 ring-blue-500' : ''} ${
                     clearable && selectedDate ? 'pr-12' : ''
                 }`}
@@ -125,7 +137,7 @@ export default function DateInput({
                     }}
                     aria-label="Kosongkan tanggal"
                     title="Kosongkan tanggal"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted transition-colors hover:bg-surface-muted hover:text-body"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer rounded-full p-1 text-muted transition-colors hover:bg-surface-muted hover:text-body"
                 >
                     <X className="h-4 w-4" />
                 </button>
@@ -139,6 +151,11 @@ export default function DateInput({
                         onSelect={handleSelect}
                         locale={indonesianLocale}
                         weekStartsOn={1}
+                        captionLayout="dropdown"
+                        startMonth={calendarStart}
+                        endMonth={calendarEnd}
+                        reverseYears
+                        navLayout="around"
                         showOutsideDays
                         disabled={disabledDays}
                     />
@@ -147,14 +164,14 @@ export default function DateInput({
                         <button
                             type="button"
                             onClick={() => handleSelect(new Date())}
-                            className="rounded-md px-2 py-1 text-xs font-medium text-brand transition-colors hover:bg-brand/10"
+                            className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-brand transition-colors hover:bg-brand/10"
                         >
                             Hari ini
                         </button>
                         <button
                             type="button"
                             onClick={() => setIsOpen(false)}
-                            className="rounded-md px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-surface-muted"
+                            className="cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-muted transition-colors hover:bg-surface-muted"
                         >
                             Tutup
                         </button>

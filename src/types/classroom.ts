@@ -6,7 +6,7 @@ export interface Classroom {
     academic_year?: AcademicYear | null;
     grade_level: number;
     name: string;
-    /** Nama tampil, mis. "1A" */
+    /** Nama tampil, mis. "1 Ikhwan" */
     display_name?: string;
     quota: number;
     /** Jumlah siswa yang sudah ditempatkan di kelas ini. */
@@ -28,3 +28,6 @@ export interface ClassroomPayload {
 
 /** Tingkat kelas yang tersedia (1 sampai 6). */
 export const gradeLevels = [1, 2, 3, 4, 5, 6];
+
+/** Kelompok kelas yang tersedia. */
+export const classroomNames = ['Ikhwan', 'Akhwat'] as const;

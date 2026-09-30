@@ -21,7 +21,8 @@ import {
     AlertCircle,
     Layers,
     CalendarRange,
-    Pencil
+    Pencil,
+    Trash2
 } from 'lucide-react';
 import type { Registration } from '../../../types/registration';
 import { registrationService } from '../../../services/registrationServices';
@@ -92,6 +93,9 @@ export default function AdminRegistrationList() {
     const [selectedYearId, setSelectedYearId] = useState<number | null>(null);
     const [isLoadingYears, setIsLoadingYears] = useState(false);
     const [isSavingYear, setIsSavingYear] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteRegistration, setDeleteRegistration] = useState<RegistrationWithUser | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const toast = useToast();
 
@@ -274,6 +278,39 @@ export default function AdminRegistrationList() {
             toast.error('Gagal memperbarui status', getApiErrorMessage(error, 'silakan coba lagi'));
         } finally {
             setIsUpdating(false);
+        }
+    };
+
+    const handleDeleteClick = (registration: RegistrationWithUser) => {
+        setDeleteRegistration(registration);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteRegistration) return;
+
+        setIsDeleting(true);
+        try {
+            const result = await registrationService.deleteRegistration(deleteRegistration.id);
+            const shouldMoveToPreviousPage = registrations.length === 1 && currentPage > 1;
+
+            setShowDeleteModal(false);
+            setDeleteRegistration(null);
+            toast.success('Pendaftaran berhasil dihapus', result.message);
+
+            if (shouldMoveToPreviousPage) {
+                setCurrentPage((page) => page - 1);
+            } else {
+                await fetchRegistrations();
+            }
+        } catch (error) {
+            console.error('Error deleting registration:', error);
+            toast.error(
+                'Gagal menghapus pendaftaran',
+                getApiErrorMessage(error, 'silakan coba lagi')
+            );
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -800,6 +837,15 @@ export default function AdminRegistrationList() {
                                                             >
                                                                 <FileText className="h-3.5 w-3.5" />
                                                             </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => handleDeleteClick(reg)}
+                                                                aria-label="Hapus pendaftaran"
+                                                                title="Hapus pendaftaran"
+                                                                className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-red-200 bg-red-50 text-red-700 transition-colors duration-200 hover:bg-red-100"
+                                                            >
+                                                                <Trash2 className="h-3.5 w-3.5" />
+                                                            </button>
                                                             {reg.status === 'approved' && (
                                                                 <button
                                                                     type="button"
@@ -996,6 +1042,42 @@ export default function AdminRegistrationList() {
                 </div>
             </Modal>
 
+            {/* Modal Hapus Pendaftaran */}
+            <Modal
+                isOpen={showDeleteModal}
+                onClose={() => {
+                    setShowDeleteModal(false);
+                    setDeleteRegistration(null);
+                }}
+                title="Hapus Pendaftaran"
+                type="danger"
+                confirmText="Ya, Hapus Permanen"
+                cancelText="Batal"
+                onConfirm={confirmDelete}
+                isLoading={isDeleting}
+                size="md"
+            >
+                <div className="space-y-4 py-2">
+                    <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                        <p className="font-medium text-red-900">
+                            Pendaftaran {deleteRegistration?.full_name} akan dihapus permanen.
+                        </p>
+                        <p className="mt-2 text-sm text-red-700">
+                            Berkas unggahan pendaftaran juga akan dihapus. Akun orang tua tetap tersimpan.
+                        </p>
+                    </div>
+
+                    {deleteRegistration?.status === 'approved' && (
+                        <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                            Pendaftar ini sudah diterima. Data siswa beserta penempatan kelas, nilai,
+                            kehadiran, dan kelulusan terkait juga akan ikut terhapus.
+                        </div>
+                    )}
+
+                    <p className="text-sm text-muted">Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+            </Modal>
+
             {/* Modal Penempatan / Pemindahan Kelas */}
             <Modal
                 isOpen={showPlacementModal}
@@ -1061,7 +1143,7 @@ export default function AdminRegistrationList() {
                                     value: classroom.id,
                                     label:
                                         classroom.display_name ??
-                                        `${classroom.grade_level}${classroom.name}`,
+                                        `${classroom.grade_level} ${classroom.name}`,
                                     description: isFull
                                         ? `Kuota ${classroom.quota} — penuh`
                                         : `Kuota ${classroom.quota} • terisi ${

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
     ArrowLeft,
     User,
@@ -20,11 +20,14 @@ import {
     FileDown,
     Loader2,
     GraduationCap,
-    School
+    School,
+    Trash2
 } from 'lucide-react';
 import { registrationService } from '../../../services/registrationServices';
 import { studentService } from '../../../services/studentServices';
 import Layout from '../../../components/layout/panel/MainLayout';
+import Modal from '../../../components/common/Modal';
+import SearchableSelect from '../../../components/common/SearchableSelect';
 import type { Registration } from '../../../types/registration';
 import { Helmet } from 'react-helmet-async';
 import { getDownloadErrorMessage } from '../../../utils/fileDownload';
@@ -272,6 +275,7 @@ function AcceptanceLetterModal({
 
 export default function AdminRegistrationDetail() {
     const { id } = useParams();
+    const navigate = useNavigate();
     const toast = useToast();
     const [registration, setRegistration] = useState<RegistrationWithUser | null>(null);
     const [loading, setLoading] = useState(true);
@@ -287,6 +291,63 @@ export default function AdminRegistrationDetail() {
     const [acceptanceLetterModal, setAcceptanceLetterModal] = useState(false);
     const [isDownloadingDocs, setIsDownloadingDocs] = useState(false);
     const [isCreatingStudent, setIsCreatingStudent] = useState(false);
+    const [showStatusModal, setShowStatusModal] = useState(false);
+    const [updateStatus, setUpdateStatus] = useState('');
+    const [updateNotes, setUpdateNotes] = useState('');
+    const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+
+    const openStatusModal = () => {
+        if (!registration) return;
+
+        setUpdateStatus(registration.status);
+        setUpdateNotes(registration.notes || '');
+        setShowStatusModal(true);
+    };
+
+    const handleUpdateStatus = async () => {
+        if (!registration || !updateStatus) return;
+
+        setIsUpdatingStatus(true);
+        try {
+            const result = await registrationService.updateStatus(registration.id, {
+                status: updateStatus,
+                notes: updateNotes.trim() || undefined,
+            });
+
+            setRegistration((current) => current ? { ...current, ...result.data } : current);
+            setShowStatusModal(false);
+            toast.success('Status pendaftaran berhasil diperbarui');
+        } catch (error) {
+            console.error('Error updating registration status:', error);
+            toast.error(
+                'Gagal memperbarui status pendaftaran',
+                getApiErrorMessage(error, 'silakan coba lagi')
+            );
+        } finally {
+            setIsUpdatingStatus(false);
+        }
+    };
+
+    const handleDelete = async () => {
+        if (!registration) return;
+
+        setIsDeleting(true);
+        try {
+            const result = await registrationService.deleteRegistration(registration.id);
+            toast.success('Pendaftaran berhasil dihapus', result.message);
+            navigate('/admin/registrations');
+        } catch (error) {
+            console.error('Error deleting registration:', error);
+            toast.error(
+                'Gagal menghapus pendaftaran',
+                getApiErrorMessage(error, 'silakan coba lagi')
+            );
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     // Bentuk data siswa dari pendaftaran yang sudah Diterima
     const handleCreateStudent = async () => {
@@ -442,14 +503,6 @@ export default function AdminRegistrationDetail() {
         }
     };
 
-    const handleGenerateAcceptanceLetter = () => {
-        if (registration?.status !== 'approved') {
-            toast.warning('Hanya pendaftaran dengan status "Diterima" yang dapat dibuatkan surat penerimaan.');
-            return;
-        }
-        setAcceptanceLetterModal(true);
-    };
-
     if (loading) {
         return (
             <Layout title="Loading...">
@@ -504,6 +557,97 @@ export default function AdminRegistrationDetail() {
                     onGeneratePDF={generateAcceptanceLetterPDF}
                 />
 
+                <Modal
+                    isOpen={showStatusModal}
+                    onClose={() => setShowStatusModal(false)}
+                    title="Update Status Pendaftaran"
+                    confirmText="Simpan Perubahan"
+                    cancelText="Batal"
+                    onConfirm={handleUpdateStatus}
+                    isLoading={isUpdatingStatus}
+                    size="md"
+                >
+                    <div className="space-y-4 py-2">
+                        <div className="rounded-lg bg-surface-muted p-3">
+                            <p className="font-medium text-body">{registration.full_name}</p>
+                            <p className="mt-1 text-sm text-muted">
+                                Status saat ini: {statusConfig.text}
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-body">
+                                Status Baru *
+                            </label>
+                            <SearchableSelect
+                                options={[
+                                    { value: 'submitted', label: 'Dikirim' },
+                                    { value: 'review', label: 'Dalam Review' },
+                                    { value: 'approved', label: 'Diterima' },
+                                    { value: 'rejected', label: 'Ditolak' },
+                                ]}
+                                value={updateStatus}
+                                onChange={(value) => setUpdateStatus(String(value))}
+                                searchPlaceholder="Cari status..."
+                                ariaLabel="Status pendaftaran baru"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="mb-2 block text-sm font-medium text-body">
+                                Catatan (Opsional)
+                            </label>
+                            <textarea
+                                value={updateNotes}
+                                onChange={(event) => setUpdateNotes(event.target.value)}
+                                placeholder="Tambahkan catatan untuk orang tua..."
+                                rows={3}
+                                maxLength={500}
+                                className="w-full resize-none rounded-lg border border-line bg-surface px-4 py-2 text-body focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                            />
+                            <p className="mt-1 text-xs text-muted">{updateNotes.length}/500 karakter</p>
+                        </div>
+
+                        {updateStatus === 'approved' && (
+                            <div className="rounded-lg border border-green-200 bg-green-50 p-3 text-sm text-green-800">
+                                Data siswa akan otomatis disiapkan setelah status disimpan sebagai Diterima.
+                            </div>
+                        )}
+                    </div>
+                </Modal>
+
+                <Modal
+                    isOpen={showDeleteModal}
+                    onClose={() => setShowDeleteModal(false)}
+                    title="Hapus Pendaftaran"
+                    type="danger"
+                    confirmText="Ya, Hapus Permanen"
+                    cancelText="Batal"
+                    onConfirm={handleDelete}
+                    isLoading={isDeleting}
+                    size="md"
+                >
+                    <div className="space-y-4 py-2">
+                        <div className="rounded-lg border border-red-200 bg-red-50 p-4">
+                            <p className="font-medium text-red-900">
+                                Pendaftaran {registration.full_name} akan dihapus permanen.
+                            </p>
+                            <p className="mt-2 text-sm text-red-700">
+                                Berkas unggahan akan dihapus. Akun orang tua tetap tersimpan.
+                            </p>
+                        </div>
+
+                        {registration.status === 'approved' && (
+                            <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
+                                Data siswa beserta penempatan kelas, nilai, kehadiran, dan kelulusan
+                                terkait juga akan ikut terhapus.
+                            </div>
+                        )}
+
+                        <p className="text-sm text-muted">Tindakan ini tidak dapat dibatalkan.</p>
+                    </div>
+                </Modal>
+
                 {/* Header */}
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center bg-surface rounded-xl shadow-sm p-6 mb-6 print:hidden">
                     <div className="mb-4 md:mb-0">
@@ -535,13 +679,14 @@ export default function AdminRegistrationDetail() {
                             {statusConfig.icon}
                             <span className="ml-2">{statusConfig.text}</span>
                         </span>
-                        <Link
-                            to={`/admin/registrations/${registration.id}/edit`}
+                        <button
+                            type="button"
+                            onClick={openStatusModal}
                             className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                         >
                             <Edit className="w-4 h-4 mr-2" />
                             Edit Status
-                        </Link>
+                        </button>
                     </div>
                 </div>
 
@@ -968,13 +1113,22 @@ export default function AdminRegistrationDetail() {
                                     Tindakan Cepat
                                 </h2>
                                 <div className="grid grid-cols-1 gap-3">
-                                    <Link
-                                        to={`/admin/registrations/${registration.id}/edit`}
+                                    <button
+                                        type="button"
+                                        onClick={openStatusModal}
                                         className="flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
                                     >
                                         <Edit className="w-4 h-4" />
                                         Update Status
-                                    </Link>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowDeleteModal(true)}
+                                        className="flex items-center justify-center gap-2 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-red-700 transition-colors duration-200 hover:bg-red-100"
+                                    >
+                                        <Trash2 className="h-4 w-4" />
+                                        Hapus Pendaftaran
+                                    </button>
                                 </div>
                             </div>
                         </div>

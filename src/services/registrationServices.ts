@@ -2,6 +2,32 @@ import api from '../api/api';
 import type { Registration, RegistrationWithUser } from '../types/registration';
 import { getFilenameFromDisposition, saveBlob } from '../utils/fileDownload';
 
+interface RegistrationListResponse {
+    success: boolean;
+    data: {
+        data: RegistrationWithUser[];
+    };
+    stats: {
+        total: number;
+        submitted: number;
+        review: number;
+        approved: number;
+        rejected: number;
+    };
+    meta: {
+        total: number;
+        per_page: number;
+        current_page: number;
+        last_page: number;
+    };
+}
+
+interface UpdateStatusResponse {
+    success: boolean;
+    message: string;
+    data: RegistrationWithUser;
+}
+
 // Nama file cadangan dipakai bila header Content-Disposition tidak terbaca
 // (mis. dibatasi CORS), supaya file tetap tersimpan dengan nama yang jelas.
 const buildExportFallbackName = () => {
@@ -41,7 +67,7 @@ export const registrationService = {
         return response.data.data;
     },
 
-    async getAllRegistrationsWithParams(params?: string): Promise<any> {
+    async getAllRegistrationsWithParams(params?: string): Promise<RegistrationListResponse> {
         const url = `/admin/registrations${params ? `?${params}` : ''}`;
         const response = await api.get(url, {
             headers: {
@@ -62,12 +88,18 @@ export const registrationService = {
     },
 
     // Admin: Update registration status
-    async updateStatus(id: number, data: { status: string; notes?: string }): Promise<any> {
+    async updateStatus(id: number, data: { status: string; notes?: string }): Promise<UpdateStatusResponse> {
         const response = await api.put(`/admin/registrations/${id}/status`, data, {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             }
         });
+        return response.data;
+    },
+
+    // Admin: Hapus pendaftaran beserta data siswa turunannya
+    async deleteRegistration(id: number): Promise<{ success: boolean; message: string }> {
+        const response = await api.delete(`/admin/registrations/${id}`);
         return response.data;
     },
 

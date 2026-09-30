@@ -78,8 +78,8 @@ export default function ClassroomCreate() {
             >
                 <div className="py-2">
                     <p className="text-body">
-                        Tambahkan kelas {formData?.grade_level}
-                        {formData?.name} dengan kuota {formData?.quota}?
+                        Tambahkan kelas {formData?.grade_level} {formData?.name} dengan kuota{' '}
+                        {formData?.quota}?
                     </p>
                 </div>
             </Modal>

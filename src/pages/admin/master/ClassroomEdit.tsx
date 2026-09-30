@@ -28,7 +28,12 @@ export default function ClassroomEdit() {
                 setInitialData({
                     academic_year_id: classroom.academic_year_id,
                     grade_level: classroom.grade_level,
-                    name: classroom.name,
+                    name:
+                        classroom.name === 'A'
+                            ? 'Ikhwan'
+                            : classroom.name === 'B'
+                              ? 'Akhwat'
+                              : classroom.name,
                     quota: classroom.quota,
                     is_active: classroom.is_active,
                 });
@@ -115,8 +120,7 @@ export default function ClassroomEdit() {
             >
                 <div className="py-2">
                     <p className="text-body">
-                        Simpan perubahan kelas {formData?.grade_level}
-                        {formData?.name}?
+                        Simpan perubahan kelas {formData?.grade_level} {formData?.name}?
                     </p>
                 </div>
             </Modal>

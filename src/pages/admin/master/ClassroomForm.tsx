@@ -5,7 +5,7 @@ import SearchableSelect from '../../../components/common/SearchableSelect';
 import { useToast } from '../../../context/toast';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { academicYearService } from '../../../services/academicYearServices';
-import { gradeLevels } from '../../../types/classroom';
+import { classroomNames, gradeLevels } from '../../../types/classroom';
 import type { AcademicYear } from '../../../types/academicYear';
 
 export interface ClassroomFormValues {
@@ -25,7 +25,7 @@ interface Props {
 const defaultValues: ClassroomFormValues = {
     academic_year_id: 0,
     grade_level: 1,
-    name: '',
+    name: 'Ikhwan',
     quota: 28,
     is_active: true,
 };
@@ -80,8 +80,8 @@ export default function ClassroomForm({
             return;
         }
 
-        if (!form.name.trim()) {
-            toast.warning('Nama kelas wajib diisi');
+        if (!classroomNames.includes(form.name as (typeof classroomNames)[number])) {
+            toast.warning('Nama kelas harus Ikhwan atau Akhwat');
             return;
         }
 
@@ -90,7 +90,7 @@ export default function ClassroomForm({
             return;
         }
 
-        onSubmit({ ...form, name: form.name.trim().toUpperCase() });
+        onSubmit(form);
     };
 
     return (
@@ -144,23 +144,23 @@ export default function ClassroomForm({
                     <label className="mb-2 block text-sm font-medium text-body">
                         Nama Kelas <span className="text-red-500">*</span>
                     </label>
-                    <input
-                        type="text"
-                        maxLength={2}
+                    <SearchableSelect
+                        options={classroomNames.map((name) => ({
+                            value: name,
+                            label: name,
+                            description: name === 'Ikhwan' ? 'Kelas putra' : 'Kelas putri',
+                        }))}
                         value={form.name}
-                        onChange={(event) =>
-                            setForm((previous) => ({
-                                ...previous,
-                                name: event.target.value
-                                    .toUpperCase()
-                                    .replace(/[^A-Z0-9]/g, '')
-                                    .slice(0, 2),
-                            }))
+                        onChange={(value) =>
+                            setForm((previous) => ({ ...previous, name: String(value) }))
                         }
-                        placeholder="A"
-                        className="w-full rounded-lg border border-line bg-surface px-4 py-3 text-body shadow-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                        placeholder="Pilih kelompok kelas"
+                        searchPlaceholder="Cari kelompok kelas..."
+                        ariaLabel="Nama kelas"
                     />
-                    <p className="mt-2 text-xs text-muted">Contoh: A, B, C.</p>
+                    <p className="mt-2 text-xs text-muted">
+                        Ikhwan untuk kelas putra, Akhwat untuk kelas putri.
+                    </p>
                 </div>
             </div>
 
@@ -221,8 +221,7 @@ export default function ClassroomForm({
                     Nama kelas yang tampil
                 </p>
                 <p className="mt-1 text-2xl font-bold text-blue-800">
-                    {form.grade_level}
-                    {form.name || '?'}
+                    {form.grade_level} {form.name || '?'}
                 </p>
             </div>
 

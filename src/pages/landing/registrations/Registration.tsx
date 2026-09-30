@@ -450,7 +450,7 @@ const PendaftaranPage = () => {
                                     <p className="text-3xl font-bold text-blue-600">
                                         {information?.available === null || information?.available === undefined
                                             ? 'Belum ditentukan'
-                                            : `${information.available} kursi`}
+                                            : `${information.available} pendaftar`}
                                     </p>
                                     {information && information.quota > 0 && (
                                         <>

@@ -90,7 +90,7 @@ export default function ClassroomList() {
             const matchesYear = yearFilter === 'all' || item.academic_year_id === yearFilter;
             const matchesSearch =
                 keyword === '' ||
-                (item.display_name ?? `${item.grade_level}${item.name}`)
+                (item.display_name ?? `${item.grade_level} ${item.name}`)
                     .toLowerCase()
                     .includes(keyword) ||
                 (item.academic_year?.name ?? '').toLowerCase().includes(keyword);
@@ -389,7 +389,7 @@ export default function ClassroomList() {
                                                         {item.name}
                                                         <span className="rounded-full bg-brand/20 px-2 py-0.5 text-xs font-semibold text-brand">
                                                             {item.display_name ??
-                                                                `${item.grade_level}${item.name}`}
+                                                                `${item.grade_level} ${item.name}`}
                                                         </span>
                                                     </span>
                                                 </td>
@@ -536,7 +536,7 @@ export default function ClassroomList() {
                     <p className="text-body">
                         Hapus kelas{' '}
                         <span className="font-semibold">
-                            {deleting?.display_name ?? `${deleting?.grade_level}${deleting?.name}`}
+                            {deleting?.display_name ?? `${deleting?.grade_level} ${deleting?.name}`}
                         </span>{' '}
                         pada tahun ajaran {deleting?.academic_year?.name}?
                     </p>
@@ -638,7 +638,7 @@ export default function ClassroomList() {
                 onClose={() => setShowStudentsModal(false)}
                 title={`Siswa Kelas ${
                     studentsClassroom?.display_name ??
-                    `${studentsClassroom?.grade_level ?? ''}${studentsClassroom?.name ?? ''}`
+                    `${studentsClassroom?.grade_level ?? ''} ${studentsClassroom?.name ?? ''}`
                 }`}
                 type="default"
                 confirmText="Tutup"
