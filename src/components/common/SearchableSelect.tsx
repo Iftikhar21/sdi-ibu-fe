@@ -22,6 +22,8 @@ interface SearchableSelectProps {
     clearable?: boolean;
     /** Ukuran lebih ringkas, cocok untuk baris filter. */
     compact?: boolean;
+    /** Tandai pilihan yang gagal validasi. */
+    invalid?: boolean;
     className?: string;
     ariaLabel?: string;
 }
@@ -43,6 +45,7 @@ export default function SearchableSelect({
     loading = false,
     clearable = false,
     compact = false,
+    invalid = false,
     className = '',
     ariaLabel,
 }: SearchableSelectProps) {
@@ -223,12 +226,15 @@ export default function SearchableSelect({
                     aria-haspopup="listbox"
                     aria-expanded={isOpen}
                     aria-label={ariaLabel}
+                    aria-invalid={invalid || undefined}
                     className={`flex w-full items-center justify-between gap-2 rounded-lg border bg-surface text-left shadow-sm transition-all duration-200 ${
                         triggerClasses
                     } ${clearable && selectedOption ? 'pr-14' : ''} ${
                         disabled
                             ? 'cursor-not-allowed border-line bg-surface-muted text-muted'
-                            : 'border-line hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
+                            : invalid
+                              ? 'cursor-pointer border-red-300 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-500/30'
+                              : 'cursor-pointer border-line hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
                     } ${isOpen ? 'border-blue-500 ring-2 ring-blue-500' : ''}`}
                 >
                     <span className={`truncate ${selectedOption ? 'text-body' : 'text-muted'}`}>
@@ -259,7 +265,7 @@ export default function SearchableSelect({
                         }}
                         aria-label="Kosongkan pilihan"
                         title="Kosongkan pilihan"
-                        className="absolute right-8 top-1/2 -translate-y-1/2 rounded-full p-1 text-muted transition-colors hover:bg-surface-muted hover:text-muted"
+                        className="absolute right-8 top-1/2 -translate-y-1/2 cursor-pointer rounded-full p-1 text-muted transition-colors hover:bg-surface-muted hover:text-muted"
                     >
                         <X className="h-3.5 w-3.5" />
                     </button>

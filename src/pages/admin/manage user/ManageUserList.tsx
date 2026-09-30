@@ -378,23 +378,6 @@ export default function UserList() {
                             />
                         </div>
 
-                        {/* Status Filter */}
-                        {/* <div>
-                            <label htmlFor="status" className="block text-sm font-medium text-body mb-1">
-                                Status
-                            </label>
-                            <select
-                                id="status"
-                                value={filters.status}
-                                onChange={(e) => handleFilterChange('status', e.target.value)}
-                                className="block w-full px-3 py-2 border border-line rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
-                            >
-                                <option value="all">Semua Status</option>
-                                <option value="active">Aktif</option>
-                                <option value="inactive">Tidak Aktif</option>
-                            </select>
-                        </div> */}
-
                         {/* Results Count */}
                         <div>
                             <label className="block text-sm font-medium text-body mb-1">

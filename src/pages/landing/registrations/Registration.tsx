@@ -10,6 +10,7 @@ import DateInput from '../../../components/common/DateInput';
 import { registrationInformationService, type RegistrationInformation } from '../../../services/registrationInformationServices';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { useToast } from '../../../context/toast';
+import SearchableSelect from '../../../components/common/SearchableSelect';
 
 const formatRupiah = (value: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
@@ -83,7 +84,7 @@ const PendaftaranPage = () => {
         return () => window.clearTimeout(timer);
     }, [informationLoading, location.hash]);
 
-    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setFormData(prev => ({
             ...prev,
@@ -699,17 +700,23 @@ const PendaftaranPage = () => {
                                             <label className="block text-sm font-medium text-body mb-2">
                                                 Jenis Kelamin <span className="text-red-500">*</span>
                                             </label>
-                                            <select
-                                                name="gender"
+                                            <SearchableSelect
+                                                options={[
+                                                    { value: 'L', label: 'Laki-laki' },
+                                                    { value: 'P', label: 'Perempuan' },
+                                                ]}
                                                 value={formData.gender}
-                                                onChange={handleChange}
-                                                className={`w-full px-4 py-3 bg-surface-muted border ${errors.gender ? 'border-red-300' : 'border-line'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-surface transition-all appearance-none cursor-pointer`}
-                                                required
-                                            >
-                                                <option value="">Pilih Jenis Kelamin</option>
-                                                <option value="L">Laki-laki</option>
-                                                <option value="P">Perempuan</option>
-                                            </select>
+                                                onChange={(value) => {
+                                                    setFormData((previous) => ({ ...previous, gender: String(value) }));
+                                                    if (errors.gender) {
+                                                        setErrors((previous) => ({ ...previous, gender: '' }));
+                                                    }
+                                                }}
+                                                placeholder="Pilih Jenis Kelamin"
+                                                searchPlaceholder="Cari jenis kelamin..."
+                                                invalid={Boolean(errors.gender)}
+                                                ariaLabel="Jenis kelamin calon murid"
+                                            />
                                             {errors.gender && <p className="mt-1 text-sm text-red-600">{errors.gender}</p>}
                                         </div>
 

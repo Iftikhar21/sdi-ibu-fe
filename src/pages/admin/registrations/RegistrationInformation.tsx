@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { CalendarClock, CircleDollarSign, ClipboardCheck, Landmark, Loader2, Plus, Save, Trash2, Users } from 'lucide-react';
 import Layout from '../../../components/layout/panel/MainLayout';
 import NumericInput from '../../../components/common/NumericInput';
+import SearchableSelect from '../../../components/common/SearchableSelect';
 import { useToast } from '../../../context/toast';
 import { getApiErrorMessage } from '../../../utils/apiError';
 import {
@@ -153,15 +154,17 @@ export default function RegistrationInformation() {
                         <div className="grid gap-4 md:grid-cols-[280px_1fr]">
                             <div>
                                 <label className="mb-2 block text-sm font-medium text-body">Status Halaman</label>
-                                <select
+                                <SearchableSelect
+                                    options={[
+                                        { value: 'closed', label: 'Belum Dibuka' },
+                                        { value: 'account', label: 'Pembuatan Akun' },
+                                        { value: 'open', label: 'Formulir Dibuka' },
+                                    ]}
                                     value={phase}
-                                    onChange={(event) => setPhase(event.target.value as typeof phase)}
-                                    className={`${inputClass} cursor-pointer`}
-                                >
-                                    <option value="closed">Belum Dibuka</option>
-                                    <option value="account">Pembuatan Akun</option>
-                                    <option value="open">Formulir Dibuka</option>
-                                </select>
+                                    onChange={(value) => setPhase(value as typeof phase)}
+                                    searchPlaceholder="Cari status halaman..."
+                                    ariaLabel="Status halaman pendaftaran"
+                                />
                                 <p className="mt-2 text-xs leading-relaxed text-muted">
                                     {phase === 'closed' && 'Pengunjung hanya melihat pemberitahuan bahwa pendaftaran belum dibuka.'}
                                     {phase === 'account' && 'Pengunjung diarahkan membuat akun, sementara formulir masih disembunyikan.'}

@@ -662,8 +662,8 @@ export default function AdminRegistrationList() {
                 </div>
 
                 {/* Content */}
-                <div className="bg-surface rounded-xl shadow-sm border border-line overflow-hidden">
-                    <div className="overflow-x-auto">
+                <div className="bg-surface rounded-xl shadow-sm border border-line">
+                    <div className="min-w-0">
                         {loading ? (
                             <div className="py-12 text-center">
                                 <Loader2 className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-4" />
@@ -683,6 +683,7 @@ export default function AdminRegistrationList() {
                             </div>
                         ) : (
                             <>
+                                <div className="overflow-x-auto">
                                 <table className="w-full min-w-[1100px] table-fixed divide-y divide-line">
                                     <thead className="bg-surface-muted">
                                         <tr>
@@ -868,6 +869,7 @@ export default function AdminRegistrationList() {
                                         })}
                                     </tbody>
                                 </table>
+                                </div>
 
                                 {/* Pagination */}
                                 <div className="px-4 py-3 border-t border-line">
@@ -884,16 +886,20 @@ export default function AdminRegistrationList() {
                                         <div className="flex items-center gap-4">
                                             <div className="flex items-center gap-2">
                                                 <label className="text-sm text-body">Per halaman:</label>
-                                                <select
+                                                <SearchableSelect
+                                                    compact
+                                                    options={[
+                                                        { value: 10, label: '10' },
+                                                        { value: 25, label: '25' },
+                                                        { value: 50, label: '50' },
+                                                        { value: 100, label: '100' },
+                                                    ]}
                                                     value={perPage}
-                                                    onChange={(e) => setPerPage(Number(e.target.value))}
-                                                    className="px-2 py-1 border border-line rounded text-sm"
-                                                >
-                                                    <option value="10">10</option>
-                                                    <option value="25">25</option>
-                                                    <option value="50">50</option>
-                                                    <option value="100">100</option>
-                                                </select>
+                                                    onChange={(value) => setPerPage(Number(value))}
+                                                    searchPlaceholder="Cari jumlah..."
+                                                    className="w-24"
+                                                    ariaLabel="Jumlah data per halaman"
+                                                />
                                             </div>
                                             <div className="flex items-center gap-2">
                                                 <button

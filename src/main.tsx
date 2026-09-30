@@ -1,7 +1,5 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-// Dimuat sebelum index.css agar gaya kustom kita bisa menimpa gaya bawaan library
-import "react-day-picker/style.css";
 import App from "./App";
 import "./index.css";
 import { AuthProvider } from "./auth/AuthContext";
