@@ -9,12 +9,14 @@ import NumericInput from '../../../components/common/NumericInput';
 import DateInput from '../../../components/common/DateInput';
 import { registrationInformationService, type RegistrationInformation } from '../../../services/registrationInformationServices';
 import { getApiErrorMessage } from '../../../utils/apiError';
+import { useToast } from '../../../context/toast';
 
 const formatRupiah = (value: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
 
 const PendaftaranPage = () => {
     const location = useLocation();
+    const toast = useToast();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [successMessage, setSuccessMessage] = useState('');
@@ -222,6 +224,12 @@ const PendaftaranPage = () => {
             });
             setSuccessMessage(
                 `Pendaftaran untuk ${namaPendaftar} berhasil dikirim! Simpan nomor pendaftaran di bawah untuk memantau status.`
+            );
+            toast.success(
+                'Pendaftaran berhasil dikirim',
+                nomorPendaftaran
+                    ? `Nomor pendaftaran: ${nomorPendaftaran}`
+                    : `Data ${namaPendaftar} berhasil diterima.`
             );
 
         } catch (error: unknown) {

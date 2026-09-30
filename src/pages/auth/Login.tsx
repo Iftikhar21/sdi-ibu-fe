@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../auth/AuthContext";
-import { Link, Navigate, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Mail, Lock, Loader2 } from "lucide-react";
 import WebsiteLogo from '../../components/common/WebsiteLogo';
 import ring_home from "@/assets/img/ring_home.svg";
 import bg_6 from "@/assets/img/bg_6.svg";
 import bg_1 from "@/assets/img/bg_1.svg";
 import { Helmet } from "react-helmet-async";
+import { useToast } from "../../context/toast";
+import { getApiErrorMessage } from "../../utils/apiError";
 
 export default function Login() {
     const { user, login } = useAuth();
     const navigate = useNavigate();
+    const toast = useToast();
     const [error, setError] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
 
@@ -44,29 +47,10 @@ export default function Login() {
 
         try {
             await login(email, password);
+            toast.success("Login berhasil", "Selamat datang kembali di SDI IBU.");
 
-            // Setelah login sukses, tunggu sejenak untuk state update
-            setTimeout(() => {
-                const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
-
-                if (storedUser?.must_change_password) {
-                    navigate("/ganti-password", { replace: true });
-                } else if (storedUser?.role?.role_name === "admin") {
-                    navigate("/admin/dashboard", { replace: true });
-                } else if (storedUser?.role?.role_name === "guru") {
-                    navigate("/guru/dashboard", { replace: true });
-                } else if (storedUser?.role?.role_name === "user") {
-                    navigate("/user/dashboard", { replace: true });
-                } else {
-                    navigate("/", { replace: true });
-                }
-            }, 100); // Tunggu 100ms untuk state update
-
-        } catch (err: any) {
-            setError(
-                err?.response?.data?.message ||
-                "Login gagal, silakan coba lagi."
-            );
+        } catch (err: unknown) {
+            setError(getApiErrorMessage(err, "Login gagal, silakan coba lagi."));
         } finally {
             setLoading(false);
         }

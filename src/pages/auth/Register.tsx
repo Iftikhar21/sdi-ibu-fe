@@ -10,6 +10,7 @@ import bg_6 from "@/assets/img/bg_6.svg";
 import { Helmet } from "react-helmet-async";
 import { registrationInformationService, type RegistrationInformation } from "../../services/registrationInformationServices";
 import { getApiErrorMessage } from "../../utils/apiError";
+import { useToast } from "../../context/toast";
 
 interface RegisterData {
     name: string;
@@ -20,6 +21,7 @@ interface RegisterData {
 
 export default function Register() {
     const navigate = useNavigate();
+    const toast = useToast();
     const [formData, setFormData] = useState<RegisterData>({
         name: "",
         email: "",
@@ -30,7 +32,6 @@ export default function Register() {
     const [showConfirmPassword, setShowConfirmPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [success, setSuccess] = useState<string | null>(null);
     const [registrationPhase, setRegistrationPhase] = useState<RegistrationInformation['phase']>('closed');
     const [phaseMessage, setPhaseMessage] = useState<string | null>(null);
     const [phaseLoading, setPhaseLoading] = useState(true);
@@ -58,7 +59,6 @@ export default function Register() {
     const validateForm = (): boolean => {
         // Reset previous messages
         setError(null);
-        setSuccess(null);
 
         // Check if all fields are filled
         if (!formData.name.trim() || !formData.email.trim() || !formData.password || !formData.confirmPassword) {
@@ -97,7 +97,6 @@ export default function Register() {
 
         setLoading(true);
         setError(null);
-        setSuccess(null);
 
         try {
             const response = await api.post('/register', {
@@ -107,20 +106,11 @@ export default function Register() {
             });
 
             if (response.data) {
-                setSuccess("Registrasi berhasil! Anda akan dialihkan ke halaman login...");
-
-                // Reset form
-                setFormData({
-                    name: "",
-                    email: "",
-                    password: "",
-                    confirmPassword: ""
-                });
-
-                // Redirect to login after 2 seconds
-                setTimeout(() => {
-                    navigate("/login");
-                }, 2000);
+                toast.success(
+                    "Akun berhasil dibuat",
+                    "Silakan masuk menggunakan akun yang baru dibuat."
+                );
+                navigate("/login", { replace: true });
             }
         } catch (err: unknown) {
             console.error("Register error:", err);
@@ -214,13 +204,6 @@ export default function Register() {
                                 Lengkapi data untuk membuat akun.
                             </p>
                         </div>
-
-                        {/* Success Message */}
-                        {success && (
-                            <div className="mb-4 p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
-                                {success}
-                            </div>
-                        )}
 
                         {/* Error Message */}
                         {error && (
