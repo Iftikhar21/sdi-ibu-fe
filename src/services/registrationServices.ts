@@ -57,12 +57,18 @@ export const registrationService = {
         return response.data.data;
     },
 
-    async create(formData: FormData): Promise<Registration> {
+    async create(
+        formData: FormData,
+        onProgress?: (percentage: number) => void,
+    ): Promise<Registration> {
         const response = await api.post("/registrations", formData, {
             headers: {
-                'Authorization': `Bearer ${localStorage.getItem('token')}`,
-                'Content-Type': 'multipart/form-data'
-            }
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            onUploadProgress: (event) => {
+                if (!onProgress || !event.total) return;
+                onProgress(Math.min(100, Math.round((event.loaded / event.total) * 100)));
+            },
         });
         return response.data.data;
     },

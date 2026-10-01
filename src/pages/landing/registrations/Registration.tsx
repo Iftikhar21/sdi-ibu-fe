@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Upload, Camera, FileText, CheckCircle, Users, X, CircleDollarSign, ClipboardCheck, ListChecks, UserPlus, Send, ShieldCheck, CalendarClock, Landmark, Loader2, School } from 'lucide-react';
 import MainLayout from "../../../components/layout/landing/MainLayout";
@@ -11,14 +11,28 @@ import { registrationInformationService, type RegistrationInformation } from '..
 import { getApiErrorMessage } from '../../../utils/apiError';
 import { useToast } from '../../../context/toast';
 import SearchableSelect from '../../../components/common/SearchableSelect';
+import { optimizeImageForUpload } from '../../../utils/imageCompression';
 
 const formatRupiah = (value: number) =>
     new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value);
 
+const maxFileBytes = 10 * 1024 * 1024;
+const maxRequestBytes = 20 * 1024 * 1024;
+const imageFields = new Set([
+    'photo',
+    'birth_certificate',
+    'family_card',
+    'payment_proof',
+    'transfer_proof',
+]);
+
 const PendaftaranPage = () => {
     const location = useLocation();
     const toast = useToast();
+    const submitLock = useRef(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [optimizingFiles, setOptimizingFiles] = useState(0);
+    const [uploadProgress, setUploadProgress] = useState<number | null>(null);
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [successMessage, setSuccessMessage] = useState('');
     const [information, setInformation] = useState<RegistrationInformation | null>(null);
@@ -96,48 +110,69 @@ const PendaftaranPage = () => {
         }
     };
 
-    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
         const { name, files: fileList } = e.target;
         if (!fileList || fileList.length === 0) return;
 
-        const file = fileList[0];
+        const selectedFile = fileList[0];
+        const extension = selectedFile.name.split('.').pop()?.toLowerCase();
+        const supportedImage = ['jpg', 'jpeg', 'png'].includes(extension ?? '');
 
-        // Validasi ukuran file (max 10MB = 10485760 bytes)
-        if (file.size > 10485760) {
-            setErrors(prev => ({ ...prev, [name]: 'Ukuran file maksimal 10MB' }));
+        if (name !== 'transfer_proof' && !supportedImage) {
+            setErrors(prev => ({ ...prev, [name]: 'File harus berupa JPG atau PNG' }));
+            e.target.value = '';
             return;
         }
 
-        // Validasi tipe file untuk gambar
-        if (name === 'photo' || name === 'birth_certificate' || name === 'family_card' || name === 'payment_proof') {
-            if (!file.type.startsWith('image/')) {
+        if (name === 'transfer_proof') {
+            if (!extension || !['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'].includes(extension)) {
+                setErrors(prev => ({ ...prev, [name]: 'Format harus JPG, PNG, PDF, DOC, atau DOCX' }));
+                e.target.value = '';
+                return;
+            }
+        }
+
+        setOptimizingFiles((count) => count + 1);
+
+        try {
+            const file = imageFields.has(name) && supportedImage
+                ? await optimizeImageForUpload(selectedFile)
+                : selectedFile;
+
+            if (file.size > maxFileBytes) {
+                setErrors(prev => ({ ...prev, [name]: 'Ukuran file maksimal 10MB' }));
+                return;
+            }
+
+            if (name !== 'transfer_proof' && !file.type.startsWith('image/')) {
                 setErrors(prev => ({ ...prev, [name]: 'File harus berupa gambar' }));
                 return;
             }
-        }
 
-        if (name === 'transfer_proof') {
-            const extension = file.name.split('.').pop()?.toLowerCase();
-            if (!extension || !['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx'].includes(extension)) {
-                setErrors(prev => ({ ...prev, [name]: 'Format harus JPG, PNG, PDF, DOC, atau DOCX' }));
-                return;
+            setFiles(prev => ({ ...prev, [name]: file }));
+
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    setPreviews(prev => ({ ...prev, [name]: reader.result as string }));
+                };
+                reader.readAsDataURL(file);
+            } else {
+                setPreviews(prev => ({ ...prev, [name]: '' }));
             }
-        }
 
-        setFiles(prev => ({ ...prev, [name]: file }));
-
-        // Create preview for images
-        if (file.type.startsWith('image/')) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setPreviews(prev => ({ ...prev, [name]: reader.result as string }));
-            };
-            reader.readAsDataURL(file);
-        }
-
-        // Clear error
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
+            if (errors[name]) {
+                setErrors(prev => ({ ...prev, [name]: '' }));
+            }
+        } catch (error) {
+            console.error('Error optimizing registration file:', error);
+            setErrors(prev => ({
+                ...prev,
+                [name]: 'File gagal diproses. Pilih file lain lalu coba kembali.',
+            }));
+        } finally {
+            setOptimizingFiles((count) => Math.max(0, count - 1));
+            e.target.value = '';
         }
     };
 
@@ -182,6 +217,8 @@ const PendaftaranPage = () => {
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
 
+        if (submitLock.current || isSubmitting || optimizingFiles > 0) return;
+
         if (!validateForm()) {
             // Scroll to first error
             const firstError = Object.keys(errors)[0];
@@ -192,7 +229,22 @@ const PendaftaranPage = () => {
             return;
         }
 
+        const totalFileBytes = Object.values(files).reduce(
+            (total, file) => total + (file?.size ?? 0),
+            0,
+        );
+
+        if (totalFileBytes > maxRequestBytes) {
+            showError(
+                'Ukuran Berkas Terlalu Besar',
+                'Total seluruh berkas maksimal 20MB. Kecilkan dokumen bukti pindahan lalu coba kembali.'
+            );
+            return;
+        }
+
+        submitLock.current = true;
         setIsSubmitting(true);
+        setUploadProgress(0);
 
         try {
             const formDataToSend = new FormData();
@@ -209,7 +261,10 @@ const PendaftaranPage = () => {
                 }
             });
 
-            const response = await registrationService.create(formDataToSend);
+            const response = await registrationService.create(
+                formDataToSend,
+                setUploadProgress,
+            );
 
             const nomorPendaftaran = response?.registration_number ?? '';
             const namaPendaftar = formData.full_name;
@@ -240,7 +295,9 @@ const PendaftaranPage = () => {
                 getApiErrorMessage(error, 'Gagal mengirim pendaftaran. Silakan coba lagi.')
             );
         } finally {
+            submitLock.current = false;
             setIsSubmitting(false);
+            setUploadProgress(null);
         }
     };
 
@@ -920,7 +977,7 @@ const PendaftaranPage = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="text-muted">Klik untuk mengunggah foto</p>
-                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-xs text-muted mt-1">JPG/PNG, otomatis dioptimalkan sebelum dikirim</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -964,7 +1021,7 @@ const PendaftaranPage = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="text-muted">Klik untuk mengunggah akte</p>
-                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-xs text-muted mt-1">JPG/PNG, otomatis dioptimalkan sebelum dikirim</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -1008,7 +1065,7 @@ const PendaftaranPage = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="text-muted">Klik untuk mengunggah KK</p>
-                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-xs text-muted mt-1">JPG/PNG, otomatis dioptimalkan sebelum dikirim</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -1052,7 +1109,7 @@ const PendaftaranPage = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="text-muted">Klik untuk mengunggah bukti</p>
-                                                                <p className="text-xs text-muted mt-1">Format: JPG, PNG (maks. 10MB)</p>
+                                                                <p className="text-xs text-muted mt-1">JPG/PNG, otomatis dioptimalkan sebelum dikirim</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -1102,7 +1159,7 @@ const PendaftaranPage = () => {
                                                             </div>
                                                             <div>
                                                                 <p className="text-muted">Klik untuk mengunggah bukti pindahan</p>
-                                                                <p className="text-xs text-muted mt-1">JPG, PNG, PDF, DOC, DOCX (maks. 10MB)</p>
+                                                                <p className="text-xs text-muted mt-1">JPG/PNG otomatis dioptimalkan; dokumen maks. 10MB</p>
                                                             </div>
                                                         </div>
                                                     )}
@@ -1127,28 +1184,64 @@ const PendaftaranPage = () => {
                                     </label>
                                 </div>
 
+                                {(optimizingFiles > 0 || isSubmitting) && (
+                                    <div className="mb-5 rounded-lg border border-blue-200 bg-blue-50 p-3">
+                                        <div className="mb-2 flex items-center justify-between gap-3 text-xs font-medium text-blue-800">
+                                            <span>
+                                                {optimizingFiles > 0
+                                                    ? 'Menyiapkan dan mengecilkan ukuran gambar...'
+                                                    : uploadProgress !== null && uploadProgress < 100
+                                                      ? 'Mengunggah berkas pendaftaran...'
+                                                      : 'Memproses pendaftaran di server...'}
+                                            </span>
+                                            {isSubmitting && uploadProgress !== null && uploadProgress < 100 && (
+                                                <span>{uploadProgress}%</span>
+                                            )}
+                                        </div>
+                                        <div className="h-2 overflow-hidden rounded-full bg-blue-100">
+                                            <div
+                                                className={`h-full rounded-full bg-blue-600 transition-[width] duration-300 ${
+                                                    optimizingFiles > 0 ? 'animate-pulse' : ''
+                                                }`}
+                                                style={{
+                                                    width: optimizingFiles > 0
+                                                        ? '35%'
+                                                        : `${uploadProgress ?? 100}%`,
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Buttons */}
                                 <div className="flex flex-col sm:flex-row gap-4 justify-end">
                                     <button
                                         type="button"
                                         onClick={handleReset}
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || optimizingFiles > 0}
                                         className="px-8 py-3 cursor-pointer border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         Reset Form
                                     </button>
                                     <button
                                         type="submit"
-                                        disabled={isSubmitting}
+                                        disabled={isSubmitting || optimizingFiles > 0}
                                         className="px-8 py-3 cursor-pointer bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                                     >
-                                        {isSubmitting ? (
+                                        {optimizingFiles > 0 ? (
+                                            <>
+                                                <Loader2 className="h-5 w-5 animate-spin" />
+                                                Menyiapkan File...
+                                            </>
+                                        ) : isSubmitting ? (
                                             <>
                                                 <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                                 </svg>
-                                                Mengirim...
+                                                {uploadProgress !== null && uploadProgress < 100
+                                                    ? `Mengunggah ${uploadProgress}%`
+                                                    : 'Memproses...'}
                                             </>
                                         ) : (
                                             <>
@@ -1171,17 +1264,14 @@ const PendaftaranPage = () => {
             <Modal
                 isOpen={showErrorModal}
                 onClose={() => setShowErrorModal(false)}
-                onCancel={() => setShowErrorModal(false)}
                 title={errorModalTitle}
                 type="danger"
                 confirmText="Mengerti"
+                cancelText=""
                 onConfirm={() => setShowErrorModal(false)}
             >
                 <div className="text-body">
-                    <p className="mb-4">{errorModalMessage}</p>
-                    <p className="text-sm text-muted">
-                        Silakan periksa kembali data yang Anda masukkan dan coba lagi.
-                    </p>
+                    <p>{errorModalMessage}</p>
                 </div>
             </Modal>
         </>

@@ -77,7 +77,7 @@ const Modal: React.FC<ModalProps> = ({
                         type="button"
                         onClick={onClose}
                         disabled={isLoading}
-                        className="p-1 rounded-lg hover:bg-surface-muted"
+                        className="cursor-pointer p-1 rounded-lg hover:bg-surface-muted disabled:cursor-not-allowed"
                     >
                         <X size={20} />
                     </button>
@@ -93,7 +93,7 @@ const Modal: React.FC<ModalProps> = ({
                             type="button"
                             onClick={onCancel ?? onClose}
                             disabled={isLoading}
-                            className="px-4 py-2 text-body bg-surface border rounded-lg hover:bg-surface-muted"
+                            className="cursor-pointer px-4 py-2 text-body bg-surface border rounded-lg hover:bg-surface-muted disabled:cursor-not-allowed"
                         >
                             {cancelText}
                         </button>
@@ -102,11 +102,10 @@ const Modal: React.FC<ModalProps> = ({
                     <button
                         type="button"
                         onClick={() => {
-                            console.log('Modal confirm button clicked');
                             onConfirm?.();
                         }}
                         disabled={isLoading}
-                        className="px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+                        className="cursor-pointer px-4 py-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 flex items-center gap-2 disabled:cursor-not-allowed"
                     >
                         {isLoading ? (
                             <>
